@@ -1,5 +1,9 @@
+'use client';
+
 import type { Metadata } from 'next';
 import './globals.css';
+import { ReactNode } from 'react';
+import { RecoilRoot } from 'recoil';
 
 export const metadata: Metadata = {
   title: 'DoorFrame',
@@ -12,8 +16,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html>
-      <body>{children}</body>
+    <html lang="ko">
+      <body>
+        <RecoilRoot>{children}</RecoilRoot>
+      </body>
     </html>
   );
 }

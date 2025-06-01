@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default function Home() {
   return (
     <div>
@@ -14,8 +16,8 @@ export default function Home() {
             <div className="time"></div>
           </div>
           <div className="weather">
-            <div className="wetherIco"></div>
-            <div className="wetehrTxt">
+            <div className="weatherIco"></div>
+            <div className="weatehrTxt">
               <div className="temper"></div>
               <div className="state"></div>
               <div className="region"></div>
