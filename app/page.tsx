@@ -1,11 +1,12 @@
 import React from 'react';
+import Login from './component/login';
 
 export default function Home() {
   return (
     <div>
       <header>
         {/* <img ></img> 로고 들어올 공간~ */}
-        <div className="login"></div>
+        <Login />
       </header>
       <hr />
       <main>
