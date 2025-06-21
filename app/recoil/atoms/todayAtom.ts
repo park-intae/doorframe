@@ -1,11 +1,25 @@
 import { atom } from 'recoil';
+// 나중에 날씨데이터도 얻어오셈
 
-export interface Weather {
-  pageNo: string;
-  numOfRows: number;
-  dataType: string;
-  base_date: number;
-  base_time: number;
-  nx: number;
-  ny: number;
+// 날짜/시간 데이터
+export interface todayTimeState {
+  date: string;
+  time: string;
 }
+
+export const todayState = atom<todayTimeState>({
+  key: 'todayTimeState',
+  default: {
+    date: new Date().toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      weekday: 'long',
+    }),
+    time: new Date().toLocaleTimeString('ko-KR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    }),
+  },
+});
