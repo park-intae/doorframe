@@ -1,7 +1,8 @@
 'use client';
 
-import Today from './container/subcomponents/Today';
-import Weather from './container/subcomponents/Weather';
+import Today from "./subcomponents/Today";
+import Weather from "./subcomponents/Weather";
+
 
 export default function Container() {
     return (

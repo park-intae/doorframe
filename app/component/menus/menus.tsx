@@ -1,8 +1,8 @@
-export default function Menus() {
+export default function Menus({ onOpenModal }) {
     return (
         <div className='menus'>
-            <div className='todo'></div>
-            <div className='memo'></div>
+            <button className="memo" onClick={() => onOpenModal('memo')}>memo</button>
+            <button className="todo" onClick={() => onOpenModal('todo')}>todo</button>
         </div>
     )
 }

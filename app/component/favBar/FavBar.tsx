@@ -1,4 +1,4 @@
-export default function SideBar() {
+export default function FavBar() {
     return (
         <div className="side_bar">
             <div className="fav">
