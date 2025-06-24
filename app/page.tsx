@@ -1,9 +1,8 @@
 import React from 'react';
-import Login from './component/container/subcomponents/login';
 import Image from 'next/image';
 import SideBar from './component/sidebar/sidebar';
-import Today from './component/container/subcomponents/today';
-import Weather from './component/container/subcomponents/weather';
+import Login from './component/container/subcomponents/Login';
+import Container from './component/Container';
 
 export default function Home() {
   return (
@@ -20,10 +19,7 @@ export default function Home() {
       <hr />
       <main>
         <div className="search_bar"></div>
-        <section className='container'>
-          <Today />
-          <Weather />
-        </section>
+        <Container />
         <SideBar />
       </main>
       <footer></footer>

@@ -1,10 +1,23 @@
 'use client';
 
-import { useRecoilValue } from 'recoil';
-import { todayState } from 'app/recoil/atoms/todayAtom';
+import { useAppDispatch, useAppSelector } from "app/store/hooks";
+import { updateDateTime } from "app/store/todaySlice";
+import { useEffect } from "react";
 
 export default function Today() {
-    const { date, time } = useRecoilValue(todayState);
+    const { date, time } = useAppSelector((state) => state.today);
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        dispatch(updateDateTime());
+        const timer = setInterval(() => {
+            dispatch(updateDateTime());
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [dispatch]);
+
+    if (!date || !time) return <div>Loading...</div>
 
     return (
         <div className="today">

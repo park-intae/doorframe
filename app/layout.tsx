@@ -1,8 +1,5 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { ReactNode } from 'react';
-import { SessionProvider } from 'next-auth/react';
-import RecoilProvider from './providers/RecoilProvider';
 import Providers from './providers/Provider';
 
 export const metadata: Metadata = {
