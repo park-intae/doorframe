@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import todayReducer from './todaySlice';
+import modalReducer from './modalSlice';
 
 export const store = configureStore({
   reducer: {
     today: todayReducer,
+    modal: modalReducer,
     // 다른 slice들도 여기에 추가
   },
 });

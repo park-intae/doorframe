@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { closeModal, openModal } from './store/modalSlice';
+import { RootState } from './store';
+
 import Image from 'next/image';
 import Login from './component/header/Login';
 import Container from './component/container/Container';
@@ -8,12 +11,11 @@ import Menus from './component/menus/Menus';
 import Modal from './component/menus/modal/Modal';
 
 export default function Home() {
-  type ModalType = 'todo' | 'memo' | null;
-  const [modalName, setModalName] = useState<ModalType>(null);
+  const dispatch = useDispatch();
+  const modalName = useSelector((state: RootState) => state.modal.name);
 
-  const openModal = (name: ModalType) => setModalName(name);
-  const closeModal = () => setModalName(null);
-
+  const handleOpenModal = (name: typeof modalName) => dispatch(openModal(name));
+  const handleCloseModal = () => dispatch(closeModal());
   return (
     <div>
       <header>
