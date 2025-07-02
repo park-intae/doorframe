@@ -1,7 +1,7 @@
 'use client';
 
 import { useAppDispatch, useAppSelector } from "app/store/hooks";
-import { updateDateTime } from "app/store/todaySlice";
+import { updateDateTime } from "app/store/slice/todaySlice";
 import { useEffect } from "react";
 
 export default function Today() {

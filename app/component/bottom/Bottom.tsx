@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Menus from "./Menus"
 import Modal from "./modal/Modal"
 import { RootState } from "app/store";
-import { closeModal, openModal } from "app/store/modalSlice";
+import { closeModal, openModal } from "app/store/slice/modalSlice";
 
 export default function Bottom() {
     const dispatch = useDispatch();

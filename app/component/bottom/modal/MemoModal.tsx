@@ -1,13 +1,11 @@
 import Input from "./subCompo/Input";
+import List from "./subCompo/List";
 
 export default function MemoModal() {
-    const handleInputSubmit = (value: string) => {
-        console.log('입력된 값:', value);
-    }
-
     return (
         <>
-            <Input onSubmit={handleInputSubmit} />
+            <Input kind='memo' />
+            <List kind='memo' />
         </>
     )
 }
