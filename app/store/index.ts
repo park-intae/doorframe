@@ -6,12 +6,19 @@ import listReducer from './slice/listSlice';
 
 export const store = configureStore({
   reducer: {
-    Today: todayReducer,
+    today: todayReducer,
     modal: modalReducer,
     input: inputReducer,
     list: listReducer,
     // 다른 slice들도 여기에 추가
   },
+});
+
+store.subscribe(() => {
+  const state = store.getState();
+
+  localStorage.setItem('input', JSON.stringify(state.input));
+  localStorage.setItem('list', JSON.stringify(state.list));
 });
 
 export type RootState = ReturnType<typeof store.getState>;

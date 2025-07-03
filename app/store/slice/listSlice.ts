@@ -14,10 +14,20 @@ interface ListState {
   nextId: number;
 }
 
-const initialState: ListState = {
-  items: [],
-  nextId: 1,
+const loadListFromStorage = (): ListState => {
+  try {
+    const saved = localStorage.getItem('list');
+    if (saved) return JSON.parse(saved);
+  } catch (e) {
+    console.error('list 불러오기 실패:', e);
+  }
+  return {
+    items: [],
+    nextId: 1,
+  };
 };
+
+const initialState: ListState = loadListFromStorage();
 
 const listSlice = createSlice({
   name: 'list',

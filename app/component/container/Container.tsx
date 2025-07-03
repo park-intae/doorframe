@@ -1,6 +1,6 @@
 'use client';
 
-import Today from "./subcomponents/Today";
+import Today from "./subcomponents/today";
 import Weather from "./subcomponents/Weather";
 
 
