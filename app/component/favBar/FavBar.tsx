@@ -1,11 +1,20 @@
+import { RootState } from "app/store";
+import { Bookmark } from "app/type/bookmark";
+import { useSelector } from "react-redux";
+
 export default function FavBar() {
+    const bookmarks = useSelector((state: RootState) => state.bookmarks);
+
     return (
-        <div className="side_bar">
-            <div className="fav">
-                <div className="IcoBg">{/* <img/> 즐찾 아이콘*/}</div>
-                <p className="tit"></p>
-                <span className="desc"></span>
-            </div>
-        </div>
+        <section className="side_bar">
+            {bookmarks.map((item: Bookmark) => (
+                <a className="fav" key={item.id} href={item.url} target="_blank" rel="noopener noreferrer">
+                    <div className="IcoBg">
+                        <img src={item.icon} alt={item.title} />
+                    </div>
+                    <p className="tit">{item.title}</p>
+                </a>
+            ))}
+        </section>
     )
 }

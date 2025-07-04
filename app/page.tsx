@@ -1,9 +1,8 @@
 import Image from 'next/image';
 import Login from './component/header/Login';
-import Container from './component/container/Container';
-import Search from './component/container/subcomponents/Search';
 import FavBar from './component/favBar/FavBar';
 import Bottom from './component/bottom/Bottom';
+import MainSec from './component/container/subcomponents/MainSec';
 
 export default function Home() {
   return (
@@ -19,13 +18,8 @@ export default function Home() {
       </header>
       <hr />
       <main>
-        <section className='fav'>
-          <FavBar />
-        </section>
-        <section className='mainSec'>
-          <Search />
-          <Container />
-        </section>
+        <FavBar />
+        <MainSec />
         <Bottom />
       </main>
       <footer></footer>
