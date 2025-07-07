@@ -18,12 +18,7 @@ const defaultBookmarks: Bookmark[] = [
   },
 ];
 
-const loadInitialBookmarks = (): Bookmark[] => {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  return saved ? JSON.parse(saved) : defaultBookmarks;
-};
-
-const initialState: Bookmark[] = loadInitialBookmarks();
+const initialState: Bookmark[] = defaultBookmarks;
 
 const bookmarkSlice = createSlice({
   name: 'bookmarks',
@@ -31,15 +26,12 @@ const bookmarkSlice = createSlice({
   reducers: {
     addBookmark(state, action: PayloadAction<Bookmark>) {
       state.push(action.payload);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     },
     removeBookmark(state, action: PayloadAction<number>) {
       const idx = state.findIndex((bMark) => bMark.id === action.payload);
       if (idx !== -1) state.splice(idx, 1);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     },
     setBookmarks(state, action: PayloadAction<Bookmark[]>) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(action.payload));
       return action.payload;
     },
   },

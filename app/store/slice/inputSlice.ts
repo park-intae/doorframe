@@ -16,7 +16,7 @@ const loadInputFromStorage = (): inputState => {
   };
 };
 
-const initialState: inputState = loadInputFromStorage();
+const initialState: inputState = { value: '' };
 
 const inputSlice = createSlice({
   name: 'input',

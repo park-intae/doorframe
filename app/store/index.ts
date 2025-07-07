@@ -21,6 +21,7 @@ store.subscribe(() => {
 
   localStorage.setItem('input', JSON.stringify(state.input));
   localStorage.setItem('list', JSON.stringify(state.list));
+  localStorage.setItem('fav_items', JSON.stringify(state.bookmarks));
 });
 
 export type RootState = ReturnType<typeof store.getState>;

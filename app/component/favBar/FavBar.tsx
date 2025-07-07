@@ -1,3 +1,5 @@
+'use client'
+
 import { RootState } from "app/store";
 import { Bookmark } from "app/type/bookmark";
 import { useSelector } from "react-redux";
