@@ -24,16 +24,14 @@ export async function GET(req: Request) {
 
     // 날짜/시간 계산
     const now = new Date();
-    let hour = now.getHours();
-    let date = new Date(now);
-    if (hour === 0) {
-      date.setDate(date.getDate() - 1);
-      hour = 23;
-    } else {
-      hour -= 1;
-    }
-    const BASE_DATE = date.toISOString().slice(0, 10).replace(/-/g, '');
-    const BASE_TIME = hour.toString().padStart(2, '0') + '00';
+    // API 데이터는 매 시 40분에 발표.
+    // 40분 이전이면 이전 시간을, 40분 이후면 현재 시간을 기준으로 요청.
+    const dateToRequest = now.getMinutes() < 40 ? new Date(now.getTime() - 60 * 60 * 1000) : now;
+
+    const BASE_DATE = dateToRequest.toISOString().slice(0, 10).replace(/-/g, '');
+    const BASE_TIME = dateToRequest.getHours().toString().padStart(2, '0') + '00';
+
+    console.log(`[BASE TIME] base_date: ${BASE_DATE}, base_time: ${BASE_TIME}`);
 
     // 1) 기상청 날씨 API 호출
     const weatherUrl = `${WEATHER_BASE_URL}?${new URLSearchParams({
@@ -44,14 +42,28 @@ export async function GET(req: Request) {
       base_time: BASE_TIME,
       nx: nx.toString(),
       ny: ny.toString(),
-      serviceKey: decodeURIComponent(WEATHER_API_KEY),
+      serviceKey: WEATHER_API_KEY, // decodeURIComponent 제거
     }).toString()}`;
 
     const weatherRes = await fetch(weatherUrl);
     const weatherText = await weatherRes.text();
     const weatherData = JSON.parse(weatherText);
 
-    const items = weatherData.response.body.items.item;
+    // 1단계: resultCode로 API 자체의 오류를 검사
+    const resultCode = weatherData.response?.header?.resultCode;
+    if (resultCode !== '00') {
+      const resultMsg = weatherData.response?.header?.resultMsg || 'API 응답 오류';
+      console.error(`[Weather API Error] ${resultCode}: ${resultMsg}`);
+      return NextResponse.json({ error: resultMsg }, { status: 500 });
+    }
+
+    // 2단계: 정상 응답이지만 데이터가 비어있는 경우를 검사
+    const items = weatherData.response?.body?.items?.item;
+    if (!items || items.length === 0) {
+      console.warn('[Weather API] 데이터 없음 (NO DATA)');
+      return NextResponse.json({ error: '날씨 데이터를 찾을 수 없습니다.' }, { status: 500 });
+    }
+
     const T1H = items.find((i: any) => i.category === 'T1H');
     const PTY = items.find((i: any) => i.category === 'PTY');
     const SKY = items.find((i: any) => i.category === 'SKY');
@@ -87,8 +99,6 @@ export async function GET(req: Request) {
       type: 'both',
       key: VWORLD_API_KEY,
     }).toString()}`;
-
-    console.log('[VWorld API URL]', geoUrl);
 
     const geoRes = await fetch(geoUrl);
     const geoData = await geoRes.json();
