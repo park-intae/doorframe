@@ -15,6 +15,14 @@ interface ListState {
 }
 
 const loadListFromStorage = (): ListState => {
+  if (typeof window === 'undefined') {
+    // 서버 환경에서는 빈 값으로 초기화
+    return {
+      items: [],
+      nextId: 1,
+    };
+  }
+
   try {
     const saved = localStorage.getItem('list');
     if (saved) return JSON.parse(saved);

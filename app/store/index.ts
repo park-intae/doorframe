@@ -4,6 +4,7 @@ import modalReducer from './slice/modalSlice';
 import inputReducer from './slice/inputSlice';
 import listReducer from './slice/listSlice';
 import bookmarkReducer from './slice/bookmarkSlice';
+import weatherReducer from './slice/weatherSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     input: inputReducer,
     list: listReducer,
     bookmarks: bookmarkReducer,
+    weather: weatherReducer,
     // 다른 slice들도 여기에 추가
   },
 });
