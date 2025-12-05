@@ -16,11 +16,15 @@ export default function List({ kind }: ListProps) {
     );
 
     return (
-        <ul>
+        <ul className="max-h-70 overflow-y-auto">
             {filteredItems.map(item => (
-                <li key={item.id} style={{ marginBottom: '0.5rem' }}>
+                <li className="flex flex-row mx-5 justify-between border-b" key={item.id} style={{ marginBottom: '0.5rem' }}>
                     {kind === 'todo' ? (
-                        <label style={{ textDecoration: item.completed ? 'line-through' : 'none' }}>
+                        <label
+                            className="flex-grow min-w-30 max-w-xs truncate whitespace-nowrap overflow-hidden"
+                            style={{ textDecoration: item.completed ? 'line-through' : 'none' }}
+                            title={item.text}
+                        >
                             <input
                                 type="checkbox"
                                 checked={item.completed}
@@ -29,9 +33,10 @@ export default function List({ kind }: ListProps) {
                             {item.text}
                         </label>
                     ) : (
-                        <span>{item.text}</span>
+                        <span className="flex-grow max-w-50 truncate whitespace-nowrap overflow-hidden" title={item.text}>{item.text}</span>
                     )}
                     <button
+                        className="border rounded-lg bg-red-500 text-white"
                         style={{ marginLeft: '0.5rem' }}
                         onClick={() => dispatch(removeItem(item.id))}>
                         삭제

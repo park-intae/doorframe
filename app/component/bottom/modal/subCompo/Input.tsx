@@ -24,12 +24,12 @@ export default function Input({ kind }: InputProps) {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form className="summitForm border rounded-lg w-fit overflow-hidden self-center mb-2" onSubmit={handleSubmit}>
             <input
                 value={value}
                 onChange={handleChange}>
             </input>
-            <button type='submit'>등록</button>
+            <button className="summitBTN border-l" type='submit'>등록</button>
         </form>
     )
 }

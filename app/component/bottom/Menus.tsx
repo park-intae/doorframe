@@ -6,9 +6,9 @@ interface MenuesProps {
 
 export default function Menus({ onOpenModal }: MenuesProps) {
     return (
-        <div className='menus'>
-            <button className="memo" onClick={() => onOpenModal('memo')}>memo</button>
-            <button className="todo" onClick={() => onOpenModal('todo')}>todo</button>
+        <div className='menus mx-5 flex flex-row gap-3'>
+            <button className="memo p-1 border rounded-lg" onClick={() => onOpenModal('memo')}>memo</button>
+            <button className="todo p-1 border rounded-lg" onClick={() => onOpenModal('todo')}>todo</button>
         </div>
     )
 }

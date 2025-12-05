@@ -29,10 +29,12 @@ export default function Modal({ name, onClose }: ModalProps) {
     return (
         <>
             <div className="modal-backdrop">
-                <dialog ref={dialogRef} className="modal" >
-                    {name === 'memo' && <MemoModal />}
-                    {name === 'todo' && <TodoModal />}
-                    <button onClick={handleClose}>닫기</button>
+                <dialog ref={dialogRef} className="modal m-auto min-h-30 w-80 p-3 rounded-lg flex flex-col justify-center gap-3">
+                    <div className="content flex justify-center flex flex-col border rounded-lg py-5">
+                        {name === 'memo' && <MemoModal />}
+                        {name === 'todo' && <TodoModal />}
+                    </div>
+                    <button onClick={handleClose} className="self-end">닫기</button>
                 </dialog>
             </div>
         </>

@@ -23,15 +23,38 @@ export async function GET(req: Request) {
     const { nx, ny } = convertToGrid(latitude, longitude);
 
     // 날짜/시간 계산
+    // 날짜/시간 계산 (KST 기준)
     const now = new Date();
-    // API 데이터는 매 시 40분에 발표.
-    // 40분 이전이면 이전 시간을, 40분 이후면 현재 시간을 기준으로 요청.
-    const dateToRequest = now.getMinutes() < 40 ? new Date(now.getTime() - 60 * 60 * 1000) : now;
 
-    const BASE_DATE = dateToRequest.toISOString().slice(0, 10).replace(/-/g, '');
-    const BASE_TIME = dateToRequest.getHours().toString().padStart(2, '0') + '00';
+    // KST 시간으로 변환 (UTC + 9시간)
+    const kstOffset = 9 * 60 * 60 * 1000;
+    const kstTime = new Date(now.getTime() + kstOffset);
 
-    console.log(`[BASE TIME] base_date: ${BASE_DATE}, base_time: ${BASE_TIME}`);
+    // 현재 분이 40분 미만이면 이전 시간 데이터 요청
+    const currentMinute = kstTime.getUTCMinutes();
+    let dateToRequest = new Date(kstTime);
+
+    if (currentMinute < 40) {
+      dateToRequest = new Date(kstTime.getTime() - 60 * 60 * 1000);
+    }
+
+    const BASE_DATE = [
+      dateToRequest.getUTCFullYear(),
+      String(dateToRequest.getUTCMonth() + 1).padStart(2, '0'),
+      String(dateToRequest.getUTCDate()).padStart(2, '0'),
+    ].join('');
+
+    const BASE_TIME = String(dateToRequest.getUTCHours()).padStart(2, '0') + '00';
+
+    console.log(
+      `[KST 시간] ${kstTime.getUTCFullYear()}-${String(kstTime.getUTCMonth() + 1).padStart(2, '0')}-${String(
+        kstTime.getUTCDate()
+      ).padStart(2, '0')} ${String(kstTime.getUTCHours()).padStart(2, '0')}:${String(kstTime.getUTCMinutes()).padStart(
+        2,
+        '0'
+      )}`
+    );
+    console.log(`[요청 시간] base_date: ${BASE_DATE}, base_time: ${BASE_TIME}`);
 
     // 1) 기상청 날씨 API 호출
     const weatherUrl = `${WEATHER_BASE_URL}?${new URLSearchParams({
@@ -121,6 +144,6 @@ export async function GET(req: Request) {
     });
   } catch (err: any) {
     console.error(err);
-    return NextResponse.json({ error: err.message || '서버 에러' }, { status: 500 });
+    return NextResponse.json({ temperature: '--℃', weather: '정보 없음', region: '서울', isTemporary: true });
   }
 }

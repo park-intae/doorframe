@@ -20,9 +20,9 @@ export default function Today() {
     if (!date || !time) return <div>Loading...</div>
 
     return (
-        <div className="today">
-            <div className="date">{date}</div>
-            <div className="time">{time}</div>
+        <div className="today border rounded-xl m-3 p-3 text-center">
+            <div className="date text-2xl">{date}</div>
+            <div className="time text-6xl">{time}</div>
         </div>
     );
 }

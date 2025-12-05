@@ -14,7 +14,7 @@ export default function Bottom() {
     const handleCloseModal = () => { dispatch(closeModal()); };
 
     return (
-        <section className='botSec'>
+        <section className='botSec self-end'>
             <Menus onOpenModal={handleOpenModal} />
             <Modal name={modalName} onClose={handleCloseModal} />
         </section>
