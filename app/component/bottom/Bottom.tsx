@@ -2,21 +2,26 @@
 
 import { useDispatch, useSelector } from "react-redux";
 import Menus from "./Menus"
-import Modal from "./modal/Modal"
+import Popover from "./modal/Popover";
 import { RootState } from "app/store";
-import { closeModal, openModal } from "app/store/slice/modalSlice";
+import { closePopover, openPopover } from "app/store/slice/popoverSlice";
+import { PopoverType } from "app/type/popover";
 
 export default function Bottom() {
     const dispatch = useDispatch();
-    const modalName = useSelector((state: RootState) => state.modal.name);
+    const popoverName = useSelector((state: RootState) => state.popover.name);
 
-    const handleOpenModal = (name: typeof modalName) => { dispatch(openModal(name)); };
-    const handleCloseModal = () => { dispatch(closeModal()); };
+    const handleOpenPopover = (name: PopoverType) =>
+        (e: React.MouseEvent<HTMLElement>) => {
+            const anchor = e.currentTarget as HTMLElement;
+            dispatch(openPopover({ name, anchor, }));
+        };
+    const handleClosePopover = () => { dispatch(closePopover()); };
 
     return (
         <section className='botSec self-end'>
-            <Menus onOpenModal={handleOpenModal} />
-            <Modal name={modalName} onClose={handleCloseModal} />
+            <Menus onOpenPopover={handleOpenPopover} />
+            <Popover name={popoverName} onClose={handleClosePopover} />
         </section>
     )
 }
