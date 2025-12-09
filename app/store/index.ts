@@ -5,6 +5,7 @@ import inputReducer from './slice/inputSlice';
 import listReducer from './slice/listSlice';
 import bookmarkReducer from './slice/bookmarkSlice';
 import weatherReducer from './slice/weatherSlice';
+import popoverReducer from './slice/popoverSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,8 +15,16 @@ export const store = configureStore({
     list: listReducer,
     bookmarks: bookmarkReducer,
     weather: weatherReducer,
-    // 다른 slice들도 여기에 추가
+    popover: popoverReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['popover/openPopover'],
+        ignoredActionPaths: ['payload.anchor'],
+        ignoredPaths: ['popover.anchorRect'],
+      },
+    }),
 });
 
 store.subscribe(() => {
