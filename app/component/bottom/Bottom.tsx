@@ -33,7 +33,7 @@ export default function Bottom() {
     const handleClosePopover = () => { dispatch(closePopover()); };
 
     return (
-        <section className='botSec self-end'>
+        <section className='botSec self-end h-[5vh]'>
             <Menus onOpenPopover={handleOpenPopover} buttonRefs={buttonRefs} />
             <Popover name={popoverName} anchorRect={anchorRect} onClose={handleClosePopover} />
         </section>

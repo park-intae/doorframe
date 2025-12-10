@@ -16,7 +16,7 @@ export default function List({ kind }: ListProps) {
     );
 
     return (
-        <ul className="max-h-70 overflow-y-auto">
+        <ul className="min-h-30 overflow-y-auto">
             {filteredItems.map(item => (
                 <li className="flex flex-row mx-5 justify-between border-b" key={item.id} style={{ marginBottom: '0.5rem' }}>
                     {kind === 'todo' ? (

@@ -11,14 +11,13 @@ interface PopoverProps {
 
 export default function Popover({ name, onClose, anchorRect }: PopoverProps) {
     const popoverRef = useRef<HTMLDivElement>(null);
-    const [position, setPosition] = useState({ top: 0, left: 0 });
+    const [position, setPosition] = useState({ bottom: 0, left: 0 });
 
     useEffect(() => {
         if (name && popoverRef.current && anchorRect) {
-            const popoverHeight = 400; // 예상 높이
             const popoverWidth = 320; // w-80 = 320px
 
-            let top = anchorRect.top - popoverHeight + 220;
+            let bottom = window.innerHeight - anchorRect.top + 5;
             let left = anchorRect.left + (anchorRect.width / 2) - (popoverWidth / 2);
 
             if (left < 10) {
@@ -29,9 +28,8 @@ export default function Popover({ name, onClose, anchorRect }: PopoverProps) {
                 left = window.innerWidth - popoverWidth - 10;
             }
 
-            // 앵커 위쪽에 표시 (bottom 메뉴이므로)
             setPosition({
-                top, left
+                bottom, left
             });
         }
     }, [name, anchorRect]);
@@ -58,7 +56,7 @@ export default function Popover({ name, onClose, anchorRect }: PopoverProps) {
                 ref={popoverRef}
                 className="absolute bg-white min-h-30 w-80 p-3 rounded-lg flex flex-col justify-center gap-3 shadow-2xl border"
                 style={{
-                    top: `${position.top}px`,
+                    bottom: `${position.bottom}px`,
                     left: `${position.left}px`,
                 }}
             >

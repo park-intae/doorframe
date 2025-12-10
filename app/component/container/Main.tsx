@@ -6,7 +6,7 @@ import MainSec from "./subcomponents/MainSec";
 
 export default function Main() {
     return (
-        <main className="flex h-[calc(100vh-64px)]">
+        <main className="flex">
             <FavBar />
             <article className="flex flex-1 flex-col overflow-auto justifi-center items-center">
                 <MainSec />
