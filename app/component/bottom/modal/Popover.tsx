@@ -18,10 +18,20 @@ export default function Popover({ name, onClose, anchorRect }: PopoverProps) {
             const popoverHeight = 400; // 예상 높이
             const popoverWidth = 320; // w-80 = 320px
 
+            let top = anchorRect.top - popoverHeight + 220;
+            let left = anchorRect.left + (anchorRect.width / 2) - (popoverWidth / 2);
+
+            if (left < 10) {
+                left = 10
+            }
+
+            if (left + popoverWidth > window.innerWidth - 10) {
+                left = window.innerWidth - popoverWidth - 10;
+            }
+
             // 앵커 위쪽에 표시 (bottom 메뉴이므로)
             setPosition({
-                top: anchorRect.top - popoverHeight - 10,
-                left: anchorRect.left + (anchorRect.width / 2) - (popoverWidth / 2)
+                top, left
             });
         }
     }, [name, anchorRect]);
