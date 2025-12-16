@@ -60,22 +60,14 @@ export default function TypedPopover({ name, onClose, anchorRect }: TypedPopover
                 {name === 'memo' && <MemoPopover />}
                 {name === 'memo' && <TodoPopover />}
             </div> */}
-            <div className="content flex justify-center flex-col border rounded-lg py-5">
-                {name === 'memo' && (
-                    <>
-                        <div>Rendering MemoModal</div>
-                        <MemoPopover />
-                    </>
-                )}
-                {name === 'todo' && (
-                    <>
-                        <div>Rendering TodoModal</div>
-                        <TodoPopover />
-                    </>
-                )}
-                {name !== 'memo' && name !== 'todo' && (
-                    <div>Unknown popover type: {name}</div>
-                )}
+            <div className="content flex justify-center flex-col border rounded-lg py-5 max-h-90 scrollbar-hide">
+                {name === 'memo' &&
+                    <MemoPopover />
+                }
+                {name === 'todo' &&
+                    <TodoPopover />
+                }
+
             </div>
         </Popover>
     )

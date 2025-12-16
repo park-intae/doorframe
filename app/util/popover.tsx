@@ -39,15 +39,11 @@ export default function Popover({
 
             //세로 기준 위치
             if (placement === 'top') {
-                const bottom = window.innerHeight - anchorRect.top + 5;
-                console.log('Using TOP placement');
-                console.log('Calculated bottom:', bottom);
-                setPosition({ bottom, left, top: 0 });
+                const bottom = window.innerHeight - anchorRect.top + 5
+                setPosition({ bottom, left, top: 0 })
             } else {
                 const top = anchorRect.bottom + 5;
-                console.log('Using BOTTOM placement');
-                console.log('Calculated top:', top);
-                setPosition({ top, left, bottom: 0 });
+                setPosition({ top, left, bottom: 0 })
             }
         }
     }, [isOpen, anchorRect, width, placement])
@@ -97,7 +93,7 @@ export default function Popover({
     return (
         <div
             ref={popoverRef}
-            className="popoverDiv fix min-h-30 p-3 rounded-lg border"
+            className="popoverDiv fixed min-h-30 p-3 rounded-lg border"
             style={{
                 ...(placement === 'top'
                     ? { bottom: `${position.bottom}px` }
@@ -107,18 +103,7 @@ export default function Popover({
                 width: `${width}px`,
             }}
         >
-            <div style={{ fontSize: '10px', color: 'red' }}>
-                Debug: placement={placement}, bottom={position.bottom}, top={position.top}
-            </div>
             {children}
-            {showCloseButton && (
-                <button
-                    onClick={onClose}
-                    className="self-end px-4 py-2 rounded hover:bg-gray-100 transition-colors"
-                >
-                    닫기
-                </button>
-            )}
         </div>
     )
 }
