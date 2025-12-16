@@ -9,6 +9,7 @@ export default function Header() {
                 alt='로고'
                 width={35}
                 height={40}
+                className="my-2 mx-3"
             />
             <Login />
         </header>

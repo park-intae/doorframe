@@ -1,6 +1,6 @@
 import { ModalType } from "app/type/modal";
-import TodoModal from "./TodoModal";
-import MemoModal from "./MemoModal";
+import TodoModal from "./TodoPopover";
+import MemoModal from "./MemoPopover";
 import { useEffect, useRef } from "react";
 
 interface ModalProps {

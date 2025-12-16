@@ -1,6 +1,6 @@
 import { PopoverType } from "app/type/popover";
-import TodoModal from "./TodoModal";
-import MemoModal from "./MemoModal";
+import TodoPopover from "./TodoPopover";
+import MemoPopover from "./MemoPopover";
 import { useEffect, useRef, useState } from "react";
 
 interface PopoverProps {
@@ -9,7 +9,7 @@ interface PopoverProps {
     anchorRect?: DOMRect | null;
 }
 
-export default function Popover({ name, onClose, anchorRect }: PopoverProps) {
+export default function TypedPopover({ name, onClose, anchorRect }: PopoverProps) {
     const popoverRef = useRef<HTMLDivElement>(null);
     const [position, setPosition] = useState({ bottom: 0, left: 0 });
 
@@ -61,8 +61,8 @@ export default function Popover({ name, onClose, anchorRect }: PopoverProps) {
                 }}
             >
                 <div className="content flex justify-center flex-col border rounded-lg py-5">
-                    {name === 'memo' && <MemoModal />}
-                    {name === 'todo' && <TodoModal />}
+                    {name === 'memo' && <MemoPopover />}
+                    {name === 'todo' && <TodoPopover />}
                 </div>
                 <button
                     onClick={handleClose}

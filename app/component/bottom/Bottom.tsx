@@ -2,7 +2,7 @@
 
 import { useDispatch, useSelector } from "react-redux";
 import Menus from "./Menus"
-import Popover from "./modal/Popover";
+import TypedPopover from "./modal/TypedPopover";
 import { RootState } from "app/store";
 import { closePopover, openPopover } from "app/store/slice/popoverSlice";
 import { PopoverType } from "app/type/popover";
@@ -14,20 +14,14 @@ export default function Bottom() {
     const anchorRect = useSelector((state: RootState) => state.popover.anchorRect);
     const buttonRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
 
-    console.log('=== Bottom Component ===');
-    console.log('popoverName from Redux:', popoverName);
-    console.log('anchorRect from Redux:', anchorRect);
-
     const handleOpenPopover = (name: PopoverType) => {
         if (!name) return;
 
         const anchor = buttonRefs.current[name];
-        console.log('handleOpenPopover called - name:', name);
-        console.log('handleOpenPopover - anchor:', anchor);
         if (anchor) {
             dispatch(openPopover({ name, anchor }));
         } else {
-            console.log('anchor is null!');
+            console.log('anchor 탐색 불가');
         }
     };
     const handleClosePopover = () => { dispatch(closePopover()); };
@@ -35,7 +29,7 @@ export default function Bottom() {
     return (
         <section className='botSec self-end h-[5vh]'>
             <Menus onOpenPopover={handleOpenPopover} buttonRefs={buttonRefs} />
-            <Popover name={popoverName} anchorRect={anchorRect} onClose={handleClosePopover} />
+            <TypedPopover name={popoverName} anchorRect={anchorRect} onClose={handleClosePopover} />
         </section>
     )
 }

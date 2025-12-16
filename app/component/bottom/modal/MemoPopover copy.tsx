@@ -1,11 +1,11 @@
 import Input from "./subCompo/Input";
 import List from "./subCompo/List";
 
-export default function MemoModal() {
+export default function MemoPopover() {
     return (
         <>
-            <Input kind='todo' />
-            <List kind='todo' />
+            <Input kind='memo' />
+            <List kind='memo' />
         </>
     )
 }
