@@ -1,6 +1,6 @@
 @import url('https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/Paperlogy.css');
 @import 'tailwindcss';
-@plugin "tailwind-scrollbar-hide";
+
 
 /* Regular (400) */
 @font-face {
@@ -25,4 +25,16 @@
 /* 3. @theme를 사용하여 Tailwind 설정에 커스텀 폰트 추가 (v4.x 방식) */
 @theme {
     --font-paperlogy: 'Paperlogy', 'sans-serif';
+}
+
+
+@layer utilities {
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+
+    .scrollbar-hide {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
 }
