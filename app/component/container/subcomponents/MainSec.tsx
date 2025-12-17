@@ -3,7 +3,7 @@ import Search from "./mainSec/Search";
 
 export default function MainSec() {
     return (
-        <section className="mainSection h-[80vh] mt-[10vh]">
+        <section className="mainSection mt-[10vh]">
             <Search />
             <Container />
         </section>

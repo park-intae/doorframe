@@ -9,7 +9,6 @@ interface PopoverProps {
     children: ReactNode;
     width?: number;
     placement?: PopoverPlacement;
-    showCloseButton?: boolean;
 }
 
 export default function Popover({
@@ -19,7 +18,6 @@ export default function Popover({
     children,
     width = 320,
     placement = 'bottom',
-    showCloseButton = true
 }: PopoverProps) {
     const popoverRef = useRef<HTMLDivElement>(null);
     const [position, setPosition] = useState({ top: 0, bottom: 0, left: 0 });
@@ -47,12 +45,6 @@ export default function Popover({
             }
         }
     }, [isOpen, anchorRect, width, placement])
-
-    // const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    //     if (e.target === e.currentTarget) {
-    //         onClose();
-    //     }
-    // }
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -93,7 +85,7 @@ export default function Popover({
     return (
         <div
             ref={popoverRef}
-            className="popoverDiv fixed min-h-30 p-3 rounded-lg border"
+            className="popoverDiv fixed min-h-30 p-3 rounded-lg border bg-white"
             style={{
                 ...(placement === 'top'
                     ? { bottom: `${position.bottom}px` }

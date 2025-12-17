@@ -14,7 +14,7 @@ export default function Weather() {
     }, []);
 
     return (
-        <div className="weather border rounded-xl my-8 mx-auto w-60 h-60 flex flex-row items-center justify-between p-8">
+        <div className="weather border rounded-xl my-4 mx-auto min-w-50 min-h-58 flex flex-row items-center justify-between p-6">
             <div className="weatherIco border rounded-full w-20 h-20"></div>
             <div className="weatehrTxt">
                 <div className="temper">{loading ? '로딩중...' : temperature}</div>

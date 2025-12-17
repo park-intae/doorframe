@@ -60,7 +60,7 @@ export default function TypedPopover({ name, onClose, anchorRect }: TypedPopover
                 {name === 'memo' && <MemoPopover />}
                 {name === 'memo' && <TodoPopover />}
             </div> */}
-            <div className="content flex justify-center flex-col border rounded-lg py-5 max-h-85">
+            <div className="content flex justify-center flex-col rounded-lg py-5 max-h-85">
                 {name === 'memo' &&
                     <MemoPopover />
                 }

@@ -15,7 +15,7 @@ export default function Search() {
 
     return (
         <>
-            <form onSubmit={handleSearch} className="border rounded-full m-3 h-8 flex item-center">
+            <form onSubmit={handleSearch} className="border rounded-full m-2 h-8 flex item-center">
                 <div className="search-icon"></div>
                 <input type="text" value={keyword} onChange={(e) => setKeyword(e.target.value)} />
             </form>

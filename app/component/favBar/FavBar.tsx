@@ -12,7 +12,7 @@ export default function FavBar() {
 
     return (
         <aside className={`
-        fixed top-[43px] left-0 h-full w-64 p-4 bg-white shadow-lg z-50
+        fixed left-0 h-full w-64 p-4 bg-white shadow-lg z-50
         flex flex-col gap-4
         transform transition-transform duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-[70%]"}

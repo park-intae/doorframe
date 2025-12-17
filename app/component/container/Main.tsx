@@ -6,9 +6,9 @@ import MainSec from "./subcomponents/MainSec";
 
 export default function Main() {
     return (
-        <main className="flex">
+        <main className="flex flex-1 items-stretch">
             <FavBar />
-            <article className="flex flex-1 flex-col overflow-auto justifi-center items-center">
+            <article className="mainSec flex flex-1 flex-col justify-around items-center">
                 <MainSec />
                 <Bottom />
             </article>
