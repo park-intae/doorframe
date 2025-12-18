@@ -5,10 +5,13 @@ import { Bookmark } from "app/type/bookmark";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Menu, X } from "lucide-react";
+import AddFav from "./favBar/addFav";
 
 export default function FavBar() {
     const [isOpen, setIsOpen] = useState(false);
     const bookmarks = useSelector((state: RootState) => state.bookmarks);
+    const [showModal, setShowModal] = useState(false);
+
 
     return (
         <aside className={`
@@ -17,7 +20,7 @@ export default function FavBar() {
         transform transition-transform duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-[70%]"}
         `}>
-            <div className="flex justify-end mr-2 mb-8">
+            <div className="flex justify-end mr-2">
                 <button
                     onClick={() => setIsOpen(!isOpen)}
                     className="p-2 bg-blue-500 rounded text-white"
@@ -39,6 +42,8 @@ export default function FavBar() {
                         <p className="tit">{item.title}</p>
                     </a>
                 ))}
+
+                <AddFav />
             </div>
         </aside>
     )

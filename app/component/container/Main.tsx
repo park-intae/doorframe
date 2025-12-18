@@ -1,7 +1,7 @@
 'use client';
 
 import Bottom from "../bottom/Bottom";
-import FavBar from "../favBar/FavBar";
+import FavBar from "../FavBar";
 import MainSec from "./subcomponents/MainSec";
 
 export default function Main() {

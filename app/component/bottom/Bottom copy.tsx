@@ -2,7 +2,7 @@
 
 import { useDispatch, useSelector } from "react-redux";
 import Menus from "./Menus copy"
-import Modal from "./modal/Modal"
+import Modal from "../../util/Modal"
 import { RootState } from "app/store";
 import { closeModal, openModal } from "app/store/slice/modalSlice";
 
