@@ -5,13 +5,11 @@ import { Bookmark } from "app/type/bookmark";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Menu, X } from "lucide-react";
-import AddFav from "./favBar/addFav";
+import AddFav from "./favBar/AddFav";
 
 export default function FavBar() {
     const [isOpen, setIsOpen] = useState(false);
     const bookmarks = useSelector((state: RootState) => state.bookmarks);
-    const [showModal, setShowModal] = useState(false);
-
 
     return (
         <aside className={`
@@ -37,12 +35,11 @@ export default function FavBar() {
                         rel="noopener noreferrer"
                     >
                         <div className="IcoBg">
-                            <img src={item.icon} alt={item.title} />
+                            <img className="w-8 h-8" src={item.icon} alt={item.title} />
                         </div>
                         <p className="tit">{item.title}</p>
                     </a>
                 ))}
-
                 <AddFav />
             </div>
         </aside>
