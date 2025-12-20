@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import Modal from "app/util/Modal";
 import InputField from "./InputField";
+import { BookmarkInput } from "app/type/bookmark";
 
 
 export default function AddFav() {
@@ -60,8 +61,7 @@ export default function AddFav() {
         }
 
         // 북마크 추가
-        const newBookmark = {
-            id: Date.now(),
+        const newBookmark: BookmarkInput = {
             icon: getFaviconUrl(url),
             title: favName.trim(),
             url: url.trim(),
@@ -102,7 +102,7 @@ export default function AddFav() {
             <Modal
                 isOpen={showModal}
                 onClose={resetAndClose}
-                title="즐겨찾기"
+                title="북마크 추가"
             >
                 <div className="nameInputField flex flex-col">
                     <InputField

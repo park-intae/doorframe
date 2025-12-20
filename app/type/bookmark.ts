@@ -4,3 +4,5 @@ export interface Bookmark {
   title: string;
   url: string;
 }
+
+export type BookmarkInput = Omit<Bookmark, 'id'>;
