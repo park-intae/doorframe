@@ -33,32 +33,33 @@ export default function FavBar() {
 
     return (
         <aside className={`
-        fixed left-0 h-full w-64 p-4 bg-white shadow-lg z-50
+        fixed left-0 h-full p-4 bg-white shadow-lg z-50
         flex flex-col gap-4
-        transform transition-transform duration-300 ease-in-out
-        ${isOpen ? "translate-x-0" : "-translate-x-[70%]"}
+        transition-transform duration-300 ease-in-out
+        ${isOpen ? "w-64" : "w-20"} overflow-hidden
         `}>
             <div className="flex justify-end mr-2">
                 <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="p-2 bg-blue-500 rounded text-white"
+                    className="p-2 bg-blue-500 rounded text-white shrink-0"
                 >
-                    {isOpen ? <X /> : <Menu />}
+                    {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                 </button>
             </div>
             <div className="flex flex-col gap-2">
                 {bookmarks.map((item: Bookmark) => (
-                    <div className="fav_list flex justify-between">
-                        <a className="fav flex flex-1 items-center gap-2 hover:bg-gray-100 p-2 rounded"
-                            key={item.id}
+                    <div className={`fav_list flex justify-between ${!isOpen ? 'group' : ''}`}
+                        key={item.id}>
+                        <a className={`fav flex flex-1 items-center gap-2 ${isOpen ? 'hover:bg-gray-100' : ''} p-1 rounded h-10`}
                             href={item.url}
                             target="_blank"
                             rel="noopener noreferrer"
                         >
-                            <div className="IcoBg">
+                            <div className={`IcoBg shrink-0 ${!isOpen ? 'group-hover:bg-gray-200 rounded p-1 transition-colors' : ''}`}
+                            >
                                 <img className="w-8 h-8" src={item.icon} alt={item.title} onError={(e) => { e.currentTarget.src = 'https://www.google.com/favicon.ico' }} />
                             </div>
-                            <p className="tit">{item.title}</p>
+                            <p className="tit ml-4 whitespace-nowrap">{item.title}</p>
                         </a>
                         <button
                             onClick={(e) => handleRemove(e, item.id)}
