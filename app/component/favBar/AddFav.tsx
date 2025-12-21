@@ -85,12 +85,7 @@ export default function AddFav() {
 
     return (
         <>
-            {/* <a className="addFav group flex justify-center items-center gap-2 hover:bg-blue-50 p-2 rounded transition-colors">
-                <div className="rounded-full bg-blue-200 w-8 h-8 flex justify-center items-center group-hover:bg-blue-400 transition-colors">
-                    <PlusIcon className="w-5 h-5 text-gray-800" />
-                </div>
-            </a> */}
-            <a
+            {/* <a
                 href="#"
                 onClick={handleClick}
                 className="group addFav flex justify-center items-center gap-2 hover:bg-blue-50 p-2 rounded"
@@ -98,7 +93,15 @@ export default function AddFav() {
                 <div className="rounded-full bg-gray-100 w-8 h-8 flex justify-center items-center group-hover:bg-blue-500 transition-colors">
                     <PlusIcon className="w-5 h-5 text-gray-600 group-hover:text-white" />
                 </div>
-            </a>
+            </a> */}
+            <button
+                onClick={() => setShowModal(true)}
+                className="group addFav flex justify-center items-center gap-2 hover:bg-blue-50 p-2 rounded transition-colors "
+            >
+                <div className="rounded-full bg-gray-100 w-8 h-8 flex justify-center items-center group-hover:bg-blue-500 transition-colors">
+                    <PlusIcon className="w-5 h-5 text-gray-600 group-hover:text-white transition-colors " />
+                </div>
+            </button>
             <Modal
                 isOpen={showModal}
                 onClose={resetAndClose}
@@ -123,14 +126,20 @@ export default function AddFav() {
                         placeholder="즐겨찾기 url"
                     />
                     <div className="modal-bottom flex flex-row-reverse">
-                        <a
+                        {/* <a
                             className="mt-3"
                             onClick={(e: React.MouseEvent<HTMLElement>) => { e.preventDefault(); handleSubmit(); }}
                         >
                             <div className="flex justify-center items-center border w-8 h-8">
                                 <PlusIcon className="w-5 h-5" />
                             </div>
-                        </a>
+                        </a> */}
+                        <button
+                            onClick={handleSubmit}
+                            className="flex justify-center items-center border w-8 h-8"
+                        >
+                            <PlusIcon className="w-5 h-5" />
+                        </button>
                     </div>
                 </div>
 
