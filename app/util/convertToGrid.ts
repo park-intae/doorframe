@@ -1,4 +1,4 @@
-export function convertToGrid(lat: number, lon: number) {
+export function ConvertToGrid(lat: number, lon: number) {
   const RE = 6371.00877;
   const GRID = 5.0;
   const SLAT1 = 30.0;

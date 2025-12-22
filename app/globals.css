@@ -1,6 +1,80 @@
 @import url('https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/Paperlogy.css');
+@import url('/style/wu-icons-style.css');
 @import 'tailwindcss';
 
+:root {
+    --color-main: 142 196 221;
+    --color-background: 208 235 248;
+    --color-background-sub: 192 222 236;
+    --color-point: 109 182 216;
+    --color-sub-back: 221 255 253;
+    --color-important: 248 155 0;
+    --color-context: 50 55 58;
+    --color-title: 44 47 49;
+}
+
+/*utility*/
+@layer utilities {
+
+    /* Background */
+    .bg-main {
+        background-color: rgb(var(--color-main) / 1);
+    }
+
+    .bg-background {
+        background-color: rgb(var(--color-background) / 1);
+    }
+
+    .bg-background-sub {
+        background-color: rgb(var(--color-background-sub) / 1);
+    }
+
+    .bg-point {
+        background-color: rgb(var(--color-point) / 1);
+    }
+
+    .bg-sub-back {
+        background-color: rgb(var(--color-sub-back) / 1);
+    }
+
+    .bg-important {
+        background-color: rgb(var(--color-important) / 1);
+    }
+
+    /* Text */
+    .text-main {
+        color: rgb(var(--color-main) / 1);
+    }
+
+    .text-context {
+        color: rgb(var(--color-context) / 1);
+    }
+
+    .text-title {
+        color: rgb(var(--color-title) / 1);
+    }
+
+    .text-point {
+        color: rgb(var(--color-point) / 1);
+    }
+
+    .text-important {
+        color: rgb(var(--color-important) / 1);
+    }
+
+    /* Border */
+    .border-main {
+        border-color: rgb(var(--color-main) / 1);
+    }
+
+    .border-point {
+        border-color: rgb(var(--color-point) / 1);
+    }
+
+    .border-important {
+        border-color: rgb(var(--color-important) / 1);
+    }
+}
 
 /* Regular (400) */
 @font-face {

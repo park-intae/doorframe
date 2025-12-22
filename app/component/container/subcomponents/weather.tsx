@@ -2,6 +2,7 @@ import { AppDispatch, RootState } from "app/store"
 import { fetchWeather } from "app/store/slice/weatherSlice";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux"
+import { WeatherIcon } from "./mainSec/weather/WeatherIcon";
 
 export default function Weather() {
     const dispatch = useDispatch<AppDispatch>();
@@ -14,12 +15,14 @@ export default function Weather() {
     }, []);
 
     return (
-        <div className="weather border rounded-xl my-4 mx-auto min-w-50 min-h-58 flex flex-row items-center justify-between p-6">
-            <div className="weatherIco border rounded-full w-20 h-20"></div>
-            <div className="weatehrTxt">
-                <div className="temper">{loading ? '로딩중...' : temperature}</div>
-                <div className="state">{weather}</div>
-                <div className="region">{region}</div>
+        <div className="weather rounded-xl my-4 mx-auto min-w-50 min-h-58 flex flex-row items-center justify-between gap-5 p-6 bg-[rgb(var(--color-background)/1)]">
+            <div className="weatherIco rounded-full w-20 h-20 flex justify-center items-center overflow-hidden bg-white">
+                <WeatherIcon />
+            </div>
+            <div className="weatehrTxt flex flex-col gap-3">
+                <div className="temper text-2xl">{loading ? '로딩중...' : temperature}</div>
+                <div className="state text-2xl">{weather}</div>
+                <div className="region text-2xl">{region}</div>
                 {error && <div className="error">{error}</div>}
             </div>
         </div>

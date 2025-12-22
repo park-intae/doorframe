@@ -3,7 +3,7 @@ import Login from "./header/Login";
 
 export default function Header() {
     return (
-        <header className="flex justify-between items-center">
+        <header className="flex justify-between items-center bg-white">
             <Image
                 src="/logo.png"
                 alt='로고'

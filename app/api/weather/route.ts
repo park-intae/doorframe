@@ -1,5 +1,5 @@
+import { ConvertToGrid } from 'app/util/ConvertToGrid';
 import { NextResponse } from 'next/server';
-import { convertToGrid } from 'app/util/convertToGrid';
 
 const WEATHER_API_KEY = process.env.NEXT_PUBLIC_WEATHER_API_KEY || '';
 const VWORLD_API_KEY = process.env.NEXT_PUBLIC_GEOCODER_API_KEY || '';
@@ -20,7 +20,7 @@ export async function GET(req: Request) {
     const longitude = Number(lon);
 
     // 격자 좌표 변환
-    const { nx, ny } = convertToGrid(latitude, longitude);
+    const { nx, ny } = ConvertToGrid(latitude, longitude);
 
     // 날짜/시간 계산
     // 날짜/시간 계산 (KST 기준)
@@ -65,7 +65,7 @@ export async function GET(req: Request) {
       base_time: BASE_TIME,
       nx: nx.toString(),
       ny: ny.toString(),
-      serviceKey: WEATHER_API_KEY, // decodeURIComponent 제거
+      serviceKey: WEATHER_API_KEY,
     }).toString()}`;
 
     const weatherRes = await fetch(weatherUrl);

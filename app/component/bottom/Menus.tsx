@@ -14,23 +14,23 @@ export default function Menus({ onOpenPopover, buttonRefs }: MenuesProps) {
                 ref={(el) => {
                     buttonRefs.current['memo'] = el;
                 }}
-                className="memo p-1 border rounded-lg"
+                className="memo p-1 border rounded-full bg-sub-back"
                 onClick={() => {
                     onOpenPopover('memo');
                 }}
             >
-                memo
+                <img src="/note.svg" className="w-8 h-8" />
             </button>
             <button
                 ref={(el) => {
                     buttonRefs.current['todo'] = el;
                 }}
-                className="todo p-1 border rounded-lg"
+                className="todo p-1 border rounded-full bg-sub-back"
                 onClick={() => {
                     onOpenPopover('todo')
                 }}
             >
-                todo
+                <img src="/list.svg" className="w-8 h-8" />
             </button>
         </div>
     )

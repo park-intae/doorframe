@@ -2,7 +2,7 @@ import { PopoverType } from "app/type/popover";
 import TodoPopover from "./TodoPopover";
 import MemoPopover from "./MemoPopover";
 import { useEffect, useRef, useState } from "react";
-import Popover from "app/util/popover";
+import Popover from "app/util/Popover";
 
 interface TypedPopoverProps {
     name: PopoverType;

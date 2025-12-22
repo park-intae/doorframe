@@ -1,6 +1,6 @@
 'use client';
 
-import Popover from 'app/util/popover';
+import Popover from 'app/util/Popover';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';

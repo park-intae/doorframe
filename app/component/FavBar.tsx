@@ -37,6 +37,7 @@ export default function FavBar() {
         flex flex-col gap-4
         transition-all duration-300 ease-in-out
         ${isOpen ? "w-64" : "w-20"} overflow-hidden
+        bg-white
         `}>
             <div className="flex justify-end mr-2">
                 <button

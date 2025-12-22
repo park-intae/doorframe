@@ -29,6 +29,7 @@ export const fetchWeather = createAsyncThunk('weather/fetchWeather', async (_, {
     if (!res.ok) throw new Error('날씨 정보 가져오기 실패');
 
     const data = await res.json();
+    console.log(data);
 
     return data;
   } catch (err: any) {
