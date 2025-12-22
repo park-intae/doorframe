@@ -20,6 +20,10 @@ const defaultBookmarks: Bookmark[] = [
 
 //불러오기
 export const loadFromStorage = (): Bookmark[] => {
+  if (typeof window === 'undefined') {
+    return defaultBookmarks;
+  }
+
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     return stored ? JSON.parse(stored) : defaultBookmarks;

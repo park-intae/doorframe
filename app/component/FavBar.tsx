@@ -35,7 +35,7 @@ export default function FavBar() {
         <aside className={`
         fixed left-0 h-full p-4 bg-white shadow-lg z-50
         flex flex-col gap-4
-        transition-transform duration-300 ease-in-out
+        transition-all duration-300 ease-in-out
         ${isOpen ? "w-64" : "w-20"} overflow-hidden
         `}>
             <div className="flex justify-end mr-2">
@@ -55,11 +55,11 @@ export default function FavBar() {
                             target="_blank"
                             rel="noopener noreferrer"
                         >
-                            <div className={`IcoBg shrink-0 ${!isOpen ? 'group-hover:bg-gray-200 rounded p-1 transition-colors' : ''}`}
+                            <div className={`IcoBg fixed shrink-0 p-1 ${!isOpen ? 'group-hover:bg-gray-200 rounded transition-colors' : ''}`}
                             >
                                 <img className="w-8 h-8" src={item.icon} alt={item.title} onError={(e) => { e.currentTarget.src = 'https://www.google.com/favicon.ico' }} />
                             </div>
-                            <p className="tit ml-4 whitespace-nowrap">{item.title}</p>
+                            <p className="tit whitespace-nowrap ml-15">{item.title}</p>
                         </a>
                         <button
                             onClick={(e) => handleRemove(e, item.id)}
