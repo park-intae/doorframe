@@ -6,17 +6,19 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Menu, MinusIcon, X } from "lucide-react";
 import AddFav from "./favBar/AddFav";
-import { loadBookmarks, removeBookmark } from "app/store/slice/bookmarkSlice";
+import { removeBookmark } from "app/store/slice/bookmarkSlice";
+import { loadBookmarksFromStorage, saveBookmarksToStorage } from "app/thunk/bookmarkThunk";
+import { useAppDispatch } from "app/store/hooks";
 
 export default function FavBar() {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const [isOpen, setIsOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const bookmarks = useSelector((state: RootState) => state.bookmarks);
 
     useEffect(() => {
         setMounted(true);
-        dispatch(loadBookmarks());
+        dispatch(loadBookmarksFromStorage());
     }, [dispatch]);
 
     const handleRemove = (e: React.MouseEvent, id: number) => {
@@ -24,6 +26,8 @@ export default function FavBar() {
         e.stopPropagation();
         if (confirm('북마크를 삭제하시겠습니까')) {
             dispatch(removeBookmark(id));
+            const updatedBookmarks = bookmarks.filter(b => b.id !== id);
+            dispatch(saveBookmarksToStorage(updatedBookmarks));
         }
     }
 

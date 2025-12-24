@@ -3,14 +3,12 @@
 @import 'tailwindcss';
 
 :root {
-    --color-main: 142 196 221;
-    --color-background: 208 235 248;
-    --color-background-sub: 192 222 236;
-    --color-point: 109 182 216;
-    --color-sub-back: 221 255 253;
+    --color-main: 230 246 250;
+    --color-background: 209 238 248;
+    --color-point: 79 163 199;
     --color-important: 248 155 0;
-    --color-context: 50 55 58;
-    --color-title: 44 47 49;
+    --color-title: 15 21 42;
+    --color-context: 100 116 139;
 }
 
 /*utility*/
@@ -25,16 +23,8 @@
         background-color: rgb(var(--color-background) / 1);
     }
 
-    .bg-background-sub {
-        background-color: rgb(var(--color-background-sub) / 1);
-    }
-
     .bg-point {
         background-color: rgb(var(--color-point) / 1);
-    }
-
-    .bg-sub-back {
-        background-color: rgb(var(--color-sub-back) / 1);
     }
 
     .bg-important {

@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { loadBookmarksFromStorage } from 'app/thunk/bookmarkThunk';
 import { Bookmark, BookmarkInput } from 'app/type/bookmark';
 
 const STORAGE_KEY = 'fav_items';
@@ -18,33 +19,7 @@ const defaultBookmarks: Bookmark[] = [
   },
 ];
 
-//불러오기
-export const loadFromStorage = (): Bookmark[] => {
-  if (typeof window === 'undefined') {
-    return defaultBookmarks;
-  }
-
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : defaultBookmarks;
-  } catch (error) {
-    console.error('불러오기 실패', error);
-  }
-  return defaultBookmarks;
-};
-
-//저장
-const saveToStorage = (bookmarks: Bookmark[]) => {
-  if (typeof window === 'undefined') return;
-
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks));
-  } catch (error) {
-    console.error('저장 실패:', error);
-  }
-};
-
-const initialState: Bookmark[] = loadFromStorage();
+const initialState: Bookmark[] = [];
 
 const bookmarkSlice = createSlice({
   name: 'bookmarks',
@@ -59,26 +34,20 @@ const bookmarkSlice = createSlice({
       };
 
       state.push(newBookmark);
-      saveToStorage(state);
     },
     removeBookmark(state, action: PayloadAction<number>) {
-      const idx = state.findIndex((bMark) => bMark.id === action.payload);
-      if (idx !== -1) {
-        state.splice(idx, 1);
-        saveToStorage(state);
-      }
+      return state.filter((b) => b.id !== action.payload);
     },
     setBookmarks(_, action: PayloadAction<Bookmark[]>) {
-      saveToStorage(action.payload);
       return action.payload;
     },
-    loadBookmarks() {
-      const loaded = loadFromStorage();
-      saveToStorage(loaded);
-      return loaded;
-    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(loadBookmarksFromStorage.fulfilled, (state, action) => {
+      return action.payload;
+    });
   },
 });
 
-export const { addBookmark, removeBookmark, setBookmarks, loadBookmarks } = bookmarkSlice.actions;
+export const { addBookmark, removeBookmark, setBookmarks } = bookmarkSlice.actions;
 export default bookmarkSlice.reducer;

@@ -15,14 +15,14 @@ export default function Weather() {
     }, []);
 
     return (
-        <div className="weather rounded-xl my-4 mx-auto min-w-50 min-h-58 flex flex-row items-center justify-between gap-5 p-6 bg-[rgb(var(--color-background)/1)]">
+        <div className="weather rounded-xl my-4 mx-auto min-w-50 min-h-58 flex flex-row items-center justify-between gap-5 p-6 bg-background">
             <div className="weatherIco rounded-full w-20 h-20 flex justify-center items-center overflow-hidden bg-white">
                 <WeatherIcon />
             </div>
             <div className="weatehrTxt flex flex-col gap-3">
                 <div className="temper text-2xl">{loading ? '로딩중...' : temperature}</div>
-                <div className="state text-2xl">{weather}</div>
-                <div className="region text-2xl">{region}</div>
+                <div className="state text-xl">{weather}</div>
+                <div className="region text-lg">{region}</div>
                 {error && <div className="error">{error}</div>}
             </div>
         </div>
