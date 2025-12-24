@@ -2,23 +2,6 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { loadBookmarksFromStorage } from 'app/thunk/bookmarkThunk';
 import { Bookmark, BookmarkInput } from 'app/type/bookmark';
 
-const STORAGE_KEY = 'fav_items';
-
-const defaultBookmarks: Bookmark[] = [
-  {
-    id: 1,
-    icon: 'https://www.google.com/favicon.ico',
-    title: 'Google',
-    url: 'https://www.google.com/',
-  },
-  {
-    id: 2,
-    icon: 'https://www.naver.com/favicon.ico',
-    title: 'Naver',
-    url: 'https://www.naver.com/',
-  },
-];
-
 const initialState: Bookmark[] = [];
 
 const bookmarkSlice = createSlice({
