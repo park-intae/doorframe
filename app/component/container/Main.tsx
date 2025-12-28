@@ -8,7 +8,7 @@ export default function Main() {
     return (
         <main className="flex flex-1 items-stretch">
             <FavBar />
-            <article className="mainSec flex flex-1 flex-col justify-around items-center">
+            <article className="mainSec flex flex-1 flex-col justify-between items-center">
                 <MainSec />
                 <Bottom />
             </article>

@@ -11,6 +11,24 @@
     --color-context: 100 116 139;
 }
 
+@theme {
+    --font-paperlogy: 'Paperlogy', 'sans-serif';
+
+    /* 커스텀 컬러 추가 */
+    --color-sky-blue: #7CB3C9;
+    --color-light-blue: #D4E7F0;
+    --color-ocean-blue: #5A9FBA;
+    --color-mint: #E0F4F4;
+    --color-bright-orange: #F5A623;
+    --color-charcoal: #3C4043;
+    --color-dark-gray: #2D2D2D;
+
+    /* 커스텀 브레이크포인트 */
+    --breakpoint-smDT: 1280px;
+    --breakpoint-mdDT: 1366px;
+    --breakpoint-lgDT: 1440px;
+}
+
 /*utility*/
 @layer utilities {
 
@@ -66,6 +84,78 @@
     }
 }
 
+@media (min-width: 1280px) {
+    @layer utilities {
+        .smDT\:w-56 {
+            width: 14rem;
+        }
+
+        .smDT\:w-16 {
+            width: 4rem;
+        }
+
+        .smDT\:text-sm {
+            font-size: 0.875rem;
+        }
+
+        .smDT\:p-3 {
+            padding: 0.75rem;
+        }
+
+        .smDT\:gap-3 {
+            gap: 0.75rem;
+        }
+    }
+}
+
+@media (min-width: 1366px) {
+    @layer utilities {
+        .mdDT\:w-64 {
+            width: 16rem;
+        }
+
+        .mdDT\:w-20 {
+            width: 5rem;
+        }
+
+        .mdDT\:text-base {
+            font-size: 1rem;
+        }
+
+        .mdDT\:p-4 {
+            padding: 1rem;
+        }
+
+        .mdDT\:gap-4 {
+            gap: 1rem;
+        }
+    }
+}
+
+@media (min-width: 1440px) {
+    @layer utilities {
+        .lgDT\:w-72 {
+            width: 18rem;
+        }
+
+        .lgDT\:w-24 {
+            width: 6rem;
+        }
+
+        .lgDT\:text-lg {
+            font-size: 1.125rem;
+        }
+
+        .lgDT\:p-5 {
+            padding: 1.25rem;
+        }
+
+        .lgDT\:gap-5 {
+            gap: 1.25rem;
+        }
+    }
+}
+
 /* Regular (400) */
 @font-face {
     font-family: 'Paperlogy';
@@ -85,12 +175,6 @@
     font-display: swap;
     src: url('https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/Paperlogy-7Bold.woff2') format('woff2');
 }
-
-/* 3. @theme를 사용하여 Tailwind 설정에 커스텀 폰트 추가 (v4.x 방식) */
-@theme {
-    --font-paperlogy: 'Paperlogy', 'sans-serif';
-}
-
 
 @layer utilities {
     .scrollbar-hide::-webkit-scrollbar {

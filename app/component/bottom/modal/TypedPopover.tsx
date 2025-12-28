@@ -46,7 +46,7 @@ export default function TypedPopover({ name, onClose, anchorRect }: TypedPopover
     //     }
     // }
 
-    if (!name) return null;
+    if (!name || !anchorRect) return null;
 
     return (
         <Popover
