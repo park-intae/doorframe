@@ -1,16 +1,16 @@
 'use client';
 
-import { addBookmark } from "app/store/slice/bookmarkSlice";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import Modal from "app/util/Modal";
 import InputField from "./InputField";
 import { BookmarkInput } from "app/type/bookmark";
+import { useAppDispatch } from "app/store/hooks";
+import { addBookmark } from "app/store/slice/bookmarkSlice";
 
 
 export default function AddFav() {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const [showModal, setShowModal] = useState(false);
     const [url, setUrl] = useState('');
     const [favName, setFavName] = useState('');
@@ -55,8 +55,13 @@ export default function AddFav() {
             return;
         }
 
+        let normalizedUrl = url.trim();
+        if (!/^https?:\/\//i.test(normalizedUrl)) {
+            normalizedUrl = 'https://' + normalizedUrl;
+        }
+
         if (!isValidUrl(url)) {
-            alert('올바른 URL 형식을 입력해주세요. (예: https://example.com)');
+            alert('올바른 URL 형식을 입력해주세요. (예: example.com 또는 https://example.com)');
             return;
         }
 
@@ -67,7 +72,9 @@ export default function AddFav() {
             url: url.trim(),
         };
 
+        console.log('➕ 북마크 추가 시도:', newBookmark);
         dispatch(addBookmark(newBookmark));
+        console.log('✅ dispatch 완료');
         resetAndClose();
     };
 
@@ -76,11 +83,6 @@ export default function AddFav() {
         if (e.key === 'Enter') {
             handleSubmit();
         }
-    }
-
-    const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-        e.preventDefault();
-        setShowModal(true);
     }
 
     return (

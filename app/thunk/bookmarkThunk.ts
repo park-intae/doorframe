@@ -22,10 +22,11 @@ const defaultBookmarks: Bookmark[] = [
 export const loadBookmarksFromStorage = createAsyncThunk<Bookmark[]>('bookmarks/load', async () => {
   const stored = await chromeStorage.get<Bookmark[]>(STORAGE_KEY);
 
-  if (stored === undefined || stored === null) {
+  if (stored === undefined || stored === null || (Array.isArray(stored) && stored.length === 0)) {
     await chromeStorage.set(STORAGE_KEY, defaultBookmarks);
     return defaultBookmarks;
   }
+
   return stored ?? [];
 });
 

@@ -6,6 +6,10 @@ const VWORLD_API_KEY = process.env.NEXT_PUBLIC_GEOCODER_API_KEY || '';
 
 const WEATHER_BASE_URL = 'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst';
 
+let cachedWeather: any = null;
+let cacheTime: number = 0;
+const CACHE_DURATION = 10 * 60 * 1000;
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -14,6 +18,12 @@ export async function GET(req: Request) {
 
     if (!lat || !lon) {
       return NextResponse.json({ error: 'lat, lon 파라미터 필요' }, { status: 400 });
+    }
+
+    const nowForCache = Date.now();
+    if (cachedWeather && nowForCache - cacheTime < CACHE_DURATION) {
+      console.log('✅ 캐시된 날씨 데이터 사용');
+      return NextResponse.json(cachedWeather);
     }
 
     const latitude = Number(lat);
@@ -70,7 +80,28 @@ export async function GET(req: Request) {
 
     const weatherRes = await fetch(weatherUrl);
     const weatherText = await weatherRes.text();
-    const weatherData = JSON.parse(weatherText);
+    let weatherData;
+    try {
+      weatherData = JSON.parse(weatherText);
+    } catch (parseError) {
+      console.error('JSON 파싱 실패 (Rate Limit 가능성):', weatherText.substring(0, 100));
+
+      if (cachedWeather) {
+        console.log('Rate Limit - 이전 캐시 사용');
+        return NextResponse.json(cachedWeather);
+      }
+
+      // 캐시도 없으면 기본값 반환
+      return NextResponse.json(
+        {
+          temperature: '--℃',
+          weather: '정보 없음',
+          region: '알 수 없음',
+          error: 'API 요청 제한',
+        },
+        { status: 429 }
+      );
+    }
 
     // 1단계: resultCode로 API 자체의 오류를 검사
     const resultCode = weatherData.response?.header?.resultCode;
@@ -137,11 +168,17 @@ export async function GET(req: Request) {
     }
 
     // 최종 반환
-    return NextResponse.json({
+    const result = {
       temperature: T1H?.obsrValue ? T1H.obsrValue + '℃' : 'N/A',
       weather: weatherTextStr,
       region: dong,
-    });
+    };
+
+    cachedWeather = result;
+    cacheTime = nowForCache;
+    console.log('새 날씨 데이터 캐시 저장');
+
+    return NextResponse.json(result);
   } catch (err: any) {
     console.error(err);
     return NextResponse.json({ temperature: '--℃', weather: '정보 없음', region: '서울', isTemporary: true });
