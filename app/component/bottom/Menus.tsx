@@ -17,11 +17,11 @@ export default function Menus({ onOpenPopover, buttonRefs }: MenuesProps) {
                 <button
                     key={key}
                     ref={(el) => {
-                        buttonRefs.current['memo'] = el;
+                        buttonRefs.current[key] = el;
                     }}
                     className="todo p-1 rounded-full bg-main"
                     onClick={() => {
-                        onOpenPopover('memo')
+                        onOpenPopover(key as PopoverType)
                     }}
                 >
                     <img src={icon} className="w-8 h-8" />
