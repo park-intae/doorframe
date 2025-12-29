@@ -20,10 +20,10 @@ export default function Popover({
     placement = 'bottom',
 }: PopoverProps) {
     const popoverRef = useRef<HTMLDivElement>(null);
-    const [position, setPosition] = useState({ top: 0, bottom: 0, left: 0 });
+    const [position, setPosition] = useState<{ top: number; bottom: number; left: number } | null>(null);
 
     useEffect(() => {
-        if (isOpen && popoverRef.current && anchorRect) {
+        if (isOpen && anchorRect) {
             let left = anchorRect.left + (anchorRect.width / 2) - (width / 2);
 
             // 좌우 경계
@@ -43,6 +43,8 @@ export default function Popover({
                 const top = anchorRect.bottom + 5;
                 setPosition({ top, left, bottom: 0 })
             }
+        } else {
+            setPosition(null);
         }
     }, [isOpen, anchorRect, width, placement])
 
@@ -80,12 +82,12 @@ export default function Popover({
         };
     }, [isOpen, onClose])
 
-    if (!isOpen) return null;
+    if (!isOpen || !position) return null;
 
     return (
         <div
             ref={popoverRef}
-            className="popoverDiv fixed min-h-30 p-3 rounded-lg border bg-white"
+            className="popoverDiv fixed min-h-30 p-3 rounded-lg bg-background transition-opacity duration-150"
             style={{
                 ...(placement === 'top'
                     ? { bottom: `${position.bottom}px` }

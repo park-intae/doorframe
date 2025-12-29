@@ -11,40 +11,7 @@ interface TypedPopoverProps {
 }
 
 export default function TypedPopover({ name, onClose, anchorRect }: TypedPopoverProps) {
-    // const popoverRef = useRef<HTMLDivElement>(null);
-    // const [position, setPosition] = useState({ bottom: 0, left: 0 });
-
-    // useEffect(() => {
-    //     if (name && popoverRef.current && anchorRect) {
-    //         const popoverWidth = 320; // w-80 = 320px
-
-    //         let bottom = window.innerHeight - anchorRect.top + 5;
-    //         let left = anchorRect.left + (anchorRect.width / 2) - (popoverWidth / 2);
-
-    //         if (left < 10) {
-    //             left = 10
-    //         }
-
-    //         if (left + popoverWidth > window.innerWidth - 10) {
-    //             left = window.innerWidth - popoverWidth - 10;
-    //         }
-
-    //         setPosition({
-    //             bottom, left
-    //         });
-    //     }
-    // }, [name, anchorRect]);
-
-    // const handleClose = () => {
-    //     onClose();
-    // }
-
-    // // 백드롭 클릭 시 닫기
-    // const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    //     if (e.target === e.currentTarget) {
-    //         handleClose();
-    //     }
-    // }
+    console.log('Popover 렌더링:', { name, anchorRect });
 
     if (!name || !anchorRect) return null;
 
@@ -56,11 +23,7 @@ export default function TypedPopover({ name, onClose, anchorRect }: TypedPopover
             width={320}
             placement="top"
         >
-            {/* <div>
-                {name === 'memo' && <MemoPopover />}
-                {name === 'memo' && <TodoPopover />}
-            </div> */}
-            <div className="content flex justify-center flex-col rounded-lg py-5 max-h-85">
+            <div className="content flex justify-center flex-col rounded-lg py-5 max-h-85 bg-white">
                 {name === 'memo' &&
                     <MemoPopover />
                 }
