@@ -19,12 +19,13 @@ export default function Menus({ onOpenPopover, buttonRefs }: MenuesProps) {
                     ref={(el) => {
                         buttonRefs.current[key] = el;
                     }}
-                    className="todo p-1 rounded-full bg-main"
+                    className="todo p-1 rounded-full bg-main flex justify-center items-center w-23"
                     onClick={() => {
                         onOpenPopover(key as PopoverType)
                     }}
                 >
                     <img src={icon} className="w-8 h-8" />
+                    {key}
                 </button>
             ))
             }

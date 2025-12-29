@@ -1,5 +1,6 @@
 'use client'
 
+import { SearchIcon } from "lucide-react";
 import { useState } from "react";
 
 export default function Search() {
@@ -15,9 +16,11 @@ export default function Search() {
 
     return (
         <>
-            <form onSubmit={handleSearch} className="rounded-full m-2 h-10 flex item-center bg-main">
-                <div className="search-icon"></div>
-                <input type="text" value={keyword} onChange={(e) => setKeyword(e.target.value)} />
+            <form onSubmit={handleSearch} className="rounded-full m-2 h-10 flex item-center bg-main justify-around">
+                <div className="my-auto self-start">
+                    <SearchIcon className="w-5 h-5 text-gray-400" />
+                </div>
+                <input className="w-110" type="text" value={keyword} onChange={(e) => setKeyword(e.target.value)} />
             </form>
         </>
     )
