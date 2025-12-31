@@ -4,18 +4,6 @@ interface inputState {
   value: string;
 }
 
-const loadInputFromStorage = (): inputState => {
-  try {
-    const saved = localStorage.getItem('input');
-    if (saved) return JSON.parse(saved);
-  } catch (e) {
-    console.error('input 불러오기 실패:', e);
-  }
-  return {
-    value: '',
-  };
-};
-
 const initialState: inputState = { value: '' };
 
 const inputSlice = createSlice({

@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { loadListFromStorage } from 'app/thunk/listThunk';
 
 export type ListKind = 'memo' | 'todo';
 
@@ -14,28 +15,31 @@ interface ListState {
   nextId: number;
 }
 
-const loadListFromStorage = (): ListState => {
-  if (typeof window === 'undefined') {
-    // 서버 환경에서는 빈 값으로 초기화
-    return {
-      items: [],
-      nextId: 1,
-    };
-  }
+// const loadListFromStorage = (): ListState => {
+//   if (typeof window === 'undefined') {
+//     // 서버 환경에서는 빈 값으로 초기화
+//     return {
+//       items: [],
+//       nextId: 1,
+//     };
+//   }
 
-  try {
-    const saved = localStorage.getItem('list');
-    if (saved) return JSON.parse(saved);
-  } catch (e) {
-    console.error('list 불러오기 실패:', e);
-  }
-  return {
-    items: [],
-    nextId: 1,
-  };
+//   try {
+//     const saved = localStorage.getItem('list');
+//     if (saved) return JSON.parse(saved);
+//   } catch (e) {
+//     console.error('list 불러오기 실패:', e);
+//   }
+//   return {
+//     items: [],
+//     nextId: 1,
+//   };
+// };
+
+const initialState: ListState = {
+  items: [],
+  nextId: 1,
 };
-
-const initialState: ListState = loadListFromStorage();
 
 const listSlice = createSlice({
   name: 'list',
@@ -62,6 +66,11 @@ const listSlice = createSlice({
     clearItemsByKind: (state, action: PayloadAction<ListKind>) => {
       state.items = state.items.filter((i) => i.kind !== action.payload);
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(loadListFromStorage.fulfilled, (state, action) => {
+      return action.payload;
+    });
   },
 });
 
