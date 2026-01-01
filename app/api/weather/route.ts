@@ -92,15 +92,12 @@ export async function GET(req: Request) {
       }
 
       // 캐시도 없으면 기본값 반환
-      return NextResponse.json(
-        {
-          temperature: '--℃',
-          weather: '정보 없음',
-          region: '알 수 없음',
-          error: 'API 요청 제한',
-        },
-        { status: 429 }
-      );
+      return NextResponse.json({
+        temperature: '--℃',
+        weather: '정보 없음',
+        region: '알 수 없음',
+        error: 'API 요청 제한',
+      });
     }
 
     // 1단계: resultCode로 API 자체의 오류를 검사

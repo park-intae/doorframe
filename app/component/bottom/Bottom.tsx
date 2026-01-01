@@ -2,7 +2,7 @@
 
 import { useDispatch, useSelector } from "react-redux";
 import Menus from "./Menus"
-import TypedPopover from "./modal/TypedPopover";
+import TypedPopover from "./popover/TypedPopover";
 import { RootState } from "app/store";
 import { closePopover, openPopover } from "app/store/slice/popoverSlice";
 import { PopoverType } from "app/type/popover";

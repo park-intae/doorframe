@@ -3,6 +3,7 @@
 import { RootState } from "app/store";
 import { clearInput, setInputValue } from "app/store/slice/inputSlice";
 import { addItem } from "app/store/slice/listSlice";
+import { PlusIcon } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 
 type InputProps = {
@@ -24,12 +25,16 @@ export default function Input({ kind }: InputProps) {
     };
 
     return (
-        <form className="summitForm border rounded-lg w-fit overflow-hidden self-center mb-2" onSubmit={handleSubmit}>
+        <form className="summitForm border-b w-fit overflow-hidden flex justify-center items-center self-center gap-2 mb-2" onSubmit={handleSubmit}>
             <input
+                className="focus:outline-none focus:ring-0 border-none"
+                placeholder="내용을 입력하세요"
                 value={value}
                 onChange={handleChange}>
             </input>
-            <button className="summitBTN border-l" type='submit'>등록</button>
+            <button className="summitBTN bg-blue-300 rounded-lg flex items-center" type='submit'>
+                <PlusIcon className="w-5 h-5" />
+            </button>
         </form>
     )
 }
