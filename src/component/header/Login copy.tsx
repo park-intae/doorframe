@@ -1,41 +1,21 @@
-import { auth, googleProvider } from '@/config/firebase';
 import Popover from '@/util/Popover';
-import { onAuthStateChanged, signInWithPopup, signOut, User } from 'firebase/auth';
+import { signIn, signOut, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 export default function Login() {
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { data: session, status } = useSession();
+    const router = useRouter();
     const [showPopover, setShowPopover] = useState(false);
     const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
+    const popoverRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser);
-            setLoading(false);
-        });
-
-        return () => unsubscribe();
-    }, []);
-
-    const handleGoogleSignIn = async () => {
-        try {
-            await signInWithPopup(auth, googleProvider);
-            setShowPopover(false);
-        } catch (error) {
-            console.log('로그인 실패:', error);
+        if (status === 'authenticated') {
+            router.push("/");
         }
-    }
-
-    const handleSignOut = async () => {
-        try {
-            await signOut(auth);
-            setShowPopover(false);
-        } catch (error) {
-            console.log('로그아웃 실패:', error)
-        }
-    };
+    }, [status, router]);
 
     const handleOpenPopover = () => {
         if (buttonRef.current) {
@@ -44,11 +24,11 @@ export default function Login() {
         setShowPopover(true);
     }
 
-    if (loading) {
+    if (status === 'loading') {
         return <div>Loading...</div>;
     }
 
-    if (user) {
+    if (status === 'authenticated') {
         return (
             <div className='login mr-5'>
                 <button
@@ -56,7 +36,7 @@ export default function Login() {
                     onClick={handleOpenPopover}
                     className='popoverBtn'
                 >
-                    <img src={user.photoURL ?? ""} alt='프로필' className='profile w-8 h-8 rounded-full'></img>
+                    <img src={session.user?.image ?? ""} alt='프로필' className='profile w-8 h-8 rounded-full'></img>
                 </button>
 
                 <Popover
@@ -68,14 +48,17 @@ export default function Login() {
                 >
                     <div className='flex flex-col items-center gap-3'>
                         <img
-                            src={user.photoURL ?? ""}
+                            src={session.user?.image ?? ""}
                             alt='프로필'
                             className='w-16 h-16 rounded-full'
                         />
-                        <p className='font-semibold'>{user.displayName}</p>
-                        <p className='text-sm text-gray-600'>{user.email}</p>
+                        <p className='font-semibold'>{session.user?.name}</p>
+                        <p className='text-sm text-gray-600'>{session.user?.email}</p>
                         <button
-                            onClick={handleSignOut}
+                            onClick={() => {
+                                setShowPopover(false);
+                                signOut({ callbackUrl: "/" });
+                            }}
                             className='w-full py-2 px-4 bg-red-500 text-white rounded hover:bg-red-600 transition-colors'
                         >
                             로그아웃
@@ -104,7 +87,10 @@ export default function Login() {
                 placement="bottom"
             >
                 <button
-                    onClick={handleGoogleSignIn}
+                    onClick={() => {
+                        setShowPopover(false);
+                        signIn("google");
+                    }}
                     className="w-full py-3 px-4 bg-white border rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
                 >
                     <span>구글 계정으로 로그인</span>
