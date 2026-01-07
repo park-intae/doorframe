@@ -1,5 +1,3 @@
-
-
 import { RootState } from "@/store";
 import { Bookmark } from "@/type/bookmark";
 import { useEffect, useRef, useState } from "react";

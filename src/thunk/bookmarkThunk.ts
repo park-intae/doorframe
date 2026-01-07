@@ -1,8 +1,12 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { Bookmark } from '@/type/bookmark';
 import { chromeStorage } from '@/util/chromeStorage';
+import { RootState } from '@/store';
+import { supabase } from '@/config/supabase';
 
-const STORAGE_KEY = 'fav_items';
+const BASE_STORAGE_KEY = 'fav_items';
+
+const getUserStorageKey = (userId?: string) => userId ? `${userId}_${BASE_STORAGE_KEY}` : `guest_${BASE_STORAGE_KEY}`;
 
 const defaultBookmarks: Bookmark[] = [
   {
@@ -19,17 +23,29 @@ const defaultBookmarks: Bookmark[] = [
   },
 ];
 
-export const loadBookmarksFromStorage = createAsyncThunk<Bookmark[]>('bookmarks/load', async () => {
-  const stored = await chromeStorage.get<Bookmark[]>(STORAGE_KEY);
+export const saveBookmarksToStorage = createAsyncThunk<void, Bookmark[]>(
+  'bookmarks/save',
+  async (bookmarks) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    const userId = session?.user?.id;
 
-  if (stored === undefined || stored === null || (Array.isArray(stored) && stored.length === 0)) {
-    await chromeStorage.set(STORAGE_KEY, defaultBookmarks);
-    return defaultBookmarks;
+    const key = getUserStorageKey(userId);
+    await chromeStorage.set(key, bookmarks);
   }
+);
 
-  return stored ?? [];
-});
+export const loadBookmarksFromStorage = createAsyncThunk<Bookmark[], void>('bookmarks/load',
+  async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    const userId = session?.user?.id;
 
-export const saveBookmarksToStorage = createAsyncThunk<void, Bookmark[]>('bookmarks/save', async (bookmarks) => {
-  await chromeStorage.set(STORAGE_KEY, bookmarks);
-});
+    const key = getUserStorageKey(userId)
+    const stored = await chromeStorage.get<Bookmark[]>(key);
+
+    if (stored === undefined || stored === null) {
+      await chromeStorage.set(key, defaultBookmarks);
+      return defaultBookmarks;
+    }
+
+    return stored;
+  });

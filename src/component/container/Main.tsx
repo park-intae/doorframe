@@ -1,5 +1,3 @@
-
-
 import Bottom from "../bottom/Bottom";
 import FavBar from "../FavBar";
 import MainSec from "./subcomponents/MainSec";
