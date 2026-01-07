@@ -1,10 +1,9 @@
-import Image from "next/image";
 import Login from "./header/Login";
 
 export default function Header() {
     return (
         <header className="flex justify-between items-center bg-white">
-            <Image
+            <img
                 src="/logo.png"
                 alt='로고'
                 width={35}

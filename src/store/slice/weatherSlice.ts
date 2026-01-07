@@ -37,9 +37,11 @@ export const fetchWeather = createAsyncThunk('weather/fetchWeather', async (_, {
       navigator.geolocation.getCurrentPosition(res, rej)
     );
     const { latitude, longitude } = pos.coords;
+    // const baseUrl = 'https://thrqbgygmjbnrbgmyxbc.supabase.co/function/v1/';
+    const baseUrl = 'http://127.0.0.1:54321/functions/v1'
 
     // 2. 서버 API 호출
-    const res = await fetch(`/api/weather?lat=${latitude}&lon=${longitude}`);
+    const res = await fetch(`${baseUrl}/weather?lat=${latitude}&lon=${longitude}`);
     if (!res.ok) throw new Error('날씨 정보 가져오기 실패');
 
     const data = await res.json();

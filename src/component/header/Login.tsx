@@ -1,6 +1,7 @@
 import { auth, googleProvider } from '@/config/firebase';
+import { supabase } from '@/config/supabase';
 import Popover from '@/util/Popover';
-import { onAuthStateChanged, signInWithPopup, signOut, User } from 'firebase/auth';
+import { User } from '@supabase/supabase-js';
 import { useEffect, useRef, useState } from 'react';
 
 export default function Login() {
@@ -11,17 +12,27 @@ export default function Login() {
     const buttonRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser);
+        // 현재 세션 확인
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setUser((session?.user ?? null));
             setLoading(false);
+        })
+        // 인증 상태 변경 감지
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null);
         });
-
-        return () => unsubscribe();
     }, []);
 
     const handleGoogleSignIn = async () => {
         try {
-            await signInWithPopup(auth, googleProvider);
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: window.location.origin,
+                }
+            });
+
+            if (error) throw error;
             setShowPopover(false);
         } catch (error) {
             console.log('로그인 실패:', error);
@@ -30,7 +41,8 @@ export default function Login() {
 
     const handleSignOut = async () => {
         try {
-            await signOut(auth);
+            const { error } = await supabase.auth.signOut();
+            if (error) throw error;
             setShowPopover(false);
         } catch (error) {
             console.log('로그아웃 실패:', error)
@@ -56,7 +68,7 @@ export default function Login() {
                     onClick={handleOpenPopover}
                     className='popoverBtn'
                 >
-                    <img src={user.photoURL ?? ""} alt='프로필' className='profile w-8 h-8 rounded-full'></img>
+                    <img src={user.user_metadata?.avatar_url ?? ""} alt='프로필' className='profile w-8 h-8 rounded-full'></img>
                 </button>
 
                 <Popover
@@ -68,11 +80,11 @@ export default function Login() {
                 >
                     <div className='flex flex-col items-center gap-3'>
                         <img
-                            src={user.photoURL ?? ""}
+                            src={user.user_metadata?.avatar_url ?? ""}
                             alt='프로필'
                             className='w-16 h-16 rounded-full'
                         />
-                        <p className='font-semibold'>{user.displayName}</p>
+                        <p className='font-semibold'>{user.user_metadata?.full_name ?? user.email}</p>
                         <p className='text-sm text-gray-600'>{user.email}</p>
                         <button
                             onClick={handleSignOut}
