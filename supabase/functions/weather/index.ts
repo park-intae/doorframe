@@ -11,8 +11,6 @@ const WEATHER_BASE_URL = 'http://apis.data.go.kr/1360000/VilageFcstInfoService_2
 
 console.log("Weather Function started!")
 
-
-
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
