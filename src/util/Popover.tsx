@@ -87,7 +87,7 @@ export default function Popover({
     return (
         <div
             ref={popoverRef}
-            className="popoverDiv fixed min-h-30 p-3 rounded-lg bg-background transition-opacity duration-150"
+            className="popoverDiv fixed p-3 rounded-lg bg-background transition-opacity duration-150"
             style={{
                 ...(placement === 'top'
                     ? { bottom: `${position.bottom}px` }

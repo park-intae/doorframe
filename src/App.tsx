@@ -6,15 +6,25 @@ import { AppDispatch } from './store';
 import { useEffect } from 'react';
 import { supabase } from './config/supabase';
 import { loadBookmarksFromStorage } from './thunk/bookmarkThunk';
+import { AuthChangeEvent } from '@supabase/supabase-js';
+import { loadListFromStorage } from './thunk/listThunk';
 
 export default function App() {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("🔔 [Auth Event]:", _event);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
+      console.log("🔔 [Auth Event]:", event);
       console.log("👤 [Current User]:", session?.user?.id || "비로그인");
+
+      //로그아웃시 새로고침
+      if (event === 'SIGNED_OUT') {
+        window.location.reload();
+        return
+      }
+
       dispatch(loadBookmarksFromStorage());
+      dispatch(loadListFromStorage());
     });
 
     return () => {

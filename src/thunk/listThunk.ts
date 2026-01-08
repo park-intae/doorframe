@@ -1,37 +1,39 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { ListItem } from '@/store/slice/listSlice';
 import { chromeStorage } from '@/util/chromeStorage';
+import { supabase } from '@/config/supabase';
 
-const STORAGE_KEY = 'list_items';
+const BASE_STORAGE_KEY = 'list_items';
+const getUserStorageKey = (userId?: string) => userId ? `${userId}_${BASE_STORAGE_KEY}` : `guest_${BASE_STORAGE_KEY}`;
 
 interface ListState {
   items: ListItem[];
   nextId: number;
 }
 
-export const loadListFromStorage = createAsyncThunk<ListState>('list/load', async () => {
-  console.log('리스트 로드 시도');
+export const saveListToStorage = createAsyncThunk<void, ListState>('list/save', async (listState) => {
+  const { data: { session } } = await supabase.auth.getSession();
+  const userId = session?.user?.id;
 
-  const stored = await chromeStorage.get<ListState>(STORAGE_KEY);
+  const key = getUserStorageKey(userId)
+  await chromeStorage.set(key, listState);
+});
 
-  console.log('저장된 데이터:', stored);
+export const loadListFromStorage = createAsyncThunk<ListState, void>('list/load', async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  const userId = session?.user?.id;
+
+  const key = getUserStorageKey(userId)
+  const stored = await chromeStorage.get<ListState>(key);
 
   if (stored === undefined || stored === null) {
-    console.log('저장된 데이터 없음 - 기본값 설정');
     const defaultState: ListState = {
       items: [],
       nextId: 1,
     };
-    await chromeStorage.set(STORAGE_KEY, defaultState);
+    await chromeStorage.set(key, defaultState);
     return defaultState;
   }
 
-  console.log('저장된 리스트 반환:', stored);
   return stored;
-});
-
-export const saveListToStorage = createAsyncThunk<void, ListState>('list/save', async (listState) => {
-  console.log('리스트 저장 시도:', listState);
-  await chromeStorage.set(STORAGE_KEY, listState);
-  console.log('리스트 저장 완료');
 });
