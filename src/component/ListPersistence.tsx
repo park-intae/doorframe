@@ -21,7 +21,6 @@ export default function ListPersistence() {
             return;
         }
 
-        console.log('리스트 변경 감지 > 저장 수행');
         dispatch(saveListToStorage(listState));
     }, [listState, dispatch]);
 

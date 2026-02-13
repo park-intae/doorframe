@@ -27,25 +27,34 @@ export const fetchWeather = createAsyncThunk('weather/fetchWeather', async (_, {
       const now = Date.now();
 
       if (lastFetch && cached && now - parseInt(lastFetch) < CACHE_DURATION) {
-        const remainingTime = Math.floor((CACHE_DURATION - (now - parseInt(lastFetch))) / 1000);
-        console.log(`✅ 클라이언트 캐시 사용 (${remainingTime}초 남음)`);
+        // const remainingTime = Math.floor((CACHE_DURATION - (now - parseInt(lastFetch))) / 1000); // 디버그 로그 제거
         return JSON.parse(cached);
       }
     }
     // 1. 위치 가져오기
     const pos = await new Promise<GeolocationPosition>((res, rej) =>
-      navigator.geolocation.getCurrentPosition(res, rej)
+      navigator.geolocation.getCurrentPosition(res, rej),
     );
     const { latitude, longitude } = pos.coords;
-    // const baseUrl = 'https://thrqbgygmjbnrbgmyxbc.supabase.co/function/v1/';
-    const baseUrl = 'http://127.0.0.1:54321/functions/v1'
+
+    const baseUrl = 'http://127.0.0.1:54321/functions/v1';
+    const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    // console.log('키 길이:', anonKey?.length); // 디버그 로그 제거
+    // console.log('키 시작:', anonKey?.substring(0, 10)); // 디버그 로그 제거
 
     // 2. 서버 API 호출
-    const res = await fetch(`${baseUrl}/weather?lat=${latitude}&lon=${longitude}`);
+    const res = await fetch(`${baseUrl}/weather?lat=${latitude}&lon=${longitude}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${anonKey}`,
+        apikey: anonKey,
+      },
+    });
+
     if (!res.ok) throw new Error('날씨 정보 가져오기 실패');
 
     const data = await res.json();
-    console.log(data);
+    // console.log(data); // 디버그 로그 제거
 
     return data;
   } catch (err: any) {

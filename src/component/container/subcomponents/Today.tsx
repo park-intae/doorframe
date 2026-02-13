@@ -1,5 +1,3 @@
-
-
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { updateDateTime } from "@/store/slice/todaySlice";
 import { useEffect } from "react";

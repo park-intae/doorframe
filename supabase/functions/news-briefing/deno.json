@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.window", "deno.ns"],
+    "strict": true,
+    "types": ["npm:@google/generative-ai"]
+  },
+  "imports": {
+    "supabase": "jsr:@supabase/functions-js/edge-runtime.d.ts",
+    "@google/generative-ai": "npm:@google/generative-ai@^0.11.5",
+    "rss": "https://deno.land/x/rss@1.1.3/mod.ts"
+  }
+}

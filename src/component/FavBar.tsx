@@ -122,7 +122,6 @@ export default function FavBar() {
             return;
         }
 
-        console.log('💾 데이터 변경 감지 - 저장 수행:', bookmarks);
         dispatch(saveBookmarksToStorage(bookmarks));
 
     }, [bookmarks, mounted, dispatch]);
@@ -143,7 +142,6 @@ export default function FavBar() {
             const newIndex = bookmarks.findIndex((b) => b.id === over.id);
 
             const newBookmarks = arrayMove(bookmarks, oldIndex, newIndex);
-            console.log('북마크 순서 변경:', newBookmarks);
             dispatch(setBookmarks(newBookmarks));
         }
     };

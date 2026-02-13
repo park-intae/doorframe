@@ -11,7 +11,6 @@ interface TypedPopoverProps {
 }
 
 export default function TypedPopover({ name, onClose, anchorRect }: TypedPopoverProps) {
-    console.log('Popover 렌더링:', { name, anchorRect });
 
     if (!name || !anchorRect) return null;
 

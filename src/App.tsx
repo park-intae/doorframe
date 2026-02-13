@@ -14,9 +14,6 @@ export default function App() {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
-      console.log("🔔 [Auth Event]:", event);
-      console.log("👤 [Current User]:", session?.user?.id || "비로그인");
-
       //로그아웃시 새로고침
       if (event === 'SIGNED_OUT') {
         window.location.reload();
