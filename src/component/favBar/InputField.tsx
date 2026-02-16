@@ -21,7 +21,7 @@ export default function InputField({
 }: InputFieldProps) {
     return (
         <div className="flex flex-col">
-            <label htmlFor="fav-name" className="text-sm font-medium text-gray-700 p-1.5">
+            <label htmlFor="fav-name" className="text-sm font-medium text-context p-1.5">
                 {label}
             </label>
             <input
@@ -31,7 +31,7 @@ export default function InputField({
                 onChange={onChange}
                 onKeyDown={onKeyDown}
                 placeholder={placeholder}
-                className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2"
+                className="px-3 py-2 border-main rounded-lg focus:outline-none focus:ring-2 focus:ring-point"
                 autoFocus={autoFocus}
             />
         </div>

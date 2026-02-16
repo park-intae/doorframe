@@ -78,14 +78,14 @@ export default function Login() {
                     width={200}
                     placement="bottom"
                 >
-                    <div className='flex flex-col items-center gap-3'>
+                    <div className='flex flex-col items-center gap-3 bg-white p-3'>
                         <img
                             src={user.user_metadata?.avatar_url ?? ""}
                             alt='프로필'
                             className='w-16 h-16 rounded-full'
                         />
                         <p className='font-semibold'>{user.user_metadata?.full_name ?? user.email}</p>
-                        <p className='text-sm text-gray-600'>{user.email}</p>
+                        <p className='text-sm text-context'>{user.email}</p>
                         <button
                             onClick={handleSignOut}
                             className='w-full py-2 px-4 bg-red-500 text-white rounded hover:bg-red-600 transition-colors'
@@ -103,7 +103,7 @@ export default function Login() {
             <button
                 ref={buttonRef}
                 onClick={handleOpenPopover}
-                className='px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium'
+                className='px-4 py-2 bg-point text-main rounded-lg hover:brightness-95 transition-colors font-medium'
             >
                 로그인
             </button>
@@ -118,7 +118,7 @@ export default function Login() {
                 <div className="p-2">
                     <button
                         onClick={handleGoogleSignIn}
-                        className="w-full py-3 px-4 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all flex items-center justify-center gap-3 shadow-sm hover:shadow group"
+                        className="w-full py-3 px-4 bg-white border border-main rounded-lg hover:bg-background transition-all flex items-center justify-center gap-3 shadow-sm hover:shadow group"
                     >
                         {/* 구글 로고 SVG */}
                         <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -127,7 +127,7 @@ export default function Login() {
                             <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                         </svg>
-                        <span className="font-medium text-gray-700 group-hover:text-gray-900">
+                        <span className="font-medium text-context group-hover:text-title">
                             Google 계정으로 로그인
                         </span>
                     </button>

@@ -59,18 +59,18 @@ function SortableBookmarkItem({
                 <div
                     {...attributes}
                     {...listeners}
-                    className="flex justify-center items-center cursor-grab active:cursor-grabbing p-1 hover:bg-gray-100 rounded"
+                    className="flex justify-center items-center cursor-grab active:cursor-grabbing p-1 hover:bg-background rounded"
                 >
-                    <Menu className="grapBar w-4 h-4 text-gray-400" />
+                    <Menu className="grapBar w-4 h-4 text-context" />
                 </div>
             )}
 
             <a
-                className={`fav flex items-center gap-2 ${isOpen ? 'hover:bg-gray-100 flex-1' : ''} p-1 rounded`}
+                className={`fav flex items-center gap-2 ${isOpen ? 'hover:bg-background flex-1' : ''} p-1 rounded`}
                 href={item.url}
                 target="_blank"
                 rel="nooper noreferrer">
-                <div className="IcoBg shrink-0 w-10 h-10 items-center justify-center p-1 rounded transition-colors group-hover:bg-gray-200">
+                <div className="IcoBg shrink-0 w-10 h-10 items-center justify-center p-1 rounded transition-colors group-hover:bg-background">
                     <img
                         className="w-8 h-8"
                         src={item.icon}
@@ -86,7 +86,7 @@ function SortableBookmarkItem({
                     onClick={(e) => onRemove(e, item.id)}
                     className="group addFav flex shrink-0 justify-center items-center hover:bg-red-400"
                 >
-                    <MinusIcon className="w-5 h-5 text-gray-600 group-hover:text-white transition-colors" />
+                    <MinusIcon className="w-5 h-5 text-context group-hover:text-main transition-colors" />
                 </button>
             )}
         </div>
@@ -152,7 +152,7 @@ export default function FavBar() {
 
     return (
         <aside className={`
-        fixed left-0 h-full p-4 bg-white shadow-lg z-50
+        p-4 bg-white shadow-lg
         flex flex-col gap-4
         transition-all duration-300 ease-in-out
         ${isOpen ? "w-64" : "w-20"} overflow-hidden
@@ -160,7 +160,7 @@ export default function FavBar() {
             <div className="flex justify-end mr-2">
                 <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="p-2 bg-blue-500 rounded text-white shrink-0"
+                    className="p-2 bg-point rounded text-main shrink-0"
                 >
                     {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                 </button>

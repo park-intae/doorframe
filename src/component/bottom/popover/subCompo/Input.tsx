@@ -32,7 +32,7 @@ export default function Input({ kind }: InputProps) {
                 value={value}
                 onChange={handleChange}>
             </input>
-            <button className="summitBTN bg-blue-300 rounded-lg flex items-center" type='submit'>
+            <button className="summitBTN bg-point rounded-lg flex items-center" type='submit'>
                 <PlusIcon className="w-5 h-5" />
             </button>
         </form>

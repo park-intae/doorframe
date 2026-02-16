@@ -89,10 +89,10 @@ export default function AddFav() {
         <>
             <button
                 onClick={() => setShowModal(true)}
-                className="group addFav flex justify-center items-center gap-2 hover:bg-blue-50 p-2 rounded transition-colors "
+                className="group addFav flex justify-center items-center gap-2 hover:bg-background p-2 rounded transition-colors "
             >
-                <div className="rounded-full bg-gray-100 w-8 h-8 flex justify-center items-center group-hover:bg-blue-500 transition-colors">
-                    <PlusIcon className="w-5 h-5 text-gray-600 group-hover:text-white transition-colors " />
+                <div className="rounded-full bg-background w-8 h-8 flex justify-center items-center group-hover:bg-point transition-colors">
+                    <PlusIcon className="w-5 h-5 text-context group-hover:text-main transition-colors " />
                 </div>
             </button>
             <Modal
@@ -121,7 +121,7 @@ export default function AddFav() {
                     <div className="modal-bottom flex flex-row-reverse">
                         <button
                             onClick={handleSubmit}
-                            className="flex justify-center items-center mt-3 rounded bg-blue-500 text-white w-8 h-8"
+                            className="flex justify-center items-center mt-3 rounded bg-point text-main w-8 h-8"
                         >
                             <PlusIcon className="w-5 h-5" />
                         </button>

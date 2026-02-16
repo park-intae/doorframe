@@ -16,9 +16,9 @@ export default function Search() {
 
     return (
         <>
-            <form onSubmit={handleSearch} className="rounded-full m-2 h-10 flex item-center bg-main justify-around">
+            <form onSubmit={handleSearch} className="rounded-full m-2 h-15 w-160 flex item-center bg-main justify-around">
                 <div className="my-auto self-start">
-                    <SearchIcon className="w-5 h-5 text-gray-400" />
+                    <SearchIcon className="w-5 h-5 text-context" />
                 </div>
                 <input className="w-110" type="text" value={keyword} onChange={(e) => setKeyword(e.target.value)} />
             </form>

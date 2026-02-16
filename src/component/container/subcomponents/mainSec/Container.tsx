@@ -6,7 +6,7 @@ import Weather from "../Weather";
 
 export default function Container() {
     return (
-        <section className="flex flex-col container font-paperlogy font-bold mt-[3vh] h-100">
+        <section className="flex items-center container w-200 font-paperlogy font-bold mt-[3vh] h-full">
             <Today />
             <Weather />
         </section>

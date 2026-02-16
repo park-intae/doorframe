@@ -33,7 +33,7 @@ export default function Modal({
         >
             <div className="flex justify-center items-center bg-background rounded-lg">
                 <div
-                    className="modal bg-white rounded-lg p-5 max-w-full w-100 m-5"
+                    className="modal bg-main rounded-lg p-5 max-w-full w-100 m-5"
                     onClick={(e) => e.stopPropagation()}
                 >
                     {(title || showCloseButton) && (
