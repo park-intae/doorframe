@@ -72,82 +72,97 @@ const NewsBriefing: React.FC = () => {
   };
 
   return (
-    <div className="right-0 top-0 p-4 w-130 rounded-lg shadow-md">
-      <h2 className="text-xl font-bold mb-4 text-title">뉴스 브리핑</h2>
-      <div className="flex w-full">
-        <div className="mb-4 w-50">
-          <select
-            id="category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-main rounded-md shadow-sm focus:outline-none focus:ring-point focus:border-point sm:text-sm"
-          >
-            {Object.entries(googleNewsCategories).map(([name, keyword]) => (
-              <option key={keyword} value={keyword}>
-                {name}
-              </option>
-            ))}
-          </select>
-        </div>
+    <div className="bg-main/30 backdrop-blur-sm p-5 rounded-2xl shadow-lg w-full max-w-[604px] mt-7 border border-main font-paperlogy transition-all duration-300">
+      <h2 className="text-xl font-bold mb-4 text-title flex items-center gap-2">
+        <span className="w-2 h-6 bg-point rounded-full"></span>
+        뉴스 브리핑
+      </h2>
 
-        <div className="mb-4 flex items-center">
-          <label htmlFor="searchQuery" className="block w-30 text-sm font-medium text-context">
-            검색어:
-          </label>
-          <input
-            type="text"
-            id="searchQuery"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="추가 정보를 위해 검색하실 수 있습니다"
-            className="mt-1 block w-full px-3 py-2 border border-main rounded-md shadow-sm focus:outline-none focus:ring-point focus:border-point sm:text-sm"
-          />
-        </div>
-      </div>
-
-      <button
-        onClick={handleSummarize}
-        disabled={loading}
-        className="w-full bg-point text-main py-2 px-4 rounded-md hover:brightness-95 focus:outline-none focus:ring-2 focus:ring-point focus:ring-offset-2 disabled:opacity-50"
-      >
-        뉴스 요약하기
-      </button>
-      {
-        error && (
-          <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-md">
-            오류: {error}
+      <div className="flex flex-col smDT:flex-row mdDT:flex-col gap-5">
+        {/* 입력 및 설정 영역 */}
+        <div className="flex flex-col gap-3 smDT:w-[220px] mdDT:w-full">
+          <div className="flex flex-col">
+            <label htmlFor="category" className="text-xs text-context mb-1 ml-1">카테고리</label>
+            <select
+              id="category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="block w-full px-3 py-2 bg-main/50 border border-main rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-point/50 focus:border-point text-sm transition-all"
+            >
+              {Object.entries(googleNewsCategories).map(([name, keyword]) => (
+                <option key={keyword} value={keyword}>
+                  {name}
+                </option>
+              ))}
+            </select>
           </div>
-        )
-      }
 
-      <div className="mt-4 w-120">
-        <div className="bg-background h-50 p-4 rounded-md border border-main flex items-center justify-center">
-          {loading ? (
-            <Typewriter
-              options={{
-                strings: ['요약 중입니다...', '키워드를 추출하고 있습니다...', '트렌드를 분석하고 있습니다...'],
-                autoStart: true,
-                loop: true,
-                wrapperClassName: 'text-context text-sm',
-                cursorClassName: 'text-context text-sm'
-              }}
+          <div className="flex flex-col">
+            <label htmlFor="searchQuery" className="text-xs text-context mb-1 ml-1">검색 키워드 (선택)</label>
+            <input
+              type="text"
+              id="searchQuery"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="예: AI, 금리, 삼성전자"
+              className="block w-full px-3 py-2 bg-main/50 border border-main rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-point/50 focus:border-point text-sm transition-all placeholder:text-context/50"
             />
-          ) : (
-            categorySummary && (
-              <div>
-                <p className="text-context mt-1 text-sm font-medium">
-                  키워드: {categorySummary.keywords.join(', ')}
-                </p>
-                <p className="text-context mt-2 text-sm">
-                  트렌드: {categorySummary.trendSummary}
-                </p>
+          </div>
+
+          <button
+            onClick={handleSummarize}
+            disabled={loading}
+            className="mt-2 w-full bg-point text-main py-2.5 px-4 rounded-xl font-bold hover:brightness-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-point/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-point/20"
+          >
+            {loading ? '요약 중...' : '뉴스 요약하기'}
+          </button>
+        </div>
+
+        {/* 결과 출력 영역 */}
+        <div className="flex-1 flex flex-col min-h-[160px] mdDT:w-full">
+          <div className="bg-background/50 flex-1 p-4 rounded-xl border border-main flex flex-col justify-center relative overflow-hidden">
+            {loading ? (
+              <div className="flex items-center justify-center h-full">
+                <Typewriter
+                  options={{
+                    strings: ['최신 뉴스를 가져오는 중...', '키워드를 추출하고 있습니다...', '트렌드를 분석하고 있습니다...', '요약 결과를 작성 중입니다...'],
+                    autoStart: true,
+                    loop: true,
+                    wrapperClassName: 'text-point text-sm font-medium',
+                    cursorClassName: 'text-point text-sm'
+                  }}
+                />
               </div>
-            )
-          )}
+            ) : error ? (
+              <div className="text-red-500 text-sm bg-red-50 p-3 rounded-lg border border-red-100 italic">
+                {error}
+              </div>
+            ) : categorySummary ? (
+              <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+                <div className="mb-3">
+                  <span className="text-[10px] bg-point/10 text-point px-2 py-0.5 rounded-full font-bold uppercase tracking-wider mb-1 inline-block">Keywords</span>
+                  <p className="text-title text-sm font-bold leading-relaxed">
+                    {categorySummary.keywords.join(', ')}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-[10px] bg-important/10 text-important px-2 py-0.5 rounded-full font-bold uppercase tracking-wider mb-1 inline-block">Trend Summary</span>
+                  <p className="text-context text-sm leading-relaxed text-justify break-keep">
+                    {categorySummary.trendSummary}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center text-context/40 italic">
+                <p className="text-sm">카테고리를 선택하고</p>
+                <p className="text-sm">요약하기 버튼을 눌러주세요</p>
+              </div>
+            )}
+          </div>
+          <p className="text-[10px] text-right text-context mt-2 opacity-60">출처: 구글 & 네이버 뉴스</p>
         </div>
       </div>
-      <p className="text-xs text-right text-context">검색 출처 : 구글-네이버 뉴스</p>
-    </div >
+    </div>
   );
 };
 

@@ -24,9 +24,9 @@
     --color-dark-gray: #2D2D2D;
 
     /* 커스텀 브레이크포인트 */
-    --breakpoint-smDT: 1280px;
-    --breakpoint-mdDT: 1366px;
-    --breakpoint-lgDT: 1440px;
+    --breakpoint-smDT: 1336px;
+    --breakpoint-mdDT: 1440px;
+    --breakpoint-lgDT: 1920px;
 }
 
 /*utility*/

@@ -151,8 +151,8 @@ export default function FavBar() {
     };
 
     return (
-        <aside className={`
-        p-4 bg-white shadow-lg
+        <aside className={`absolute top-0 left-0 z-10
+        p-4 h-full bg-white shadow-lg
         flex flex-col gap-4
         transition-all duration-300 ease-in-out
         ${isOpen ? "w-64" : "w-20"} overflow-hidden

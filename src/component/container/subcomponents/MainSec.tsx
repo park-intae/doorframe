@@ -4,7 +4,7 @@ import NewsBriefing from "./mainSec/NewsBrief";
 
 export default function MainSec() {
     return (
-        <section className="mainSection relative mt-15">
+        <section className="mainSection relative">
             <article className="center-area flex flex-col justify-center items-center">
                 <div className="flex flex-col justify-center items-center">
                     <Search />

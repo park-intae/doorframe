@@ -4,9 +4,9 @@ import MainSec from "./subcomponents/MainSec";
 
 export default function Main() {
     return (
-        <main className="flex flex-1 items-stretch">
+        <main className="relative flex flex-1 items-stretch">
             <FavBar />
-            <article className="mainSec flex flex-1 flex-col h-full justify-between items-center">
+            <article className="mainSec flex flex-1 flex-col h-full justify-between items-center smDT:mt-5 mdDT:mt-8 lgDT:mt-15">
                 <MainSec />
                 <Bottom />
             </article>

@@ -15,7 +15,7 @@ export default function Weather() {
     }, []);
 
     return (
-        <div className="weather rounded-xl my-4 mx-auto min-w-50 min-h-58 flex flex-row items-center justify-between gap-5 p-6 bg-background">
+        <div className="weather rounded-xl w-66 h-50 flex flex-row items-center justify-between gap-5 p-6 bg-background">
             <div className="weatherIco rounded-full w-20 h-20 flex justify-center items-center overflow-hidden bg-main">
                 <WeatherIcon />
             </div>

@@ -32,7 +32,7 @@ export default function App() {
   return (
     <>
       <ListPersistence />
-      <div className="flex flex-1 flex-col h-screen box-border">
+      <div className="flex flex-1 flex-col h-full box-border">
         <Header />
         <hr />
         <Main />
