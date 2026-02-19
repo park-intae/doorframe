@@ -115,31 +115,15 @@ Deno.serve(async (req) => {
     const xml = await response.text();
     const feed = await parseFeed(xml);
 
-    // articleCount를 10개로 늘리고, 필터링 로직 추가
-    let articlesToProcess = feed.entries.slice(0, articleCount);
+    const articlesToProcess = feed.entries.slice(0, articleCount);
 
-    // 내부 필터링 로직을 제거합니다. 
-    // RSS URL자체에서 이미 카테고리 필터링이 되었으므로, 이중 필터링은 불필요합니다.
-    /*
-    if (filterCategory) {
-      const lowerCaseFilter = filterCategory.toLowerCase();
-      articlesToProcess = articlesToProcess.filter(entry => {
-        const title = entry.title?.value?.toLowerCase() || "";
-        const content = entry.description?.value?.toLowerCase() || entry.content?.value?.toLowerCase() || "";
-        return title.includes(lowerCaseFilter) || content.includes(lowerCaseFilter);
-      });
-    }
-    */
-
-    // 모든 기사의 내용을 모으는 로직으로 변경 (개별 요약 대신)
     const combinedArticleContent = articlesToProcess.map(entry => {
       const title = entry.title?.value || "";
       const content = entry.description?.value || entry.content?.value || "";
       return `제목: ${title}\n내용: ${content}`;
-    }).join("\n\n---\n\n"); // 기사들을 구분할 수 있는 구분자 추가
+    }).join("\n\n---\n\n");
 
     if (!combinedArticleContent.trim()) {
-      // 필터링된 기사가 없으면, 내용이 없음을 알리는 표준 응답을 200 상태로 반환합니다.
       const emptySummary: CategorySummary = {
         category: filterCategory || "전체 뉴스",
         keywords: ["해당 없음"],
@@ -151,12 +135,9 @@ Deno.serve(async (req) => {
       });
     }
 
-    // summarizeWithGemini 함수는 이제 통합된 내용을 받아 전체를 요약
-    // 이 부분은 다음 단계에서 summarizeWithGemini 함수의 시그니처 변경과 함께 업데이트될 예정입니다.
-    // 임시로 빈 문자열을 전달하여 에러를 피합니다.
     const rawGeminiOutput = await summarizeWithGemini(filterCategory || "전체 뉴스", combinedArticleContent);
 
-    // Gemini 출력을 파싱하여 CategorySummary 객체 생성
+    // Gemini 출력 파싱, CategorySummary 객체 생성
     let keywords: string[] = [];
     let trendSummary: string = "요약된 트렌드를 찾을 수 없습니다.";
 
