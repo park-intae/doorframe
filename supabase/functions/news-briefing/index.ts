@@ -44,9 +44,9 @@ async function summarizeWithGemini(
 
   // 모델 폴백 리스트 정의
   const models = [
-    { name: 'gemini-2.5-pro', description: '기본' },
-    { name: 'gemini-2.5-flash', description: '열화' },
-    { name: 'gemini-2.5-flash-lite', description: '최대 열화' }
+    { name: 'gemini-pro-latest', description: '기본' },
+    { name: 'gemini-flash-latest', description: '열화' },
+    { name: 'gemini-flash-lite-latest', description: '최대 열화' }
   ];
 
   const categoryContext = filterCategory ? `카테고리: ${filterCategory}\n` : "";
