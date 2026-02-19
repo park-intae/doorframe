@@ -4,7 +4,7 @@
 
 나만의 시작 페이지 - 한 곳에서 관리하는 북마크, 메모, 할 일
 
-> ⚠️ 이 프로젝트는 개인 포트폴리오용이며, 외부 기여나 배포는 허용되지 않습니다.
+> ⚠️ 이 프로젝트는 개인 포트폴리오 용이며, 외부 기여나 배포는 허용되지 않습니다.
 
 ![Doorframe_screen_shot](./Doorframe_screes_shot.png)
 
@@ -19,15 +19,24 @@
 
 - Redux Toolkit
 - Chrome Storage API
-- Supabase (Authentication)
+- Supabase (Authentication & Edge Functions)
+- Google Gemini API (AI News Summarization)
 
 ### UI & Styling
 
 - Tailwind CSS v4
 - Lucide React (Icons)
 - @dnd-kit (Drag & Drop)
+- Typewriter-effect (Loading UI)
 
 ## 주요기능
+
+### AI 뉴스 브리핑 (New!)
+
+- 구글 및 네이버 뉴스를 기반으로 한 최신 뉴스 요약 서비스
+- 카테고리별 뉴스 필터링 및 사용자 정의 키워드 검색 지원
+- **Google Gemini API**를 활용한 핵심 키워드 추출 및 트렌드 분석 요약
+- 반응형 레이아웃 (데스크탑/태블릿/모바일 최적화)
 
 ### 실시간 날씨
 
@@ -125,54 +134,68 @@ npm run build
 doorframe/
 ├── public/
 │   ├── manifest.json       # Chrome Extension 설정
-│   ├── icon-16.png
-│   ├── icon-48.png
-│   └── icon-128.png
+│   └── icons/              # 아이콘 리소스
 ├── src/
 │   ├── components/         # React 컴포넌트
 │   │   ├── container/
+│   │   │   └── subcomponents/
+│   │   │       └── mainSec/
+│   │   │           └── newsBrief/ # 뉴스 브리핑 UI 컴포넌트
 │   │   ├── favBar/
 │   │   └── modal/
+│   ├── hooks/             # 커스텀 훅 (비즈니스 로직 분리)
 │   ├── store/             # Redux 스토어
-│   │   └── slice/
-│   ├── thunk/             # 비동기 액션
+│   ├── type/              # 전역 타입 정의
 │   ├── util/              # 유틸리티 함수
 │   ├── config/            # 설정 파일
-│   │   └── supabase.ts
 │   ├── App.tsx
-│   ├── main.tsx
 │   └── styles/
-│       └── globals.css
+│       └── global.css      # 전역 스타일 및 테마
+├── supabase/
+│   └── functions/          # Edge Functions (News Summarizer, Weather Proxy)
 ├── .env                   # 환경 변수
 ├── vite.config.ts
-├── tailwind.config.ts
 └── package.json
 ```
 
 ## 🎨 커스터마이징
 
-### 색상 테마 변경
+### 색상 및 폰트 테마
 
-`src/styles/globals.css`에서 CSS 변수 수정:
+`src/styles/global.css`에서 테마 수정:
 
-```css
-:root {
-  --color-main: 230 246 250;
-  --color-background: 209 238 248;
-  --color-point: 79 163 199;
-  --color-important: 248 155 0;
-}
-```
+- **Font**: `Paperlogy` (기본 폰트)
+- **Colors**: `main`, `background`, `point`, `important`, `title`, `context`
 
-### 기본 북마크 변경
+---
 
-`src/thunk/bookmarkThunk.ts`에서 `defaultBookmarks` 수정
+### Supabase Edge Function 설정
+
+1. [Supabase CLI](https://supabase.com/docs/guides/cli) 설치 및 로그인
+2. `supabase/functions/news-briefing/` 경로의 환경 변수 설정
+3. Google Gemini API 키 발급 및 Edge Function Secret에 추가:
+   ```bash
+   supabase secrets set GEMINI_API_KEY=your_gemini_key
+   ```
+4. Edge Function 배포:
+   ```bash
+   ### 기상청 API 키 발급
+
+1. [공공데이터포털](https://www.data.go.kr/) 회원가입
+2. "기상청_단기예보 조회서비스" 신청
+3. 발급받은 서비스키를 `.env`에 추가
+
+### VWorld API 키 발급
+
+1. [VWorld](https://www.vworld.kr/) 회원가입
+2. 오픈API 신청
+3. 발급받은 키를 `.env`에 추가
 
 ## 🐛 트러블슈팅
 
 ### Rate Limit 에러
 
-기상청 API는 시간당 호출 제한이 있습니다. 10분 캐싱이 적용되어 있으니 잠시 기다려주세요.
+기상청 API 및 Gemini API는 호출 제한이 있을 수 있습니다. 캐싱이 적용되어 있으나, 반복적인 요청 시 잠시 기다려주세요.
 
 ### 로그인 안 됨
 
