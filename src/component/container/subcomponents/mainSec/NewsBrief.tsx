@@ -16,7 +16,7 @@ const NewsBriefing: React.FC = () => {
   } = useNewsBrief();
 
   return (
-    <div className="bg-main/30 backdrop-blur-sm p-5 rounded-2xl shadow-lg w-full max-w-[604px] mt-7 border border-main font-paperlogy transition-all duration-300">
+    <div className="p-5 rounded-2xl w-full max-w-[604px] mt-7 border border-main font-paperlogy transition-all duration-300 glass">
       <h2 className="text-xl font-bold mb-4 text-title flex items-center gap-2">
         <span className="w-2 h-6 bg-point rounded-full"></span>
         뉴스 브리핑

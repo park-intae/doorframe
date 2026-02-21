@@ -1,8 +1,3 @@
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
-
-// Setup type definitions for built-in Supabase Runtime APIs
 import "supabase";
 import { parseFeed } from "rss";
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -27,7 +22,6 @@ interface CategorySummary {
   trendSummary: string;
 }
 
-// 4. Gemini를 사용하여 기사 내용을 요약하는 함수
 // 4. Gemini를 사용하여 기사 내용을 요약하는 함수 (전체 뉴스 요약 및 키워드 추출)
 async function summarizeWithGemini(
   filterCategory: string | undefined, // 필터링된 카테고리 (선택 사항)
@@ -63,15 +57,12 @@ ${combinedArticleContent}`;
 
   for (const modelInfo of models) {
     try {
-      console.log(`[뉴스 요약] ${modelInfo.description}(${modelInfo.name}) 모델으로 시도 중...`);
       const model = genAI.getGenerativeModel({ model: modelInfo.name });
       const result = await model.generateContent(prompt);
       const response = await result.response;
       const text = response.text();
-      console.log(`[뉴스 요약] ${modelInfo.name} 모델 성공`);
       return text.trim();
     } catch (error) {
-      console.error(`[뉴스 요약] ${modelInfo.name} 모델 실패:`, error);
       lastError = error;
       // 다음 모델로 계속 진행
     }
@@ -104,8 +95,6 @@ Deno.serve(async (req) => {
 
     const encodedQuery = encodeURIComponent(queryParts.join(' '));
     const rssUrl = `https://news.google.com/rss/search?q=${encodedQuery}&hl=ko&gl=KR&ceid=KR:ko`;
-
-    console.log("Constructed RSS URL:", rssUrl); // 디버깅을 위한 로그
 
     // 5. RSS 피드 가져오기 및 파싱
     const response = await fetch(rssUrl);

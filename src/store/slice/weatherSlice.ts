@@ -27,7 +27,6 @@ export const fetchWeather = createAsyncThunk('weather/fetchWeather', async (_, {
       const now = Date.now();
 
       if (lastFetch && cached && now - parseInt(lastFetch) < CACHE_DURATION) {
-        // const remainingTime = Math.floor((CACHE_DURATION - (now - parseInt(lastFetch))) / 1000); // 디버그 로그 제거
         return JSON.parse(cached);
       }
     }
@@ -39,10 +38,8 @@ export const fetchWeather = createAsyncThunk('weather/fetchWeather', async (_, {
 
     const baseUrl = 'http://127.0.0.1:54321/functions/v1';
     const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-    // console.log('키 길이:', anonKey?.length); // 디버그 로그 제거
-    // console.log('키 시작:', anonKey?.substring(0, 10)); // 디버그 로그 제거
 
-    // 2. 서버 API 호출
+    // 2. 서버 API 호출 (날씨 정보와 주소 정보를 함께 가져옴)
     const res = await fetch(`${baseUrl}/weather?lat=${latitude}&lon=${longitude}`, {
       method: 'GET',
       headers: {
@@ -54,8 +51,8 @@ export const fetchWeather = createAsyncThunk('weather/fetchWeather', async (_, {
     if (!res.ok) throw new Error('날씨 정보 가져오기 실패');
 
     const data = await res.json();
-    // console.log(data); // 디버그 로그 제거
 
+    // 3. 데이터 반환
     return data;
   } catch (err: any) {
     return rejectWithValue(err.message);

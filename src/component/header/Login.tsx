@@ -1,4 +1,3 @@
-import { auth, googleProvider } from '@/config/firebase';
 import { supabase } from '@/config/supabase';
 import Popover from '@/util/Popover';
 import { User } from '@supabase/supabase-js';
@@ -16,26 +15,41 @@ export default function Login() {
         supabase.auth.getSession().then(({ data: { session } }) => {
             setUser((session?.user ?? null));
             setLoading(false);
-        })
+        }).catch(() => {
+            setLoading(false);
+        });
+
         // 인증 상태 변경 감지
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setUser(session?.user ?? null);
         });
+
+        return () => {
+            subscription.unsubscribe();
+        };
     }, []);
 
     const handleGoogleSignIn = async () => {
         try {
+            const redirectTo = window.location.origin.endsWith('/') 
+                ? window.location.origin 
+                : `${window.location.origin}/`;
+
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: window.location.origin,
+                    redirectTo: redirectTo,
+                    queryParams: {
+                        access_type: 'offline',
+                        prompt: 'select_account',
+                    },
                 }
             });
 
             if (error) throw error;
             setShowPopover(false);
         } catch (error) {
-            console.log('로그인 실패:', error);
+            alert('로그인에 실패했습니다.');
         }
     }
 

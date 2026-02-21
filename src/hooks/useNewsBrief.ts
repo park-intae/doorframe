@@ -13,7 +13,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const useNewsBrief = () => {
-  const [category, setCategory] = useState<string>('경제');
+  const [category, setCategory] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [categorySummary, setCategorySummary] = useState<CategorySummary | null>(null);
   const [loading, setLoading] = useState<boolean>(false);

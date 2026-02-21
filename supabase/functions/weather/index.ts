@@ -76,22 +76,50 @@ Deno.serve(async (req) => {
         ? (PTY_MAP[PTY.obsrValue] ?? '강수')
         : (SKY_MAP[SKY?.obsrValue] ?? '맑음');
 
-    // 4. VWorld 법정동 조회
-    const geoUrl = `https://api.vworld.kr/req/address?service=address&request=getAddress&crs=EPSG:4326&point=${longitude},${latitude}&type=both&key=${VWORLD_API_KEY}`;
-    const geoRes = await fetch(geoUrl);
-    const geoData = await geoRes.json();
+    // 4. VWorld 법정동 조회 (Reverse Geocoding)
+    console.log(`Fetching legal district address for: ${longitude}, ${latitude}`);
+    // type=parcel을 사용하여 법정동 주소를 명시적으로 요청
+    const geoUrl = `https://api.vworld.kr/req/address?service=address&request=getAddress&crs=EPSG:4326&point=${longitude},${latitude}&type=parcel&key=${VWORLD_API_KEY}`;
+    
+    let regionName = `(${latitude.toFixed(2)}, ${longitude.toFixed(2)})`;
+    
+    try {
+      const geoRes = await fetch(geoUrl);
+      const geoData = await geoRes.json();
+      
+      console.log('VWorld API Response Status:', geoData.response?.status);
 
-    let dong = `(${latitude.toFixed(2)}, ${longitude.toFixed(2)})`;
-    if (geoData.response?.status === 'OK' && geoData.response.result?.length > 0) {
-      const result = geoData.response.result[0];
-      dong = result.structure?.level4L || result.text || dong;
+      if (geoData.response?.status === 'OK' && geoData.response.result?.length > 0) {
+        const result = geoData.response.result[0];
+        const { level1, level2, level3, level4L } = result.structure;
+        
+        // 시/도 + 시/군/구 + 읍/면/동/리 형식으로 조합
+        const parts = [];
+        if (level1) parts.push(level1);
+        if (level2) parts.push(level2);
+        if (level3) parts.push(level3);
+        if (level4L) parts.push(level4L); // 법정동/리 명칭
+        
+        if (parts.length > 0) {
+          regionName = parts.join(' ');
+        } else if (result.text) {
+          regionName = result.text;
+        }
+        
+        console.log('Successfully resolved address:', regionName);
+      } else {
+        const errorMsg = geoData.response?.error?.text || 'No result found';
+        console.error('VWorld API Error:', errorMsg);
+      }
+    } catch (geoError) {
+      console.error('VWorld API Fetch Error:', geoError.message);
     }
 
     // 5. 최종 데이터 구성
     const result = {
       temperature: T1H?.obsrValue ? T1H.obsrValue + '℃' : 'N/A',
       weather: weatherTextStr,
-      region: dong,
+      region: regionName,
     };
 
     // 응답 반환 (CORS 헤더 포함)
