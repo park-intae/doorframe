@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { googleNewsCategories } from '../../../../../type/news';
 
 interface NewsBriefInputProps {
@@ -18,38 +18,58 @@ const NewsBriefInput: React.FC<NewsBriefInputProps> = ({
   handleSummarize,
   loading,
 }) => {
+
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
     <div className="flex flex-col gap-3 smDT:w-[220px] mdDT:w-full">
-      <div className="flex flex-col w-48">
-        <div className="relative">
-          <select
-            id="category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="w-full px-4 py-2 pr-10 text-sm font-paperlogy appearance-none transition-all duration-200 hover:bg-white/15 focus:outline-none glass-input">
-            <option value="" disabled hidden>
-              카테고리 선택
-            </option>
-            {Object.entries(googleNewsCategories).map(([name, keyword]) => (
-              <option key={keyword} value={keyword}>
-                {name}
-              </option>
-            ))}
-          </select>
+      <div ref={dropdownRef} className="flex flex-col w-48 relative">
+        <button
+          type="button"
+          onClick={() => setIsOpen((prev) => !prev)}
+          className="w-full px-4 py-2 text-sm font-paperlogy text-left transition-all glass-input hover:!bg-white/15 focus:outline-none"
+        >
+          {category
+            ? Object.entries(googleNewsCategories).find(
+              ([, value]) => value === category
+            )?.[0]
+            : '카테고리 선택'}
+        </button>
 
-          {/* 커스텀 화살표 */}
-          <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-context">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
-        </div>
+        {/* Dropdown */}
+        {isOpen && (
+          <ul
+            className="absolute z-50 top-full w-full rounded-xl bg-white/80 backdrop-blur-xl border border-white/20 shadow-lg shadow-black/10 overflow-hidden">
+            {Object.entries(googleNewsCategories).map(([name, value]) => (
+              <li
+                key={value}
+                onClick={() => {
+                  setCategory(value);
+                  setIsOpen(false);
+                }}
+                className={`px-4 py-2 text-sm font-paperlogy cursor-pointer transition-all hover:bg-blue-300 hover:text-point
+                  ${category === value
+                    ? 'text-point border-l-2 border-point bg-white/10'
+                    : 'text-title border-l-2 border-transparent'
+                  }
+               `}
+              >
+                {name}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <div className="flex flex-col">

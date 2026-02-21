@@ -37,10 +37,10 @@ export default function Popover({
 
             //세로 기준 위치
             if (placement === 'top') {
-                const bottom = window.innerHeight - anchorRect.top + 5
+                const bottom = window.innerHeight - anchorRect.top + 10;
                 setPosition({ bottom, left, top: 0 })
             } else {
-                const top = anchorRect.bottom + 5;
+                const top = anchorRect.bottom + 10;
                 setPosition({ top, left, bottom: 0 })
             }
         } else {
@@ -87,7 +87,7 @@ export default function Popover({
     return (
         <div
             ref={popoverRef}
-            className="popoverDiv fixed p-3 rounded-lg bg-background transition-opacity duration-150 z-[9999] shadow-xl"
+            className="popoverDiv fixed p-3 transition-opacity duration-150 z-[9999] glass"
             style={{
                 ...(placement === 'top'
                     ? { bottom: `${position.bottom}px` }

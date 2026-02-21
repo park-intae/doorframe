@@ -22,7 +22,7 @@ export default function TypedPopover({ name, onClose, anchorRect }: TypedPopover
             width={320}
             placement="top"
         >
-            <div className="content flex justify-center flex-col rounded-lg py-5 max-h-85 bg-white">
+            <div className="content flex justify-center flex-col rounded-lg py-5 max-h-85 glass-input">
                 {name === 'memo' &&
                     <MemoPopover />
                 }

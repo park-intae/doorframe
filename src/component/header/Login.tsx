@@ -31,8 +31,8 @@ export default function Login() {
 
     const handleGoogleSignIn = async () => {
         try {
-            const redirectTo = window.location.origin.endsWith('/') 
-                ? window.location.origin 
+            const redirectTo = window.location.origin.endsWith('/')
+                ? window.location.origin
                 : `${window.location.origin}/`;
 
             const { error } = await supabase.auth.signInWithOAuth({
@@ -117,9 +117,9 @@ export default function Login() {
             <button
                 ref={buttonRef}
                 onClick={handleOpenPopover}
-                className='px-4 py-2 bg-point text-main rounded-lg hover:brightness-95 transition-colors font-medium'
+                className='flex justify-center items-center w-11 h-11 glass-button text-main rounded-full hover:brightness-95 transition-colors'
             >
-                로그인
+                <img src='/login.png' className="w-8 h-8" />
             </button>
 
             <Popover
