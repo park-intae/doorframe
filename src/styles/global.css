@@ -186,18 +186,29 @@
 
 @layer utilities {
     .dashboard-bg {
+        position: fixed;
+        /* 전체 배경이면 fixed 추천 */
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+
         background:
-            radial-gradient(at 50% 40%,
-                rgba(255, 255, 255, 0.8),
-                transparent 60%),
-            radial-gradient(at 15% 10%,
-                rgba(220, 200, 255, 0.4),
-                transparent 65%),
-            radial-gradient(at 85% 85%,
-                rgba(180, 235, 230, 0.45),
-                transparent 60%),
+            radial-gradient(at 10% 75%,
+                #ffffff 0%,
+                #e9ffff 10%,
+                transparent 30%),
+            radial-gradient(at 50% 10%,
+                #e8f6fd 0%,
+                #D0Ebf8 10%,
+                transparent 30%),
+            radial-gradient(at 75% 75%,
+                #a7efef 0%,
+                #D0Ebf8 10%,
+                transparent 30%),
             linear-gradient(135deg,
-                #f5efff 0%,
+                #f4e6ff 0%,
+                #ffffff 36%,
+                #a7efef 75%,
                 #ecf9ff 100%);
     }
 
@@ -206,6 +217,7 @@
         position: absolute;
         inset: 0;
         pointer-events: none;
+
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
     }
 
