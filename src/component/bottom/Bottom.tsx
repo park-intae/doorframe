@@ -1,5 +1,3 @@
-
-
 import { useDispatch, useSelector } from "react-redux";
 import Menus from "./Menus"
 import TypedPopover from "./popover/TypedPopover";
