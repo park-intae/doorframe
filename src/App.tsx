@@ -32,7 +32,6 @@ export default function App() {
   return (
     <>
       <ListPersistence />
-      {/* <div className="flex flex-1 flex-col h-full box-border"> */}
       <div className='dashboard-bg relative min-h-screen overflow-hidden
 '>
         <Main />

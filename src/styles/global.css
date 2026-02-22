@@ -190,7 +190,6 @@
         /* 전체 배경이면 fixed 추천 */
         inset: 0;
         z-index: -1;
-        pointer-events: none;
 
         background:
             radial-gradient(at 10% 75%,
@@ -215,16 +214,13 @@
     .dashboard-bg::before {
         content: "";
         position: absolute;
+        z-index: -1;
         inset: 0;
-        pointer-events: none;
 
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
     }
 
-    /* bg-background/20 backdrop-blur-lg border border-white/30 shadow-xl roundes-2xl p-6 rounded-lg */
-
     .glass {
-        /* background-color: rgba(255, 255, 255, 0.28); */
         background-color: rgba(var(--color-background) / 0.4);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);

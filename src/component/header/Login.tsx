@@ -76,7 +76,7 @@ export default function Login() {
 
     if (user) {
         return (
-            <div className='login mr-5'>
+            <div className='login absolute top-1 right-1'>
                 <button
                     ref={buttonRef}
                     onClick={handleOpenPopover}
@@ -113,7 +113,7 @@ export default function Login() {
     }
 
     return (
-        <div className='login mr-5'>
+        <div className='login absolute top-4 right-4'>
             <button
                 ref={buttonRef}
                 onClick={handleOpenPopover}
