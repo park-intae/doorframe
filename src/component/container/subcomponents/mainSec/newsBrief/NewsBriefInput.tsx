@@ -38,7 +38,7 @@ const NewsBriefInput: React.FC<NewsBriefInputProps> = ({
         <button
           type="button"
           onClick={() => setIsOpen((prev) => !prev)}
-          className="w-full px-4 py-2 text-sm font-paperlogy text-left transition-all glass-input hover:!bg-white/15 focus:outline-none"
+          className="w-full py-2 text-sm font-paperlogy text-left transition-all glass-input hover:!bg-white/15 focus:outline-none flex justify-center items-center"
         >
           {category
             ? Object.entries(googleNewsCategories).find(
@@ -79,7 +79,7 @@ const NewsBriefInput: React.FC<NewsBriefInputProps> = ({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="예: AI, 금리, 삼성전자"
-          className="block w-80 px-3 py-2 text-sm font-paperlogy transition-all placeholder:text-context/50 glass-input hover:bg-white focus:outline-none focus:border-point/50 focus:!bg-white focus:shadow-lg focus:shadow-point/10"
+          className="block smDT:w-48 mdDT:w-80 px-3 py-2 text-sm font-paperlogy transition-all placeholder:text-context/50 glass-input hover:bg-white focus:outline-none focus:border-point/50 focus:!bg-white focus:shadow-lg focus:shadow-point/10"
         />
       </div>
 

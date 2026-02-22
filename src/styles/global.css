@@ -1,6 +1,6 @@
 @import url('https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/Paperlogy.css');
 @import url('/style/wu-icons-style.css');
-@import 'tailwindcss';
+@import "tailwindcss";
 
 html,
 body,
@@ -9,233 +9,74 @@ body,
     margin: 0;
 }
 
-:root {
-    --color-background: 248 250 252;
-    /* #F8FAFC */
-    --color-surface: 226 232 240;
-    /* #E2E8F0 */
-    --color-main: 219 234 254;
-    /* #DBEAFE */
-    --color-point: 79 156 249;
-    /* #4F9CF9 */
-    --color-important: 245 158 11;
-    /* #F59E0B */
-    --color-title: 15 21 42;
-    --color-context: 100 116 139;
-}
-
 @theme {
-    --font-paperlogy: 'Paperlogy', 'sans-serif';
+    /* 1. 폰트 정의: 이제 'font-paperlogy' 클래스 자동 생성 */
+    --font-paperlogy: "Paperlogy", sans-serif;
 
-    /* 커스텀 브레이크포인트 */
+    /* 2. 색상 정의: 이제 bg-main, text-main, border-main 등이 자동 생성됨 */
+    --color-background: rgb(248, 250, 252);
+    --color-surface: rgb(226, 232, 240);
+    --color-main: rgb(219, 234, 254);
+    --color-point: rgb(79, 156, 249);
+    --color-important: rgb(245, 158, 11);
+    --color-title: rgb(15, 21, 42);
+    --color-context: rgb(100, 116, 139);
+
+    /* 3. 커스텀 브레이크포인트: 등록만 하면 smDT:w-56 등을 HTML에서 바로 사용 가능 */
     --breakpoint-smDT: 1336px;
     --breakpoint-mdDT: 1440px;
     --breakpoint-lgDT: 1920px;
 }
 
-/*utility*/
+/* 기초 스타일 */
+@layer base {
+
+    html,
+    body,
+    #root {
+        height: 100%;
+        margin: 0;
+    }
+}
+
+/* 유틸리티: Tailwind가 자동으로 만들지 못하는 복합 스타일만 정의 */
 @layer utilities {
-
-    /* Background */
-    .bg-main {
-        background-color: rgb(var(--color-main) / 1);
-    }
-
-    .bg-background {
-        background-color: rgb(var(--color-background) / 1);
-    }
-
-    .bg-point {
-        background-color: rgb(var(--color-point) / 1);
-    }
-
-    .bg-important {
-        background-color: rgb(var(--color-important) / 1);
-    }
-
-    /* Text */
-    .text-main {
-        color: rgb(var(--color-main) / 1);
-    }
-
-    .text-context {
-        color: rgb(var(--color-context) / 1);
-    }
-
-    .text-title {
-        color: rgb(var(--color-title) / 1);
-    }
-
-    .text-point {
-        color: rgb(var(--color-point) / 1);
-    }
-
-    .text-important {
-        color: rgb(var(--color-important) / 1);
-    }
-
-    /* Border */
-    .border-main {
-        border-color: rgb(var(--color-main) / 1);
-    }
-
-    .border-point {
-        border-color: rgb(var(--color-point) / 1);
-    }
-
-    .border-important {
-        border-color: rgb(var(--color-important) / 1);
-    }
-}
-
-@media (min-width: 1280px) {
-    @layer utilities {
-        .smDT\:w-56 {
-            width: 14rem;
-        }
-
-        .smDT\:w-16 {
-            width: 4rem;
-        }
-
-        .smDT\:text-sm {
-            font-size: 0.875rem;
-        }
-
-        .smDT\:p-3 {
-            padding: 0.75rem;
-        }
-
-        .smDT\:gap-3 {
-            gap: 0.75rem;
-        }
-    }
-}
-
-@media (min-width: 1366px) {
-    @layer utilities {
-        .mdDT\:w-64 {
-            width: 16rem;
-        }
-
-        .mdDT\:w-20 {
-            width: 5rem;
-        }
-
-        .mdDT\:text-base {
-            font-size: 1rem;
-        }
-
-        .mdDT\:p-4 {
-            padding: 1rem;
-        }
-
-        .mdDT\:gap-4 {
-            gap: 1rem;
-        }
-    }
-}
-
-@media (min-width: 1440px) {
-    @layer utilities {
-        .lgDT\:w-72 {
-            width: 18rem;
-        }
-
-        .lgDT\:w-24 {
-            width: 6rem;
-        }
-
-        .lgDT\:text-lg {
-            font-size: 1.125rem;
-        }
-
-        .lgDT\:p-5 {
-            padding: 1.25rem;
-        }
-
-        .lgDT\:gap-5 {
-            gap: 1.25rem;
-        }
-    }
-}
-
-/* Regular (400) */
-@font-face {
-    font-family: 'Paperlogy';
-    font-weight: 400;
-    /* Regular */
-    font-style: normal;
-    font-display: swap;
-    src: url('https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/Paperlogy-4Regular.woff2') format('woff2');
-}
-
-/* Bold (700) */
-@font-face {
-    font-family: 'Paperlogy';
-    font-weight: 700;
-    /* Bold */
-    font-style: normal;
-    font-display: swap;
-    src: url('https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/Paperlogy-7Bold.woff2') format('woff2');
-}
-
-@layer utilities {
-    .scrollbar-hide::-webkit-scrollbar {
-        display: none;
-    }
-
     .scrollbar-hide {
         scrollbar-width: none;
         -ms-overflow-style: none;
-    }
-}
 
-@layer utilities {
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
     .dashboard-bg {
         position: fixed;
         inset: 0;
         z-index: -1;
-
         background:
-            radial-gradient(at 10% 75%,
-                #ffffff 0%,
-                #e9ffff 10%,
-                transparent 30%),
-            radial-gradient(at 50% 10%,
-                #e8f6fd 0%,
-                #D0Ebf8 10%,
-                transparent 30%),
-            radial-gradient(at 75% 75%,
-                #a7efef 0%,
-                #D0Ebf8 10%,
-                transparent 30%),
-            linear-gradient(135deg,
-                #f4e6ff 0%,
-                #ffffff 36%,
-                #a7efef 75%,
-                #ecf9ff 100%);
+            radial-gradient(at 10% 75%, #ffffff 0%, #e9ffff 10%, transparent 30%),
+            radial-gradient(at 50% 10%, #e8f6fd 0%, #D0Ebf8 10%, transparent 30%),
+            radial-gradient(at 75% 75%, #a7efef 0%, #D0Ebf8 10%, transparent 30%),
+            linear-gradient(135deg, #f4e6ff 0%, #ffffff 36%, #a7efef 75%, #ecf9ff 100%);
+
+        &::before {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+        }
     }
 
-    .dashboard-bg::before {
-        content: "";
-        position: absolute;
-        z-index: -1;
-        inset: 0;
-
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-    }
-
+    /* Glassmorphism: 변수 활용 */
     .glass {
-        background-color: rgba(var(--color-background) / 0.4);
+        background-color: color-mix(in srgb, var(--color-background), transparent 60%);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-
         border: 1px solid rgba(255, 255, 255, 0.4);
         border-radius: 24px;
-
-        box-shadow:
-            5px 5px 10px rgba(0, 0, 0, 0.08), inset 0 2px 0 rgba(255, 255, 255, 0.2);
+        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.08), inset 0 2px 0 rgba(255, 255, 255, 0.2);
     }
 
     .glass-sub {
