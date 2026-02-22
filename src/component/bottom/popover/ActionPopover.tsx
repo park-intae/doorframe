@@ -1,16 +1,25 @@
 import { PopoverType } from "@/type/popover";
-import TodoPopover from "./TodoPopover";
-import MemoPopover from "./MemoPopover";
 import { useEffect, useRef, useState } from "react";
 import Popover from "@/util/Popover";
+import Input from "./Input";
+import List from "./List";
 
-interface TypedPopoverProps {
+interface ActionPopoverProps {
     name: PopoverType;
     onClose: () => void;
-    anchorRect?: DOMRect | null;
+    anchorEl: HTMLElement | null;
 }
 
-export default function TypedPopover({ name, onClose, anchorRect }: TypedPopoverProps) {
+export default function ActionPopover({ name, onClose, anchorEl }: ActionPopoverProps) {
+    const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
+
+    useEffect(() => {
+        if (anchorEl) {
+            setAnchorRect(anchorEl.getBoundingClientRect());
+        } else {
+            setAnchorRect(null);
+        }
+    }, [anchorEl]);
 
     if (!name || !anchorRect) return null;
 
@@ -23,12 +32,8 @@ export default function TypedPopover({ name, onClose, anchorRect }: TypedPopover
             placement="top"
         >
             <div className="content flex justify-center flex-col rounded-lg py-5 max-h-85 glass-input">
-                {name === 'memo' &&
-                    <MemoPopover />
-                }
-                {name === 'todo' &&
-                    <TodoPopover />
-                }
+                <Input kind={name} />
+                <List kind={name} />
             </div>
         </Popover>
     )

@@ -1,6 +1,6 @@
 import Bottom from "../bottom/Bottom";
 import FavBar from "../FavBar";
-import Login from "../header/Login";
+import Login from "../login/Login";
 import MainSec from "./subcomponents/MainSec";
 
 export default function Main() {

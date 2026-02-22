@@ -194,7 +194,6 @@ body,
 @layer utilities {
     .dashboard-bg {
         position: fixed;
-        /* 전체 배경이면 fixed 추천 */
         inset: 0;
         z-index: -1;
 

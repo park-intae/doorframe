@@ -1,13 +1,10 @@
 import { PopoverType } from "@/type/popover"
-import { MutableRefObject } from "react"
 
-interface MenuesProps {
-    onOpenPopover: (name: PopoverType) => void
-    buttonRefs: MutableRefObject<{ [key: string]: HTMLButtonElement | null }>
+interface MenusProps {
+    onOpenPopover: (name: PopoverType, target: HTMLButtonElement) => void
 }
 
-export default function Menus({ onOpenPopover, buttonRefs }: MenuesProps) {
-
+export default function Menus({ onOpenPopover }: MenusProps) {
     return (
         <div className='menus mx-5 flex flex-row gap-3'>
             {[
@@ -16,12 +13,9 @@ export default function Menus({ onOpenPopover, buttonRefs }: MenuesProps) {
             ].map(({ key, icon }) => (
                 <button
                     key={key}
-                    ref={(el) => {
-                        buttonRefs.current[key] = el;
-                    }}
                     className="todo p-1 rounded-full glass-button flex justify-center items-center w-11 hover:brightness-95 transition-colors"
-                    onClick={() => {
-                        onOpenPopover(key as PopoverType)
+                    onClick={(e) => {
+                        onOpenPopover(key as PopoverType, e.currentTarget)
                     }}
                 >
                     <img src={icon} className="w-8 h-8" />
