@@ -33,7 +33,7 @@ const NewsBriefInput: React.FC<NewsBriefInputProps> = ({
   }, []);
 
   return (
-    <div className="flex flex-col gap-3 smDT:w-[220px] mdDT:w-full">
+    <div className="flex flex-col gap-3 smDT:w-[220px] lgDT:w-full">
       <div ref={dropdownRef} className="flex flex-col w-48 relative">
         <button
           type="button"
@@ -79,7 +79,7 @@ const NewsBriefInput: React.FC<NewsBriefInputProps> = ({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="예: AI, 금리, 삼성전자"
-          className="block smDT:w-48 mdDT:w-80 px-3 py-2 text-sm font-paperlogy transition-all placeholder:text-context/50 glass-input hover:bg-white focus:outline-none focus:border-point/50 focus:!bg-white focus:shadow-lg focus:shadow-point/10"
+          className="block smDT:w-48 lgDT:w-80 px-3 py-2 text-sm font-paperlogy transition-all placeholder:text-context/50 glass-input hover:bg-white focus:outline-none focus:border-point/50 focus:!bg-white focus:shadow-lg focus:shadow-point/10"
         />
       </div>
 
