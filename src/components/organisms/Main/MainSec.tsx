@@ -11,7 +11,7 @@ export default function MainSec() {
                     <Search />
                     <Container />
                 </div>
-                <div className="flex justify-center gap-3 w-143 h-70 lgDT:h-100 border">
+                <div className="flex justify-center gap-3 w-153 h-70 lgDT:h-100">
                     <Carousel>
                         <NewsBriefing />
                         <div className="flex items-center justify-center h-full text-context font-paperlogy">
