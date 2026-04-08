@@ -1,6 +1,7 @@
 import Container from "../today/Container";
 import Search from '../search/Search';
 import NewsBriefing from '../news/NewsBrief';
+import Carousel from '../carousel';
 
 export default function MainSec() {
     return (
@@ -10,7 +11,14 @@ export default function MainSec() {
                     <Search />
                     <Container />
                 </div>
-                <NewsBriefing />
+                <div className="flex justify-center gap-3 w-143 h-70 lgDT:h-100 border">
+                    <Carousel>
+                        <NewsBriefing />
+                        <div className="flex items-center justify-center h-full text-context font-paperlogy">
+                            여기에 다른 위젯을 추가하세요.
+                        </div>
+                    </Carousel>
+                </div>
             </article>
         </section>
     )
