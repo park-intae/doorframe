@@ -36,7 +36,10 @@ export const fetchWeather = createAsyncThunk('weather/fetchWeather', async (_, {
     );
     const { latitude, longitude } = pos.coords;
 
-    const baseUrl = 'http://127.0.0.1:54321/functions/v1';
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const baseUrl = isLocal 
+      ? 'http://127.0.0.1:54321/functions/v1' 
+      : `${import.meta.env.VITE_SUPABASE_URL}/functions/v1`;
     const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
     // 2. 서버 API 호출 (날씨 정보와 주소 정보를 함께 가져옴)

@@ -14,15 +14,30 @@ export default function Weather() {
         dispatch(fetchWeather());
     }, []);
 
+    const regionParts = region?.split(' ') || [];
+    const [city, district, neighborhood] = regionParts;
+
     return (
         <div className="weather rounded-xl w-66 h-50 p-6 mr-3 flex flex-row items-center justify-between gap-5 bg-background glass-sub">
-            <div className="weatherIco rounded-full w-20 h-20 flex justify-center items-center overflow-hidden bg-main">
-                <WeatherIcon />
-            </div>
-            <div className="weatehrTxt flex flex-col gap-3">
-                <div className="temper text-2xl">{loading ? '로딩중...' : temperature}</div>
+            {/* 좌측: 아이콘 + 상태 텍스트 */}
+            <div className="flex flex-col items-center gap-2">
+                <div className="weatherIco rounded-full w-20 h-20 flex justify-center items-center overflow-hidden bg-main">
+                    <WeatherIcon />
+                </div>
                 <div className="state text-xl">{weather}</div>
-                <div className="region text-lg">{region}</div>
+            </div>
+
+            {/* 우측: 기온 + 지역 정보(동이 상단, 시/구 하단) */}
+            <div className="weatherTxt flex flex-col items-start gap-1">
+                <div className="temper text-2xl font-bold">{loading ? '로딩중...' : temperature}</div>
+                <div className="region flex flex-col">
+                    {/* 동 정보 */}
+                    <div className="text-xl font-bold">{neighborhood || district || city}</div>
+                    {/* 시/구 정보 */}
+                    <div className="text-xs text-context/70">
+                        {city} {neighborhood ? district : ''}
+                    </div>
+                </div>
                 {error && <div className="error">{error}</div>}
             </div>
         </div>

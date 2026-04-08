@@ -13,3 +13,8 @@ export const googleNewsCategories: { [key: string]: string } = {
   '세계': '세계',
   'IT/과학': 'IT과학',
 };
+
+export const categoryLabelMap: Record<string, string> = Object.entries(googleNewsCategories).reduce((acc, [label, value]) => {
+  acc[value] = label;
+  return acc;
+}, {} as Record<string, string>);

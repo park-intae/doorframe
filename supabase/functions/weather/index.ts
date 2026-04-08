@@ -1,7 +1,6 @@
 import 'supabase';
 import { ConvertToGrid } from './ConvertToGrid.ts';
 
-// 1. CORS 설정을 위한 헤더 정의
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -18,8 +17,6 @@ interface WeatherItem {
 
 const WEATHER_BASE_URL = 'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst';
 
-console.log('Weather Function started!');
-
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -29,7 +26,6 @@ Deno.serve(async (req) => {
     const WEATHER_API_KEY = Deno.env.get('VITE_PUBLIC_WEATHER_API_KEY');
     const VWORLD_API_KEY = Deno.env.get('VITE_PUBLIC_GEOCODER_API_KEY');
 
-    // 만약 키를 못 가져오면 실행을 멈추도록 체크
     if (!WEATHER_API_KEY || !VWORLD_API_KEY) {
       return new Response(JSON.stringify({ error: '환경 변수(API Key)를 찾을 수 없습니다.' }), {
         status: 500,
@@ -46,15 +42,12 @@ Deno.serve(async (req) => {
     const latitude = Number(lat);
     const longitude = Number(lon);
 
-    // 1. 기상청용 격자 좌표 변환
     const { nx, ny } = ConvertToGrid(latitude, longitude);
 
-    // 2. 기상청 API용 날짜/시간 계산 (KST 기준)
     const now = new Date();
     const kstOffset = 9 * 60 * 60 * 1000;
     const kstTime = new Date(now.getTime() + kstOffset);
 
-    // 40분 주기에 따른 시간 설정
     let dateToRequest = new Date(kstTime);
     if (kstTime.getUTCMinutes() < 40) {
       dateToRequest = new Date(kstTime.getTime() - 60 * 60 * 1000);
@@ -67,30 +60,18 @@ Deno.serve(async (req) => {
     ].join('');
     const BASE_TIME = String(dateToRequest.getUTCHours()).padStart(2, '0') + '00';
 
-    // 3. 기상청 & VWorld API 병렬 호출 (성능 최적화)
     const weatherUrl = `${WEATHER_BASE_URL}?serviceKey=${WEATHER_API_KEY}&pageNo=1&numOfRows=1000&dataType=JSON&base_date=${BASE_DATE}&base_time=${BASE_TIME}&nx=${nx}&ny=${ny}`;
     const geoUrl = `https://api.vworld.kr/req/address?service=address&request=getAddress&crs=EPSG:4326&point=${longitude},${latitude}&type=parcel&key=${VWORLD_API_KEY}`;
 
-    console.log('Fetching weather & region in parallel...');
-
-    // 타임아웃 설정을 위한 AbortController
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8초 타임아웃
-
     try {
-      const [weatherRes, geoRes] = await Promise.all([
-        fetch(weatherUrl, { signal: controller.signal }).catch(e => {
-          console.error('Weather fetch error:', e);
-          return null;
-        }),
-        fetch(geoUrl, { signal: controller.signal }).catch(e => {
-          console.error('VWorld fetch error:', e);
-          return null;
-        })
-      ]);
-      clearTimeout(timeoutId);
+      const weatherRes = await fetch(weatherUrl);
+      const geoRes = await fetch(geoUrl);
+      
+      console.log('Weather API Status:', weatherRes.status);
+      if (!weatherRes.ok) {
+        console.error('Weather API Error Body:', await weatherRes.text());
+      }
 
-      // --- 3.1 기상청 데이터 처리 ---
       const weatherResult = { temperature: 'N/A', weather: '데이터 없음' };
       if (weatherRes && weatherRes.ok) {
         const weatherData = await weatherRes.json();
@@ -107,12 +88,9 @@ Deno.serve(async (req) => {
           weatherResult.weather = PTY?.obsrValue && PTY.obsrValue !== '0'
             ? (PTY_MAP[PTY.obsrValue] ?? '강수')
             : (SKY?.obsrValue ? (SKY_MAP[SKY.obsrValue] ?? '맑음') : '맑음');
-        } else {
-          console.warn('Weather API returned no items. Possible update lag.');
         }
       }
 
-      // --- 3.2 VWorld 데이터 처리 ---
       let regionName = `(${latitude.toFixed(2)}, ${longitude.toFixed(2)})`;
       if (geoRes && geoRes.ok) {
         const geoData = await geoRes.json();
@@ -124,7 +102,6 @@ Deno.serve(async (req) => {
         }
       }
 
-      // 5. 최종 데이터 구성
       const finalResult = {
         ...weatherResult,
         region: regionName,
@@ -135,22 +112,12 @@ Deno.serve(async (req) => {
         status: 200,
       });
 
-    } catch (parallelError) {
-      console.error('Parallel fetch failed:', parallelError);
-      throw parallelError;
+    } catch (fetchError) {
+      throw fetchError;
     }
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    const errorStack = error instanceof Error ? error.stack : undefined;
-
-    console.error('Weather Function CRITICAL ERROR:', errorMessage);
-    if (errorStack) console.error('Stack trace:', errorStack);
-
-    return new Response(JSON.stringify({
-      error: errorMessage,
-      stack: errorStack,
-      hint: 'Check Supabase Edge Function logs for details.'
-    }), {
+    return new Response(JSON.stringify({ error: errorMessage }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 400,
     });

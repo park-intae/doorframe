@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { googleNewsCategories } from '../../../../../type/news';
+import { googleNewsCategories, categoryLabelMap } from '../../../../../type/news';
 
 interface NewsBriefInputProps {
   category: string;
@@ -40,11 +40,7 @@ const NewsBriefInput: React.FC<NewsBriefInputProps> = ({
           onClick={() => setIsOpen((prev) => !prev)}
           className="w-full py-2 text-sm font-paperlogy text-left transition-all glass-input hover:!bg-white/15 focus:outline-none flex justify-center items-center"
         >
-          {category
-            ? Object.entries(googleNewsCategories).find(
-              ([, value]) => value === category
-            )?.[0]
-            : '카테고리 선택'}
+          {category ? (categoryLabelMap[category] || '카테고리 선택') : '카테고리 선택'}
         </button>
 
         {/* Dropdown */}

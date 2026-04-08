@@ -1,16 +1,6 @@
 import { useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../config/supabase';
 import { CategorySummary } from '../type/news';
-
-// Supabase 클라이언트 초기화
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Supabase URL과 Anon Key가 .env 파일에 설정되어야 합니다.');
-}
-
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const useNewsBrief = () => {
   const [category, setCategory] = useState<string>('');
@@ -26,8 +16,7 @@ export const useNewsBrief = () => {
 
     try {
       const { data, error: functionError } = await supabase.functions.invoke('news-briefing', {
-        body: JSON.stringify({ filterCategory: category, searchQuery }),
-        headers: { 'Content-Type': 'application/json' },
+        body: { filterCategory: category, searchQuery },
       });
 
       if (functionError) throw functionError;
