@@ -14,8 +14,8 @@ const NewsBriefResult: React.FC<NewsBriefResultProps> = ({
   categorySummary,
 }) => {
   return (
-    <div id='briefResCon' className="flex-1 flex flex-col min-h-[160px] mdDT:w-full">
-      <div id='briefRes' className="bg-background/50 flex-1 p-4 rounded-xl border border-main flex flex-col justify-center relative overflow-hidden">
+    <div id='briefResCon' className="flex-1 flex flex-col min-h-40 mdDT:w-full">
+      <div id='briefRes' className="bg-background/50 flex-1 p-4 rounded-xl border border-main flex flex-col justify-start relative overflow-y-auto scrollbar-thin max-h-38">
         {loading ? (
           <div className="flex items-center justify-center h-full">
             <Typewriter
@@ -48,7 +48,7 @@ const NewsBriefResult: React.FC<NewsBriefResultProps> = ({
             </div>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center text-context/40 italic font-paperlogy">
+          <div className="flex flex-col items-center justify-center h-full text-context/40 italic font-paperlogy">
             <p className="text-sm">카테고리를 선택하고</p>
             <p className="text-sm">요약하기 버튼을 눌러주세요</p>
           </div>
