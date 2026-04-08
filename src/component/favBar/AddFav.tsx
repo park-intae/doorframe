@@ -89,7 +89,8 @@ export default function AddFav() {
         <>
             <button
                 onClick={() => setShowModal(true)}
-                className="group addFav flex justify-center items-center gap-2 hover:bg-background p-2 rounded transition-colors "
+                id="addFav"
+                className="group flex justify-center items-center gap-2 hover:bg-background p-2 rounded transition-colors "
             >
                 <div className="rounded-full bg-background w-8 h-8 flex justify-center items-center group-hover:bg-point transition-colors">
                     <PlusIcon className="w-5 h-5 text-context group-hover:text-main transition-colors " />
@@ -100,7 +101,7 @@ export default function AddFav() {
                 onClose={resetAndClose}
                 title="북마크 추가"
             >
-                <div className="nameInputField flex flex-col">
+                <div id="nameInputField" className="flex flex-col">
                     <InputField
                         id="fav-name"
                         label="이름"

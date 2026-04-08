@@ -18,10 +18,10 @@ export default function Today() {
     if (!date || !time) return <div>Loading...</div>
 
     return (
-        <div className="today font-bold rounded-xl m-3 p-3 text-left flex flex-col gap-4">
-            <div className="date text-context text-3xl xl:text-3xl">{date}</div>
+        <div id="today" className="font-bold rounded-xl m-3 p-3 text-left flex flex-col gap-4">
+            <div id="date" className="text-context text-3xl xl:text-3xl">{date}</div>
             <hr className="border-[#727272]/80 border-1" />
-            <div className="time text-title text-4xl xl:text-7xl">{time}</div>
+            <div id="time" className="time text-title text-4xl xl:text-7xl">{time}</div>
         </div>
     );
 }

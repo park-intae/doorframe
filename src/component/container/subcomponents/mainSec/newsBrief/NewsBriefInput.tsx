@@ -34,10 +34,11 @@ const NewsBriefInput: React.FC<NewsBriefInputProps> = ({
 
   return (
     <div className="flex flex-col gap-3 smDT:w-[220px] lgDT:w-full">
-      <div ref={dropdownRef} className="flex flex-col w-48 relative">
+      <div ref={dropdownRef} id="BriefCateContainer" className="flex flex-col w-48 relative">
         <button
           type="button"
           onClick={() => setIsOpen((prev) => !prev)}
+          id='categoryList'
           className="w-full py-2 text-sm font-paperlogy text-left transition-all glass-input hover:!bg-white/15 focus:outline-none flex justify-center items-center"
         >
           {category ? (categoryLabelMap[category] || '카테고리 선택') : '카테고리 선택'}
@@ -68,7 +69,7 @@ const NewsBriefInput: React.FC<NewsBriefInputProps> = ({
         )}
       </div>
 
-      <div className="flex flex-col">
+      <div id="keywordContainer" className="flex flex-col">
         <input
           type="text"
           id="searchQuery"
@@ -82,6 +83,7 @@ const NewsBriefInput: React.FC<NewsBriefInputProps> = ({
       <button
         onClick={handleSummarize}
         disabled={loading}
+        id="sumBtn"
         className="mt-2 w-full bg-point text-main py-2.5 px-4 rounded-xl font-bold font-paperlogy hover:brightness-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-point/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-point/20"
       >
         {loading ? '요약 중...' : '뉴스 요약하기'}

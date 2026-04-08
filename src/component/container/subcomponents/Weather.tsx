@@ -18,19 +18,19 @@ export default function Weather() {
     const [city, district, neighborhood] = regionParts;
 
     return (
-        <div className="weather rounded-xl w-66 h-50 p-6 mr-3 flex flex-row items-center justify-between gap-5 bg-background glass-sub">
+        <div id="weather" className="rounded-xl w-66 h-50 p-6 mr-3 flex flex-row items-center justify-between gap-5 bg-background glass-sub">
             {/* 좌측: 아이콘 + 상태 텍스트 */}
             <div className="flex flex-col items-center gap-2">
-                <div className="weatherIco rounded-full w-20 h-20 flex justify-center items-center overflow-hidden bg-main">
+                <div id="weatherIco" className="rounded-full w-20 h-20 flex justify-center items-center overflow-hidden bg-main">
                     <WeatherIcon />
                 </div>
-                <div className="state text-xl">{weather}</div>
+                <div id="state" className="text-xl">{weather}</div>
             </div>
 
             {/* 우측: 기온 + 지역 정보(동이 상단, 시/구 하단) */}
-            <div className="weatherTxt flex flex-col items-start gap-1">
-                <div className="temper text-2xl font-bold">{loading ? '로딩중...' : temperature}</div>
-                <div className="region flex flex-col">
+            <div id="weatherTxt" className="flex flex-col items-start gap-1">
+                <div id="temper" className="text-2xl font-bold">{loading ? '로딩중...' : temperature}</div>
+                <div id="region" className="flex flex-col">
                     {/* 동 정보 */}
                     <div className="text-xl font-bold">{neighborhood || district || city}</div>
                     {/* 시/구 정보 */}

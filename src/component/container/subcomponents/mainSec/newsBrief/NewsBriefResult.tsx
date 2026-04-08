@@ -14,8 +14,8 @@ const NewsBriefResult: React.FC<NewsBriefResultProps> = ({
   categorySummary,
 }) => {
   return (
-    <div className="flex-1 flex flex-col min-h-[160px] mdDT:w-full">
-      <div className="bg-background/50 flex-1 p-4 rounded-xl border border-main flex flex-col justify-center relative overflow-hidden">
+    <div id='briefResCon' className="flex-1 flex flex-col min-h-[160px] mdDT:w-full">
+      <div id='briefRes' className="bg-background/50 flex-1 p-4 rounded-xl border border-main flex flex-col justify-center relative overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center h-full">
             <Typewriter

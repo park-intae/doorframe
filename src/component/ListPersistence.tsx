@@ -1,5 +1,3 @@
-
-
 import { RootState } from "@/store";
 import { useAppDispatch } from "@/store/hooks"
 import { loadListFromStorage, saveListToStorage } from "@/thunk/listThunk";

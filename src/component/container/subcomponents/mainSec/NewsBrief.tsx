@@ -16,12 +16,12 @@ const NewsBriefing: React.FC = () => {
   } = useNewsBrief();
 
   return (
-    <div className="p-5 rounded-2xl w-full max-w-140 border border-main font-paperlogy glass">
+    <div id="briefContainer" className="p-5 rounded-2xl w-full max-w-140 border border-main font-paperlogy glass">
       <h2 className="text-xl font-bold mb-4 text-title flex items-center gap-2">
         <span className="w-2 h-6 bg-point rounded-full"></span>
         뉴스 브리핑
       </h2>
-      <div className="flex flex-col mdDT:flex-row lgDT:flex-col gap-5">
+      <div id="briefContent" className="flex flex-col mdDT:flex-row lgDT:flex-col gap-5">
         <NewsBriefInput
           category={category}
           setCategory={setCategory}
