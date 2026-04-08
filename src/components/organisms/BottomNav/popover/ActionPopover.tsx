@@ -1,8 +1,9 @@
 import { PopoverType } from "@/type/popover";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Popover from "@/util/Popover";
-import Input from "./Input";
-import List from "./List";
+import TodoInput from "../../../molecules/todo/TodoInput";
+import MemoInput from "../../../molecules/memo/MemoInput";
+import ItemList from "../../../molecules/shared/ItemList";
 
 interface ActionPopoverProps {
     name: PopoverType;
@@ -32,8 +33,8 @@ export default function ActionPopover({ name, onClose, anchorEl }: ActionPopover
             placement="top"
         >
             <div className="content flex justify-center flex-col rounded-lg py-5 max-h-85 glass-input">
-                <Input kind={name} />
-                <List kind={name} />
+                {name === 'todo' ? <TodoInput /> : <MemoInput />}
+                <ItemList kind={name} />
             </div>
         </Popover>
     )

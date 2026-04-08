@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import Modal from "@/util/Modal";
-import InputField from "./InputField";
+import InputField from "./BookmarkInput";
 import { BookmarkInput } from "@/type/bookmark";
 import { useAppDispatch } from "@/store/hooks";
 import { addBookmark } from "@/store/slice/bookmarkSlice";

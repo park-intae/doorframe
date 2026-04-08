@@ -1,5 +1,5 @@
 import { Menu, X } from "lucide-react";
-import AddFav from "./favBar/AddFav";
+import AddFav from "./BookmarkAdd";
 import {
     DndContext,
     closestCenter,
@@ -9,9 +9,9 @@ import {
     verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { useFavBar } from "@/hooks/useFavBar";
-import { SortableBookmarkItem } from "./favBar/SortableBookmarkItem";
+import { SortableBookmarkItem } from "./SortableBookmarkItem";
 
-export default function FavBar() {
+export default function BookmarkBar() {
     const {
         isOpen,
         setIsOpen,

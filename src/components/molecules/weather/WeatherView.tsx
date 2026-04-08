@@ -1,19 +1,14 @@
-import { AppDispatch, RootState } from "@/store"
-import { fetchWeather } from "@/store/slice/weatherSlice";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux"
-import { WeatherIcon } from "./mainSec/weather/WeatherIcon";
+import { WeatherIcon } from "../weather/WeatherIcon";
 
-export default function Weather() {
-    const dispatch = useDispatch<AppDispatch>();
-    const { temperature, weather, region, loading, error } = useSelector(
-        (state: RootState) => state.weather
-    );
+interface WeatherViewProps {
+    temperature: string | null;
+    weather: string;
+    region: string;
+    loading: boolean;
+    error: string | null;
+}
 
-    useEffect(() => {
-        dispatch(fetchWeather());
-    }, []);
-
+export default function WeatherView({ temperature, weather, region, loading, error }: WeatherViewProps) {
     const regionParts = region?.split(' ') || [];
     const [city, district, neighborhood] = regionParts;
 

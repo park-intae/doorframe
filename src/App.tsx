@@ -1,4 +1,4 @@
-import Main from './component/container/Main';
+import Main from './components/organisms/Main/MainContainer';
 import ListPersistence from './component/ListPersistence';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from './store';

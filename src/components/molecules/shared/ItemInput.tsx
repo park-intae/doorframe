@@ -1,16 +1,14 @@
-
-
 import { RootState } from "@/store";
 import { clearInput, setInputValue } from "@/store/slice/inputSlice";
 import { addItem } from "@/store/slice/listSlice";
 import { PlusIcon } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 
-type InputProps = {
+type ItemInputProps = {
     kind: 'memo' | 'todo';
 }
 
-export default function Input({ kind }: InputProps) {
+export default function ItemInput({ kind }: ItemInputProps) {
     const value = useSelector((state: RootState) => state.input.value);
     const dispatch = useDispatch();
 
