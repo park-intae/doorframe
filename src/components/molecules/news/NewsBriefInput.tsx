@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { googleNewsCategories, categoryLabelMap } from '../../../../../type/news';
+import { googleNewsCategories, categoryLabelMap } from '../../../type/news';
 
 interface NewsBriefInputProps {
   category: string;

@@ -1,6 +1,6 @@
 
 
-import Today from "../Today";
+import Today from "./Today";
 import WeatherContainer from "@/components/organisms/WeatherContainer";
 
 

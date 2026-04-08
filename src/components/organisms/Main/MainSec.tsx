@@ -1,6 +1,6 @@
-import Container from "./mainSec/Container";
-import Search from "./mainSec/Search";
-import NewsBriefing from "./mainSec/NewsBrief";
+import Container from "../today/Container";
+import Search from '../search/Search';
+import NewsBriefing from '../news/NewsBrief';
 
 export default function MainSec() {
     return (

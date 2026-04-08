@@ -1,6 +1,6 @@
 import React from 'react';
 import Typewriter from 'typewriter-effect';
-import { CategorySummary } from '../../../../../type/news';
+import { CategorySummary } from '../../../type/news';
 
 interface NewsBriefResultProps {
   loading: boolean;

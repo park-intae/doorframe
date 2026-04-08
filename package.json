@@ -17,6 +17,7 @@
     "@supabase/supabase-js": "^2.89.0",
     "@tailwindcss/vite": "^4.1.18",
     "@types/chrome": "^0.1.32",
+    "framer-motion": "^12.38.0",
     "lucide-react": "^0.525.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
