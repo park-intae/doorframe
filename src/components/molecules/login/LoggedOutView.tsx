@@ -24,7 +24,7 @@ export default function LoggedOutView({
                 onClick={handleOpenPopover}
                 className='flex justify-center items-center w-11 h-11 glass-button text-main rounded-full hover:brightness-95 transition-colors'
             >
-                <img src='/login.png' className="w-8 h-8" />
+                <img src='/login.webp' className="w-8 h-8" />
             </button>
 
             <Popover

@@ -66,7 +66,7 @@ export default function BookmarkBar() {
             </aside>
             <div className="absolute flex item-center justify-center w-20">
                 <img
-                    src="/logo.png"
+                    src="/logo.webp"
                     alt="로고"
                     width={35}
                     height={40}
