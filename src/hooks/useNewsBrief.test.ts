@@ -42,7 +42,7 @@ describe('useNewsBrief 훅', () => {
   it('API 실패 시 에러 상태를 처리해야 함', async () => {
     (supabase.functions.invoke as any).mockResolvedValue({
       data: null,
-      error: new Error('함수 호출 실패'),
+      error: { message: 'API 호출 실패' },
     });
 
     const { result } = renderHook(() => useNewsBrief());
@@ -51,7 +51,7 @@ describe('useNewsBrief 훅', () => {
       await result.current.handleSummarize();
     });
 
-    expect(result.current.error).toBe('함수 호출 실패');
+    expect(result.current.error).toBe('API 호출 실패');
     expect(result.current.loading).toBe(false);
   });
 });

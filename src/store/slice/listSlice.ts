@@ -50,7 +50,7 @@ const listSlice = createSlice({
         id: state.nextId++,
         kind: action.payload.kind,
         text: action.payload.text,
-        completed: action.payload.kind === 'todo' ? false : undefined,
+        ...(action.payload.kind === 'todo' && { completed: false }),
       };
       state.items.push(newItem);
     },

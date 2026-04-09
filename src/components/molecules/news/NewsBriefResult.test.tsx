@@ -1,13 +1,24 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render } from '@testing-library/react';
 import NewsBriefResult from './NewsBriefResult';
+import Typewriter from 'typewriter-effect';
+
+// Typewriter를 함수형 컴포넌트로 모킹하여 호출 확인
+vi.mock('typewriter-effect', () => ({
+  default: vi.fn(() => <div data-testid="typewriter-mock" />)
+}));
 
 describe('NewsBriefResult', () => {
-  it('로딩 중일 때 로딩 메시지를 표시해야 함', () => {
-    const { getByText } = render(
-      <NewsBriefResult loading={true} error={null} categorySummary={null} />
-    );
-    expect(getByText(/최신 뉴스를 가져오는 중.../i)).toBeDefined();
+  it('로딩 중일 때 올바른 문구와 함께 Typewriter가 호출되어야 함', () => {
+    render(<NewsBriefResult loading={true} error={null} categorySummary={null} />);
+    
+    // 1. 의도한 함수(Typewriter)가 호출되었는지 확인
+    expect(Typewriter).toHaveBeenCalled();
+    
+    // 2. 의도한 데이터(문구들)가 options로 전달되었는지 확인
+    const lastCall = (Typewriter as any).mock.calls[0][0];
+    expect(lastCall.options.strings).toContain('최신 뉴스를 가져오는 중...');
+    expect(lastCall.options.strings).toContain('키워드를 추출하고 있습니다...');
   });
 
   it('에러 발생 시 에러 메시지를 표시해야 함', () => {

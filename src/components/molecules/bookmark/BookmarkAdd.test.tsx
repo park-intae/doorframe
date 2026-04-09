@@ -12,12 +12,13 @@ const renderWithRedux = (ui: React.ReactElement) => {
 
 describe('AddFav 컴포넌트 모달 테스트', () => {
   it('버튼 클릭 시 모달이 열려야 함', () => {
-    renderWithRedux(<AddFav />);
-    // id="addFav" 버튼을 찾아서 클릭
-    const addButton = screen.getByTestId('addFav') || screen.getByRole('button', { name: '' });
+    const { container } = renderWithRedux(<AddFav />);
+    // id="addFav"를 사용하여 버튼을 찾음
+    const addButton = container.querySelector('#addFav') as HTMLElement;
     fireEvent.click(addButton);
-    
-    // Modal 내부의 title 확인 (Modal 컴포넌트가 title prop을 잘 사용한다고 가정)
-    expect(screen.getByText('북마크 추가')).toBeInTheDocument();
+
+    // Modal 내부의 title 확인
+    expect(screen.getByText('북마크 추가')).toBeDefined();
   });
 });
+
