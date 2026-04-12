@@ -36,7 +36,7 @@ export default function App() {
       <div className='dashboard-bg' />
       <div className='relative min-h-dvh'>
         <Main />
-        <footer></footer>
+        <footer aria-hidden="true" className="sr-only"></footer>
       </div>
     </>
   );

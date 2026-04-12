@@ -20,7 +20,7 @@ body,
     --color-point: rgb(79, 156, 249);
     --color-important: rgb(245, 158, 11);
     --color-title: rgb(15, 21, 42);
-    --color-context: rgb(100, 116, 139);
+    --color-context: rgb(71, 85, 105);
 
     /* 3. 커스텀 브레이크포인트: 등록만 하면 smDT:w-56 등을 HTML에서 바로 사용 가능 */
     --breakpoint-smDT: 1336px;
@@ -91,47 +91,54 @@ body,
 
     /* Glassmorphism: 변수 활용 */
     .glass {
-        background-color: color-mix(in srgb, var(--color-background), transparent 60%);
+        background-color: color-mix(in srgb, var(--color-background), transparent 30%);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.5);
         border-radius: 24px;
-        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.08), inset 0 2px 0 rgba(255, 255, 255, 0.2);
+        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.08), inset 0 2px 0 rgba(255, 255, 255, 0.3);
     }
 
     .glass-sub {
-        background-color: rgba(var(--color-main)/0.4);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 24px;
-
-        box-shadow:
-            5px 5px 8px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    }
-
-    .glass-button {
         background-color: rgba(var(--color-main)/0.6);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
 
-        border: 1px solid rgba(255, 255, 255, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.5);
         border-radius: 24px;
 
         box-shadow:
-            5px 5px 8px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            5px 5px 8px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.3);
     }
 
-    .glass-input {
-        background-color: rgba(var(--color-background)/0.8);
+    .glass-button {
+        background-color: rgba(var(--color-main)/0.8);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
 
-        border: 1px solid rgba(255, 255, 255, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 24px;
+
+        box-shadow:
+            5px 5px 8px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .glass-input {
+        background-color: rgba(var(--color-background)/0.9);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+
+        border: 1px solid rgba(255, 255, 255, 0.5);
         border-radius: 10px;
 
         box-shadow:
-            5px 5px 5px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            5px 5px 5px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.4);
     }
+}
+
+:focus-visible {
+    outline: none;
+    border-color: var(--color-point);
+    box-shadow: 0 0 0 4px rgba(79, 156, 249, 0.4);
+    border-radius: 10px;
 }

@@ -15,7 +15,7 @@ const NewsBriefResult: React.FC<NewsBriefResultProps> = ({
 }) => {
   return (
     <div id='briefResCon' className="flex-1 flex flex-col min-h-40 mdDT:w-full">
-      <div id='briefRes' className="bg-background/50 flex-1 p-4 rounded-xl border border-main flex flex-col justify-start relative overflow-y-auto scrollbar-thin max-h-38">
+      <div id='briefRes' className="bg-background/50 flex-1 p-4 rounded-xl border border-main flex flex-col justify-start relative overflow-y-auto scrollbar-thin max-h-38" aria-live="polite" aria-busy={loading}>
         {loading ? (
           <div className="flex flex-col items-center justify-center h-full text-context/60 font-paperlogy">
             <Typewriter
@@ -56,7 +56,7 @@ const NewsBriefResult: React.FC<NewsBriefResultProps> = ({
           </div>
         )}
       </div>
-      <p className="text-[10px] text-right text-context mt-2 opacity-60 font-paperlogy">출처: 구글 & 네이버 뉴스</p>
+      <p className="text-[10px] text-right text-slate-600 mt-2 font-paperlogy">출처: 구글 & 네이버 뉴스</p>
     </div>
   );
 };

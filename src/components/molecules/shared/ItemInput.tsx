@@ -25,12 +25,13 @@ export default function ItemInput({ kind }: ItemInputProps) {
     return (
         <form className="summitForm border-b w-fit overflow-hidden flex justify-center items-center self-center gap-2 mb-2" onSubmit={handleSubmit}>
             <input
-                className="focus:outline-none focus:ring-0 border-none"
+                aria-label={`${kind === 'todo' ? '할 일' : '메모'} 입력`}
+                className="focus:outline-none border-none"
                 placeholder="내용을 입력하세요"
                 value={value}
                 onChange={handleChange}>
             </input>
-            <button className="summitBTN bg-point rounded-lg flex items-center" type='submit'>
+            <button aria-label={`${kind === 'todo' ? '할 일' : '메모'} 추가`} className="summitBTN bg-point rounded-lg flex items-center focus:outline-none" type='submit'>
                 <PlusIcon className="w-5 h-5" />
             </button>
         </form>

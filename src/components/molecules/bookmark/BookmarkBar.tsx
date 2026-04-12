@@ -37,6 +37,7 @@ export default function BookmarkBar() {
                     <button
                         onClick={() => setIsOpen(!isOpen)}
                         className="p-2 bg-point rounded text-main shrink-0"
+                        aria-label={isOpen ? "북마크바 닫기" : "북마크바 열기"}
                     >
                         {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                     </button>
@@ -67,7 +68,7 @@ export default function BookmarkBar() {
             <div className="absolute flex item-center justify-center w-20">
                 <img
                     src="/logo.webp"
-                    alt="로고"
+                    alt="DoorFrame 로고"
                     width={35}
                     height={40}
                     className='absolute z-[88] top-4 transition-all duration-300 ease-in-out left-6'

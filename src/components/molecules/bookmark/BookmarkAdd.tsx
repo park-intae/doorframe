@@ -90,10 +90,11 @@ export default function AddFav() {
             <button
                 onClick={() => setShowModal(true)}
                 id="addFav"
-                className="group flex justify-center items-center gap-2 hover:bg-background p-2 rounded transition-colors "
+                className="group flex justify-center items-center gap-2 hover:bg-background p-2 rounded transition-colors focus:outline-none"
+                aria-label="북마크 추가하기"
             >
                 <div className="rounded-full bg-background w-8 h-8 flex justify-center items-center group-hover:bg-point transition-colors">
-                    <PlusIcon className="w-5 h-5 text-context group-hover:text-main transition-colors " />
+                    <PlusIcon className="w-5 h-5 text-context group-hover:text-main transition-colors" aria-hidden="true" />
                 </div>
             </button>
             <Modal
@@ -122,9 +123,10 @@ export default function AddFav() {
                     <div className="modal-bottom flex flex-row-reverse">
                         <button
                             onClick={handleSubmit}
-                            className="flex justify-center items-center mt-3 rounded bg-point text-main w-8 h-8"
+                            className="flex justify-center items-center mt-3 rounded bg-point text-main w-8 h-8 focus:outline-none"
+                            aria-label="북마크 저장"
                         >
-                            <PlusIcon className="w-5 h-5" />
+                            <PlusIcon className="w-5 h-5" aria-hidden="true" />
                         </button>
                     </div>
                 </div>

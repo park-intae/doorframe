@@ -42,9 +42,10 @@ export default function Modal({
                             {showCloseButton && (
                                 <button
                                     onClick={onClose}
-                                    className="bg-red-500 text-white rounded hover:"
+                                    aria-label="모달 닫기"
+                                    className="bg-red-500 text-white rounded p-1 hover:bg-red-600 transition-colors"
                                 >
-                                    <X className="w-5 h-5" />
+                                    <X className="w-5 h-5" aria-hidden="true" />
                                 </button>
                             )}
                         </div>

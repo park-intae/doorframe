@@ -6,13 +6,13 @@ export default function Bottom() {
     const { popoverName, anchorEl, handleOpenPopover, handleClosePopover } = usePopover();
 
     return (
-        <section className='botSec self-end pb-3'>
+        <footer aria-label="하단 메뉴" className='botSec self-end pb-3 w-full flex justify-end'>
             <Menus onOpenPopover={handleOpenPopover} />
             <ActionPopover
                 name={popoverName}
                 anchorEl={anchorEl}
                 onClose={handleClosePopover}
             />
-        </section>
+        </footer>
     )
 }

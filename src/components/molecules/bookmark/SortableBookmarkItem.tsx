@@ -64,9 +64,10 @@ export function SortableBookmarkItem({
             {isOpen && (
                 <button
                     onClick={(e) => onRemove(e, item.id)}
-                    className="group addFav flex shrink-0 justify-center items-center hover:bg-red-400"
+                    className="group addFav flex shrink-0 justify-center items-center hover:bg-red-400 focus:outline-none"
+                    aria-label={`${item.title} 북마크 삭제`}
                 >
-                    <MinusIcon className="w-5 h-5 text-context group-hover:text-main transition-colors" />
+                    <MinusIcon className="w-5 h-5 text-context group-hover:text-main transition-colors" aria-hidden="true" />
                 </button>
             )}
         </div>

@@ -29,7 +29,7 @@ export default function WeatherView({ temperature, weather, region, loading, err
                     {/* 동 정보 */}
                     <div className="text-xl font-bold">{neighborhood || district || city}</div>
                     {/* 시/구 정보 */}
-                    <div className="text-xs text-context/70">
+                    <div className="text-xs text-slate-600">
                         {city} {neighborhood ? district : ''}
                     </div>
                 </div>

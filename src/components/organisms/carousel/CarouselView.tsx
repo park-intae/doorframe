@@ -56,6 +56,8 @@ export default function CarouselView({ index, direction, total, children, onPagi
                     <button 
                         key={i}
                         onClick={() => onPaginate(i - index)} 
+                        aria-label={`${i + 1}번째 슬라이드로 이동`}
+                        aria-current={index === i ? 'page' : undefined}
                         className={`w-3 h-3 rounded-full transition-all duration-300 ${
                             index === i 
                                 ? 'bg-white scale-110 shadow-[0_0_8px_rgba(255,255,255,0.8)]' 

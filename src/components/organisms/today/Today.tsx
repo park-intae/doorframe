@@ -24,10 +24,10 @@ export default function Today() {
     );
 
     return (
-        <div id="today" className="font-bold rounded-xl m-3 p-3 text-left flex flex-col gap-4">
+        <section id="today" className="font-bold rounded-xl m-3 p-3 text-left flex flex-col gap-4" aria-label="오늘의 날짜와 시간">
             <div id="date" className="text-context text-3xl xl:text-3xl">{date}</div>
             <hr className="border-[#727272]/80 border-1" />
-            <div id="time" className="time text-title text-4xl xl:text-7xl">{time}</div>
-        </div>
+            <time id="time" className="time text-title text-4xl xl:text-7xl">{time}</time>
+        </section>
     );
 }

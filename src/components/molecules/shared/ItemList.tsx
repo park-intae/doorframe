@@ -26,6 +26,7 @@ export default function List({ kind }: ListProps) {
                             title={item.text}
                         >
                             <input
+                                aria-label={`${item.text} 완료 여부`}
                                 type="checkbox"
                                 checked={item.completed}
                                 onChange={() => dispatch(toggleItem(item.id))}
@@ -36,7 +37,8 @@ export default function List({ kind }: ListProps) {
                         <span className="flex-grow max-w-50 truncate whitespace-nowrap overflow-hidden" title={item.text}>{item.text}</span>
                     )}
                     <button
-                        className="border rounded-lg bg-red-500 text-white w-6 h-6"
+                        aria-label={`${item.text} 삭제`}
+                        className="border rounded-lg bg-red-500 text-white w-6 h-6 focus:outline-none"
                         style={{ marginLeft: '0.5rem' }}
                         onClick={() => dispatch(removeItem(item.id))}>
                         -

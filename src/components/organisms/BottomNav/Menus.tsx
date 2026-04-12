@@ -6,7 +6,7 @@ interface MenusProps {
 
 export default function Menus({ onOpenPopover }: MenusProps) {
     return (
-        <div className='menus mx-5 flex flex-row gap-3'>
+        <div className='menus mx-5 flex flex-row gap-3 justify-end'>
             {[
                 { key: 'memo', icon: '/note.svg' },
                 { key: 'todo', icon: '/list.svg' },
@@ -17,8 +17,9 @@ export default function Menus({ onOpenPopover }: MenusProps) {
                     onClick={(e) => {
                         onOpenPopover(key as PopoverType, e.currentTarget)
                     }}
+                    aria-label={key === 'memo' ? '메모 작성' : '할 일 목록'}
                 >
-                    <img src={icon} className="w-8 h-8" />
+                    <img src={icon} alt="" aria-hidden="true" className="w-8 h-8" />
                 </button>
             ))
             }

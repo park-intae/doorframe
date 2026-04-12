@@ -84,7 +84,7 @@ const NewsBriefInput: React.FC<NewsBriefInputProps> = ({
         onClick={handleSummarize}
         disabled={loading}
         id="sumBtn"
-        className="mt-2 w-full bg-point text-main py-2.5 px-4 rounded-xl font-bold font-paperlogy hover:brightness-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-point/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-point/20"
+        className="mt-2 w-full bg-point text-main py-2.5 px-4 rounded-xl font-bold font-paperlogy hover:brightness-105 active:scale-95 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-point/20"
       >
         {loading ? '요약 중...' : '뉴스 요약하기'}
       </button>
