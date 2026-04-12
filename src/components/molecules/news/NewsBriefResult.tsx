@@ -17,14 +17,16 @@ const NewsBriefResult: React.FC<NewsBriefResultProps> = ({
     <div id='briefResCon' className="flex-1 flex flex-col min-h-40 mdDT:w-full">
       <div id='briefRes' className="bg-background/50 flex-1 p-4 rounded-xl border border-main flex flex-col justify-start relative overflow-y-auto scrollbar-thin max-h-38">
         {loading ? (
-          <div className="flex items-center justify-center h-full">
+          <div className="flex flex-col items-center justify-center h-full text-context/60 font-paperlogy">
             <Typewriter
               options={{
                 strings: ['최신 뉴스를 가져오는 중...', '키워드를 추출하고 있습니다...', '트렌드를 분석하고 있습니다...', '요약 결과를 작성 중입니다...'],
                 autoStart: true,
                 loop: true,
+                deleteSpeed: 50,
+                delay: 50,
                 wrapperClassName: 'text-point text-sm font-medium font-paperlogy',
-                cursorClassName: 'text-point text-sm'
+                cursorClassName: 'text-point text-sm',
               }}
             />
           </div>

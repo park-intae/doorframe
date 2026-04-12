@@ -19,7 +19,11 @@ export default function ListPersistence() {
             return;
         }
 
-        dispatch(saveListToStorage(listState));
+        const handler = setTimeout(() => {
+            dispatch(saveListToStorage(listState));
+        }, 500);
+
+        return () => clearTimeout(handler);
     }, [listState, dispatch]);
 
     return null;

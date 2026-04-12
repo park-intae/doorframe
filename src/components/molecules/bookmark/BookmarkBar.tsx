@@ -71,6 +71,8 @@ export default function BookmarkBar() {
                     width={35}
                     height={40}
                     className='absolute z-[88] top-4 transition-all duration-300 ease-in-out left-6'
+                    fetchpriority="high"
+                    loading="eager"
                 />
             </div>
         </>

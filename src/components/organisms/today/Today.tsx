@@ -15,7 +15,13 @@ export default function Today() {
         return () => clearInterval(timer);
     }, [dispatch]);
 
-    if (!date || !time) return <div>Loading...</div>
+    if (!date || !time) return (
+        <div id="today" className="rounded-xl m-3 p-3 flex flex-col gap-4 animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+            <hr className="border-[#727272]/80" />
+            <div className="h-12 bg-gray-200 rounded w-3/4"></div>
+        </div>
+    );
 
     return (
         <div id="today" className="font-bold rounded-xl m-3 p-3 text-left flex flex-col gap-4">

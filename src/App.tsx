@@ -12,15 +12,17 @@ export default function App() {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, _session) => {
       //로그아웃시 새로고침
       if (event === 'SIGNED_OUT') {
         window.location.reload();
         return
       }
 
-      dispatch(loadBookmarksFromStorage());
-      dispatch(loadListFromStorage());
+      await Promise.all([
+        dispatch(loadBookmarksFromStorage()).unwrap(),
+        dispatch(loadListFromStorage()).unwrap()
+      ]);
     });
 
     return () => {
