@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, Mock } from 'vitest';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
@@ -7,16 +7,23 @@ import weatherReducer from '@/store/slice/weatherSlice';
 
 // Mocking fetch and geolocation
 global.fetch = vi.fn();
-const mockGeolocation = {
+
+const mockGeolocation: Geolocation = {
     getCurrentPosition: vi.fn((success) => success({
-        coords: { latitude: 37.5665, longitude: 126.9780 }
-    })),
+        coords: { latitude: 37.5665, longitude: 126.9780, altitude: null, accuracy: 0, altitudeAccuracy: null, heading: null, speed: null }
+    } as GeolocationPosition)),
+    watchPosition: vi.fn(),
+    clearWatch: vi.fn(),
 };
-(global.navigator as any).geolocation = mockGeolocation;
+
+Object.defineProperty(global.navigator, 'geolocation', {
+    value: mockGeolocation,
+    writable: true
+});
 
 describe('WeatherContainer Component', () => {
     it('날씨 정보를 받아오면 제대로 렌더링해야 함', async () => {
-        (global.fetch as any).mockResolvedValue({
+        (global.fetch as Mock).mockResolvedValue({
             ok: true,
             json: async () => ({
                 temperature: '20',

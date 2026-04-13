@@ -15,13 +15,13 @@ export default function AddFav() {
     const [url, setUrl] = useState('');
     const [favName, setFavName] = useState('');
 
-    //파비콘
+    //파비콘 (외부 의존성 제거)
     const getFaviconUrl = (urlString: string) => {
         try {
             const urlObj = new URL(urlString);
             return `${urlObj.origin}/favicon.ico`;
         } catch {
-            return 'https://www.google.com/favicon.ico';
+            return '/note.svg'; // 로컬의 기본 아이콘 사용
         }
     }
 

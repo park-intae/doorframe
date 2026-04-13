@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from '@testing-library/react';
 import NewsBriefResult from './NewsBriefResult';
 import Typewriter from 'typewriter-effect';
+import { CategorySummary } from '@/type/news';
 
 // Typewriter를 함수형 컴포넌트로 모킹하여 호출 확인
 vi.mock('typewriter-effect', () => ({
@@ -16,7 +17,8 @@ describe('NewsBriefResult', () => {
     expect(Typewriter).toHaveBeenCalled();
     
     // 2. 의도한 데이터(문구들)가 options로 전달되었는지 확인
-    const lastCall = (Typewriter as any).mock.calls[0][0];
+    const typewriterMock = vi.mocked(Typewriter);
+    const lastCall = typewriterMock.mock.calls[0][0] as { options: { strings: string[] } };
     expect(lastCall.options.strings).toContain('최신 뉴스를 가져오는 중...');
     expect(lastCall.options.strings).toContain('키워드를 추출하고 있습니다...');
   });
@@ -30,13 +32,13 @@ describe('NewsBriefResult', () => {
   });
 
   it('요약 데이터가 있을 때 키워드와 요약을 표시해야 함', () => {
-    const mockSummary = {
+    const mockSummary: CategorySummary = {
       category: 'IT',
       keywords: ['AI', 'Tech'],
       trendSummary: 'AI 기술이 빠르게 발전하고 있습니다.',
     };
     const { getByText } = render(
-      <NewsBriefResult loading={false} error={null} categorySummary={mockSummary as any} />
+      <NewsBriefResult loading={false} error={null} categorySummary={mockSummary} />
     );
     expect(getByText('AI, Tech')).toBeDefined();
     expect(getByText('AI 기술이 빠르게 발전하고 있습니다.')).toBeDefined();

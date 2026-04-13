@@ -1,5 +1,5 @@
 import { PopoverType } from "@/type/popover";
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import Popover from "@/util/Popover";
 import TodoInput from "../../../molecules/todo/TodoInput";
 import MemoInput from "../../../molecules/memo/MemoInput";
@@ -12,14 +12,10 @@ interface ActionPopoverProps {
 }
 
 export default function ActionPopover({ name, onClose, anchorEl }: ActionPopoverProps) {
-    const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
+    const [anchorRect, setAnchorRect] = useState<DOMRect | null>(() => anchorEl?.getBoundingClientRect() || null);
 
-    useEffect(() => {
-        if (anchorEl) {
-            setAnchorRect(anchorEl.getBoundingClientRect());
-        } else {
-            setAnchorRect(null);
-        }
+    useLayoutEffect(() => {
+        setAnchorRect(anchorEl?.getBoundingClientRect() || null);
     }, [anchorEl]);
 
     if (!name || !anchorRect) return null;

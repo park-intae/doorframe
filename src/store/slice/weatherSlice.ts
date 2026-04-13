@@ -56,9 +56,15 @@ export const fetchWeather = createAsyncThunk('weather/fetchWeather', async (_, {
     const data = await res.json();
 
     // 3. 데이터 반환
+    if (typeof window !== 'undefined') {
+        localStorage.setItem('lastWeatherFetch', Date.now().toString());
+        localStorage.setItem('cachedWeather', JSON.stringify(data));
+    }
     return data;
-  } catch (err: any) {
-    return rejectWithValue(err.message);
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : '날씨 정보를 가져오는 중 오류가 발생했습니다.';
+    console.error('날씨 데이터 페칭 오류:', err);
+    return rejectWithValue(errorMessage);
   }
 });
 

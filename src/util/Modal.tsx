@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useLayoutEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 interface ModalProps {
@@ -17,12 +17,7 @@ export default function Modal({
     children,
     showCloseButton = true
 }: ModalProps) {
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-        return () => setMounted(false);
-    }, []);
+    const [mounted] = useState(true);
 
     if (!isOpen || !mounted) return null;
 

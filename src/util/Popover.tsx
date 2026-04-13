@@ -20,33 +20,25 @@ export default function Popover({
     placement = 'bottom',
 }: PopoverProps) {
     const popoverRef = useRef<HTMLDivElement>(null);
-    const [position, setPosition] = useState<{ top: number; bottom: number; left: number } | null>(null);
+    // 위치 계산 로직을 렌더링 중 계산하도록 수정하여 동기적 setState 방지
+    const getPosition = () => {
+        if (!isOpen || !anchorRect) return null;
 
-    useEffect(() => {
-        if (isOpen && anchorRect) {
-            let left = anchorRect.left + (anchorRect.width / 2) - (width / 2);
+        let left = anchorRect.left + (anchorRect.width / 2) - (width / 2);
 
-            // 좌우 경계
-            if (left < 10) {
-                left = 10
-            }
+        if (left < 10) left = 10;
+        if (left + width > window.innerWidth - 10) left = window.innerWidth - width - 10;
 
-            if (left + width > window.innerWidth - 10) {
-                left = window.innerWidth - width - 10
-            }
-
-            //세로 기준 위치
-            if (placement === 'top') {
-                const bottom = window.innerHeight - anchorRect.top + 10;
-                setPosition({ bottom, left, top: 0 })
-            } else {
-                const top = anchorRect.bottom + 10;
-                setPosition({ top, left, bottom: 0 })
-            }
+        if (placement === 'top') {
+            const bottom = window.innerHeight - anchorRect.top + 10;
+            return { bottom, left, top: 0 };
         } else {
-            setPosition(null);
+            const top = anchorRect.bottom + 10;
+            return { top, left, bottom: 0 };
         }
-    }, [isOpen, anchorRect, width, placement])
+    };
+
+    const position = getPosition();
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {

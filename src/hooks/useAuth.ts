@@ -58,7 +58,7 @@ export function useAuth() {
             if (error) throw error;
             setShowPopover(false);
         } catch (error) {
-            console.log('로그아웃 실패:', error)
+            console.error('로그아웃 실패:', error);
         }
     };
 

@@ -1,12 +1,10 @@
 import { RootState } from "@/store";
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { loadBookmarksFromStorage, saveBookmarksToStorage } from "@/thunk/bookmarkThunk";
 import { useAppDispatch } from "@/store/hooks";
 import { removeBookmark, setBookmarks } from "@/store/slice/bookmarkSlice";
 import {
-    DndContext,
-    closestCenter,
     KeyboardSensor,
     PointerSensor,
     useSensor,
@@ -21,7 +19,7 @@ import {
 export function useFavBar() {
     const dispatch = useAppDispatch();
     const [isOpen, setIsOpen] = useState(false);
-    const [mounted, setMounted] = useState(false);
+    const [mounted, setMounted] = useState(true);
 
     const isInitialMount = useRef(true);
 
@@ -34,12 +32,11 @@ export function useFavBar() {
         })
     );
 
-    useEffect(() => {
-        setMounted(true);
+    useLayoutEffect(() => {
         dispatch(loadBookmarksFromStorage());
     }, [dispatch]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!mounted) return;
 
         if (isInitialMount.current) {
