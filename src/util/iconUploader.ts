@@ -8,23 +8,43 @@ export async function uploadFavicon(urlString: string): Promise<string> {
 
     try {
         const urlObj = new URL(urlString);
-        const faviconUrl = `${urlObj.origin}/favicon.ico`;
+        const targetFaviconUrl = `${urlObj.origin}/favicon.ico`;
 
-        // 1. 외부 아이콘 fetch
-        const response = await fetch(faviconUrl);
-        if (!response.ok) throw new Error('Failed to fetch favicon');
-        const blob = await response.blob();
+        // 1. Edge Function을 통해 파비콘 프록시 호출
+        const response = await fetch(`${supabase.supabaseUrl}/functions/v1/favicon-proxy`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            },
+            body: JSON.stringify({ url: targetFaviconUrl }),
+        });
 
-        // 2. Storage에 업로드 (이미지 파일명은 도메인 기반으로 고유하게 생성)
-        const fileName = `${urlObj.hostname}.ico`;
-        const { data, error } = await supabase.storage
-            .from('bookmarks') // 'bookmarks' 버킷이 미리 생성되어 있어야 함
+        const proxyData = await response.json();
+        if (!response.ok) throw new Error(proxyData.error || 'Failed to fetch favicon');
+
+        // 세션에서 사용자 ID 가져오기
+        const { data: { session } } = await supabase.auth.getSession();
+        const userId = session?.user.id || 'anonymous';
+
+        // Base64 문자열을 Blob으로 변환
+        const byteCharacters = atob(proxyData.base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const blob = new Blob([new Uint8Array(byteNumbers)], { type: proxyData.contentType });
+
+        // 2. Storage에 업로드 (유저 ID별 폴더 구조)
+        const fileName = `${userId}/${urlObj.hostname}.ico`;
+        const { error: uploadError } = await supabase.storage
+            .from('bookmarks')
             .upload(fileName, blob, {
                 upsert: true,
-                contentType: 'image/x-icon',
+                contentType: proxyData.contentType,
             });
 
-        if (error) throw error;
+        if (uploadError) throw uploadError;
 
         // 3. 공개 URL 획득
         const { data: publicUrlData } = supabase.storage

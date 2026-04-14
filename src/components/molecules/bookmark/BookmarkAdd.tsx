@@ -7,6 +7,7 @@ import InputField from "./BookmarkInput";
 import { BookmarkInput } from "@/type/bookmark";
 import { useAppDispatch } from "@/store/hooks";
 import { addBookmark } from "@/store/slice/bookmarkSlice";
+import { uploadFavicon } from "@/util/iconUploader";
 
 
 export default function AddFav() {
@@ -14,16 +15,6 @@ export default function AddFav() {
     const [showModal, setShowModal] = useState(false);
     const [url, setUrl] = useState('');
     const [favName, setFavName] = useState('');
-
-    //파비콘 (외부 의존성 제거)
-    const getFaviconUrl = (urlString: string) => {
-        try {
-            const urlObj = new URL(urlString);
-            return `${urlObj.origin}/favicon.ico`;
-        } catch {
-            return '/note.svg'; // 로컬의 기본 아이콘 사용
-        }
-    }
 
     //초기화
     const resetAndClose = () => {
@@ -43,7 +34,7 @@ export default function AddFav() {
     }
 
     // 입력
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         // 입력값 검증
         if (!favName.trim()) {
             alert('이름을 입력해주세요.');
@@ -60,16 +51,19 @@ export default function AddFav() {
             normalizedUrl = 'https://' + normalizedUrl;
         }
 
-        if (!isValidUrl(url)) {
+        if (!isValidUrl(normalizedUrl)) {
             alert('올바른 URL 형식을 입력해주세요. (예: example.com 또는 https://example.com)');
             return;
         }
 
+        // 파비콘 업로드 및 처리
+        const iconUrl = await uploadFavicon(normalizedUrl);
+
         // 북마크 추가
         const newBookmark: BookmarkInput = {
-            icon: getFaviconUrl(url),
+            icon: iconUrl,
             title: favName.trim(),
-            url: url.trim(),
+            url: normalizedUrl,
         };
 
         console.log('➕ 북마크 추가 시도:', newBookmark);

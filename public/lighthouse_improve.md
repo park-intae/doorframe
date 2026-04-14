@@ -32,11 +32,16 @@
 
 ## 권장사항 개선 및 리팩토링 상세 (v1.1.3)
 
-- [ ] 서드 파티 쿠키 의존성 제거를 위한 Favicon 프록시 도입
-  - 클라이언트에서 직접 외부 파비콘을 요청할 때 발생하는 서드 파티 쿠키 문제를 해결하기 위해, Supabase Edge Function을 활용한 프록시 및 서버 측 캐싱 구조로 전환 예정입니다.
-- [x] 보안 헤더 및 CSP 적용
-  - `index.html`에 `Content-Security-Policy`와 `Referrer-Policy`를 설정하여 로컬 개발 환경 및 운영 환경에서의 보안 요청 규칙을 명확히 했습니다.
-- [x] 콘솔 오류 전수 점검 및 리팩토링
-  - **Effect 내 setState 동기 호출 해결**: `ActionPopover`, `useFavBar`, `Modal` 컴포넌트 등에서 발생하던 리액트 렌더링 경고를 `useLayoutEffect` 도입 및 상태 초기화 로직 분리를 통해 해결했습니다.
-  - **타입 안정성 확보**: 테스트 코드 및 훅(`useAuth.ts`, `useNewsBrief.ts`, `weatherSlice.ts`) 내 `any` 타입을 제거하고 구체적인 타입 정의를 추가하여 타입 안정성을 높였습니다.
-  - **오류 디버깅 개선**: `catch` 블록의 에러 로그를 `console.error`로 명확히 출력하여 원인 파악이 용이하도록 리팩토링했습니다.
+- [x] **Favicon 프록시 도입**
+  - 로직 구현 및 Edge Function 배포 완료.
+  - **익명 세션 보안 강화 완료**:
+    - [x] 1. `useAuth.ts`: 익명 세션(`signInAnonymously`) 자동 도입.
+    - [x] 2. `iconUploader.ts`: `user.id` 기반 Storage 경로 구조 전환.
+    - [x] 3. Supabase Storage 정책: `auth.uid()` 기반 보안 적용.
+    - [x] 4. 스토리지 고아 파일 정리 전략 문서화 (`README.md`에 추가 완료).
+- [x] **보안 헤더 및 CSP 적용**
+  - `index.html`에 설정 완료.
+- [x] **콘솔 오류 전수 점검 및 리팩토링**
+  - **Effect 내 setState 동기 호출 해결**: `useLayoutEffect` 전환 및 로직 분리 완료.
+  - **타입 안정성 확보**: 주요 테스트 및 훅 내 `any` 제거 및 타입 정의 보강 완료.
+  - **오류 디버깅 개선**: `catch` 블록 로깅 강화 완료.
