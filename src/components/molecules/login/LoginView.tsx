@@ -29,7 +29,7 @@ export default function LoginView({
         return <div className='absolute top-4 right-4 w-11 h-11'>Loading...</div>;
     }
 
-    if (user) {
+    if (user && !user.is_anonymous) {
         return (
             <LoggedInView
                 user={user}
