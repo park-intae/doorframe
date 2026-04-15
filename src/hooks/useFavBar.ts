@@ -24,6 +24,7 @@ export function useFavBar() {
     const isInitialMount = useRef(true);
 
     const bookmarks = useSelector((state: RootState) => state.bookmarks);
+    const userId = useSelector((state: RootState) => state.auth.user?.id);
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -33,10 +34,6 @@ export function useFavBar() {
     );
 
     useLayoutEffect(() => {
-        dispatch(loadBookmarksFromStorage());
-    }, [dispatch]);
-
-    useLayoutEffect(() => {
         if (!mounted) return;
 
         if (isInitialMount.current) {
@@ -44,9 +41,9 @@ export function useFavBar() {
             return;
         }
 
-        dispatch(saveBookmarksToStorage(bookmarks));
+        dispatch(saveBookmarksToStorage({ bookmarks, userId }));
 
-    }, [bookmarks, mounted, dispatch]);
+    }, [bookmarks, mounted, userId, dispatch]);
 
     const handleRemove = (e: React.MouseEvent, id: number) => {
         e.preventDefault();

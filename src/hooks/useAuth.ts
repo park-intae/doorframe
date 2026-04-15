@@ -2,40 +2,14 @@ import { supabase } from '@/config/supabase';
 import { User } from '@supabase/supabase-js';
 import { useEffect, useRef, useState } from 'react';
 
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
+
 export function useAuth() {
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { user, loading } = useSelector((state: RootState) => state.auth);
     const [showPopover, setShowPopover] = useState(false);
     const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
-
-    useEffect(() => {
-        // 렌더링이 완전히 끝난 후 세션 체크
-        const timer = setTimeout(() => {
-            supabase.auth.getSession().then(async ({ data: { session } }) => {
-                if (!session) {
-                    // 세션이 없으면 익명 로그인 시도
-                    const { data, error } = await supabase.auth.signInAnonymously();
-                    if (!error) setUser(data.user);
-                } else {
-                    setUser((session?.user ?? null));
-                }
-                setLoading(false);
-            }).catch(() => {
-                setLoading(false);
-            });
-        }, 0);
-
-        // 인증 상태 변경 감지
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null);
-        });
-
-        return () => {
-            clearTimeout(timer);
-            subscription.unsubscribe();
-        };
-    }, []);
 
     const handleGoogleSignIn = async () => {
         try {

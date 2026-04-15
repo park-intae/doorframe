@@ -22,22 +22,16 @@ const defaultBookmarks: Bookmark[] = [
   },
 ];
 
-export const saveBookmarksToStorage = createAsyncThunk<void, Bookmark[]>(
+export const saveBookmarksToStorage = createAsyncThunk<void, { bookmarks: Bookmark[]; userId?: string }>(
   'bookmarks/save',
-  async (bookmarks) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    const userId = session?.user?.id;
-
+  async ({ bookmarks, userId }) => {
     const key = getUserStorageKey(userId);
     await chromeStorage.set(key, bookmarks);
   }
 );
 
-export const loadBookmarksFromStorage = createAsyncThunk<Bookmark[], void>('bookmarks/load',
-  async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    const userId = session?.user?.id;
-
+export const loadBookmarksFromStorage = createAsyncThunk<Bookmark[], string | undefined>('bookmarks/load',
+  async (userId) => {
     const key = getUserStorageKey(userId)
     const stored = await chromeStorage.get<Bookmark[]>(key);
 

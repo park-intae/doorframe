@@ -21,6 +21,7 @@ body,
     --color-important: rgb(245, 158, 11);
     --color-title: rgb(15, 21, 42);
     --color-context: rgb(71, 85, 105);
+    --color-delete: rgb(239, 68, 68);
 
     /* 3. 커스텀 브레이크포인트: 등록만 하면 smDT:w-56 등을 HTML에서 바로 사용 가능 */
     --breakpoint-smDT: 1336px;

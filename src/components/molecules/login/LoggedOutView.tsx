@@ -24,7 +24,7 @@ export default function LoggedOutView({
                 onClick={handleOpenPopover}
                 className='flex justify-center items-center w-11 h-11 glass-button text-main rounded-full hover:brightness-95 transition-colors'
             >
-                <img src='/login.webp' alt="로그인" className="w-8 h-8 block object-cover" width="32" height="32" />
+                <img src='/images/login.webp' alt="로그인" className="w-8 h-8 block object-cover" width="32" height="32" />
             </button>
 
             <Popover

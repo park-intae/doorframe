@@ -8,8 +8,8 @@ export default function Menus({ onOpenPopover }: MenusProps) {
     return (
         <div className='menus mx-5 flex flex-row gap-3 justify-end'>
             {[
-                { key: 'memo', icon: '/note.svg' },
-                { key: 'todo', icon: '/list.svg' },
+                { key: 'memo', icon: '/images/note.svg' },
+                { key: 'todo', icon: '/images/list.svg' },
             ].map(({ key, icon }) => (
                 <button
                     key={key}

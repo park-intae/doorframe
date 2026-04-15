@@ -11,18 +11,12 @@ interface ListState {
   nextId: number;
 }
 
-export const saveListToStorage = createAsyncThunk<void, ListState>('list/save', async (listState) => {
-  const { data: { session } } = await supabase.auth.getSession();
-  const userId = session?.user?.id;
-
+export const saveListToStorage = createAsyncThunk<void, { listState: ListState; userId?: string }>('list/save', async ({ listState, userId }) => {
   const key = getUserStorageKey(userId)
   await chromeStorage.set(key, listState);
 });
 
-export const loadListFromStorage = createAsyncThunk<ListState, void>('list/load', async () => {
-  const { data: { session } } = await supabase.auth.getSession();
-  const userId = session?.user?.id;
-
+export const loadListFromStorage = createAsyncThunk<ListState, string | undefined>('list/load', async (userId) => {
   const key = getUserStorageKey(userId)
   const stored = await chromeStorage.get<ListState>(key);
 

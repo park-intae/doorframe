@@ -67,12 +67,12 @@ export default function BookmarkBar() {
             </aside>
             <div className="absolute flex item-center justify-center w-20">
                     <img
-                    src="/logo.webp"
+                    src="/images/logo.webp"
                     alt="DoorFrame 로고"
                     width={35}
                     height={40}
                     className='absolute z-[88] top-4 transition-all duration-300 ease-in-out left-6 object-contain'
-                    fetchpriority="high"
+                    fetchPriority="high"
                     loading="eager"
                 />
             </div>
