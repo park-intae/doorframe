@@ -114,13 +114,14 @@ export default function AddFav() {
                         onKeyDown={handleKeyDown}
                         placeholder="즐겨찾기 url"
                     />
-                    <div className="modal-bottom flex flex-row-reverse">
+                    <div className="modal-bottom flex justify-end mt-4">
                         <button
                             onClick={handleSubmit}
-                            className="flex justify-center items-center mt-3 rounded bg-point text-main w-8 h-8 focus:outline-none"
+                            className="glass-button flex items-center gap-2 px-6 py-3 text-point font-bold hover:brightness-105 transition-all active:scale-95 group"
                             aria-label="북마크 저장"
                         >
-                            <PlusIcon className="w-5 h-5" aria-hidden="true" />
+                            <span className="text-sm">저장하기</span>
+                            <PlusIcon className="w-5 h-5 group-hover:rotate-90 transition-transform" aria-hidden="true" />
                         </button>
                     </div>
                 </div>

@@ -23,28 +23,28 @@ export default function Modal({
 
     return createPortal(
         <div
-            className="background fixed inset-0 bg-black/50 flex items-center justify-center z-[999]"
+            className="background fixed inset-0 bg-white/10 backdrop-blur-md flex items-center justify-center z-[999]"
             onClick={onClose}
         >
-            <div className="flex justify-center items-center bg-background rounded-lg">
-                <div
-                    className="modal bg-main rounded-lg p-5 max-w-full w-100 m-5"
-                    onClick={(e) => e.stopPropagation()}
-                >
-                    {(title || showCloseButton) && (
-                        <div className="flex flex-row justify-between items-center mb-4">
-                            {title && <h3>{title}</h3>}
-                            {showCloseButton && (
-                                <button
-                                    onClick={onClose}
-                                    aria-label="모달 닫기"
-                                    className="bg-red-500 text-white rounded p-1 hover:bg-red-600 transition-colors"
-                                >
-                                    <X className="w-5 h-5" aria-hidden="true" />
-                                </button>
-                            )}
-                        </div>
-                    )}
+            <div
+                className="modal glass p-8 max-w-full w-[450px] m-5 relative shadow-2xl border border-white/40"
+                onClick={(e) => e.stopPropagation()}
+            >
+                {(title || showCloseButton) && (
+                    <div className="flex flex-row justify-between items-center mb-6">
+                        {title && <h3 className="text-xl font-bold text-title">{title}</h3>}
+                        {showCloseButton && (
+                            <button
+                                onClick={onClose}
+                                aria-label="모달 닫기"
+                                className="glass-button p-2 text-context hover:text-delete transition-colors"
+                            >
+                                <X className="w-5 h-5" aria-hidden="true" />
+                            </button>
+                        )}
+                    </div>
+                )}
+                <div className="modal-content">
                     {children}
                 </div>
             </div>
