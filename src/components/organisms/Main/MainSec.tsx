@@ -2,6 +2,7 @@ import Container from "../today/Container";
 import Search from '../search/Search';
 import NewsBriefing from '../news/NewsBrief';
 import Carousel from '../carousel';
+import CoinList from "../../molecules/coin/CoinList";
 
 export default function MainSec() {
     return (
@@ -11,12 +12,10 @@ export default function MainSec() {
                     <Search />
                     <Container />
                 </div>
-                <div className="flex justify-center gap-3 w-153 h-70 lgDT:h-100">
+                <div className="flex justify-center gap-3 w-165 h-70 lgDT:h-100">
                     <Carousel>
                         <NewsBriefing />
-                        <div className="flex items-center justify-center h-full text-context font-paperlogy">
-                            여기에 다른 위젯을 추가하세요.
-                        </div>
+                        <CoinList />
                     </Carousel>
                 </div>
             </article>
