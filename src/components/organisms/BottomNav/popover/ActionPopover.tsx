@@ -28,7 +28,7 @@ export default function ActionPopover({ name, onClose, anchorEl }: ActionPopover
             width={320}
             placement="top"
         >
-            <div className="content flex justify-center flex-col rounded-lg py-5 max-h-85 glass-input">
+            <div className="content flex justify-center flex-col rounded-[20px] py-5 max-h-85 glass-input !bg-white/60">
                 {name === 'todo' ? <TodoInput /> : <MemoInput />}
                 <ItemList kind={name} />
             </div>
