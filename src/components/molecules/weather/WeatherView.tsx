@@ -197,6 +197,11 @@ export default function WeatherView({
                     }`} 
                 />
             </div>
+
+            {/* 데이터 출처 */}
+            <div className="absolute bottom-1 right-2 text-[8px] text-slate-400/50 uppercase select-none">
+                Data by KMA
+            </div>
         </div>
     );
 }
