@@ -3,6 +3,7 @@ import Search from '../search/Search';
 import NewsBriefing from '../news/NewsBrief';
 import Carousel from '../carousel';
 import CoinList from "../../molecules/coin/CoinList";
+import YoutubePlayerSlide from '../carousel/YoutubePlayerSlide';
 
 export default function MainSec() {
     return (
@@ -16,6 +17,7 @@ export default function MainSec() {
                     <Carousel>
                         <NewsBriefing />
                         <CoinList />
+                        <YoutubePlayerSlide />
                     </Carousel>
                 </div>
             </article>
