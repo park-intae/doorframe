@@ -6,7 +6,19 @@
   "chrome_url_overrides": {
     "newtab": "index.html"
   },
-  "permission": ["storage"],
+  "permissions": [
+    "storage",
+    "identity"
+  ],
+  "host_permissions": [
+    "*://*.supabase.co/*"
+  ],
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  },
   "icons": {
     "16": "images/icon-16.png",
     "48": "images/icon-48.png",
