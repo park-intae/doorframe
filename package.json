@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"vite\" \"supabase functions serve weather --no-verify-jwt --env-file supabase/.env.local\"",
-    "build": "vite build",
+    "build": "vite build && copy public\\manifest.json dist\\manifest.json",
     "preview": "vite preview",
     "test": "vitest"
   },

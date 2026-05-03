@@ -8,9 +8,9 @@
   - [✔️] **팝업(Popup) 및 샌드박스 환경 구축**
     - [✔️] popup.html 및 React 렌더링 엔트리 포인트 연동 확인.
     - [✔️] 확장 프로그램 팝업 닫힘 방지 및 상태 유지 로직 검토(Chrome Storage API 연동).
-  - [ ] **개발 및 빌드 파이프라인 정비**
-    - [ ] vite.config.ts 설정: 확장 프로그램 빌드 시 manifest.json 생성 및 정적 에셋 복사 프로세스 자동화.
-    - [ ] HMR(Hot Module Replacement) 지원을 위한 개발 모드 환경 설정.
+  - [🔼] **개발 및 빌드 파이프라인 정비**
+    - [✔️] vite.config.ts 설정: 확장 프로그램 빌드 시 manifest.json 생성 및 정적 에셋 복사 프로세스 자동화.
+    - [🔼] HMR(Hot Module Replacement) 지원을 위한 개발 모드 환경 설정 (수동 방식 적용, 향후 라이브러리 도입 예정).
   - [ ] **초기 로딩 및 성능 최적화**
     - [ ] 필수 코어 라이브러리(React, Redux) 지연 로딩 전략 수립.
     - [ ] 사용자 데이터 프리페칭(Pre-fetching)을 통한 체감 속도 개선.

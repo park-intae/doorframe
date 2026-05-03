@@ -39,8 +39,13 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'index.html'),
+        popup: path.resolve(__dirname, 'public/popup.html'),
+        background: path.resolve(__dirname, 'service-worker.js'),
       },
       output: {
+        entryFileNames: (assetInfo) => {
+          return assetInfo.name === 'background' ? 'service-worker.js' : 'assets/[name]-[hash].js';
+        },
         manualChunks: {
           'vendor-core': ['react', 'react-dom', 'react-redux', '@reduxjs/toolkit'],
           'vendor-ui': ['framer-motion', 'lucide-react', '@heroicons/react'],
