@@ -15,11 +15,10 @@
     "newtab": "index.html"
   },
   "permissions": [
-    "storage",
-    "identity"
+    "storage"
   ],
   "host_permissions": [
-    "*://*.supabase.co/*"
+    "https://*.supabase.co/*"
   ],
   "background": {
     "service_worker": "service-worker.js"

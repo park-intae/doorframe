@@ -11,12 +11,9 @@
   - [🔼] **개발 및 빌드 파이프라인 정비**
     - [✔️] vite.config.ts 설정: 확장 프로그램 빌드 시 manifest.json 생성 및 정적 에셋 복사 프로세스 자동화.
     - [🔼] HMR(Hot Module Replacement) 지원을 위한 개발 모드 환경 설정 (수동 방식 적용, 향후 라이브러리 도입 예정).
-  - [ ] **초기 로딩 및 성능 최적화**
-    - [ ] 필수 코어 라이브러리(React, Redux) 지연 로딩 전략 수립.
-    - [ ] 사용자 데이터 프리페칭(Pre-fetching)을 통한 체감 속도 개선.
-  - [ ] **권한 및 보안(Security)**
-    - [ ] 사용자 데이터 보호: 로컬 환경(Chrome Storage) 민감 정보 암호화 적용 방안 수립.
-    - [ ] 권한 요청 전략: 최소 권한 원칙(Principle of Least Privilege)에 따른 권한 요청 범위 확인.
+  - [✔️] **권한 및 보안(Security)**
+    - [✔️] 사용자 데이터 보호: 로컬 환경(Chrome Storage) 민감 정보 암호화 적용 방안 수립 (추후 계획).
+    - [✔️] 권한 요청 전략: 최소 권한 원칙(Principle of Least Privilege)에 따른 권한 요청 범위 확인.
 
 - [ ] **통합 미디어 플레이어 구현 (Media Player Integration)**
   - [ ] 레이아웃 설계: 캐러셀 내 플레이어 영역 UI 정의 (앨범 아트, 재생/일시정지, 프로그레스 바)
@@ -34,6 +31,9 @@
 ## In-Progress Task
 
 ## Completed Tasks
+- [✔️] **초기 로딩 및 성능 최적화**
+  - [✔️] 필수 코어 라이브러리(React, Redux) 지연 로딩 전략 수립.
+  - [✔️] 사용자 데이터 프리페칭(Pre-fetching)을 통한 체감 속도 개선.
 - [✔️] **날씨 데이터 고도화 (Weather System Expansion)**
   - [✔️] **데이터 소스 및 상태 관리 구축**
     - *Backend:* 기상청 단기예보(VilageFcst) 및 초단기실황(UltraSrtNcst) API 연동.
