@@ -5,9 +5,11 @@
   - [✔️] **1단계: 캐러셀 내 유튜브 재생 기능 구현**
     - [✔️] YouTube IFrame Player API 연동 및 UI 구성
     - [✔️] 캐러셀 내 재생/일시정지/탐색 제어
-  - [ ] **2단계: 백그라운드 미디어 제어 확장 구현**
-    - [ ] Service Worker 및 Media Session API 연동
-    - [ ] 브라우저 미디어 컨트롤러 연동 및 제어 기능 구현
+  - [🔼] **2단계: 백그라운드 미디어 제어 확장 구현**
+    - [✔️] YouTube Content Script 작성 (비디오 제어 및 Media Session 핸들러 등록)
+    - [🔼] Service Worker 내 미디어 상태 관리 로직 추가
+    - [ ] 브라우저 미디어 컨트롤러 연동을 위한 메시징 파이프라인 구축
+    - [✔️] Manifest.json 권한(tabs, scripting) 설정 및 커맨드 등록
   - [ ] **3단계: 상태 동기화 및 최종 통합**
     - [ ] 팝업(UI)과 서비스 워커(백그라운드) 간 상태 동기화 (Zustand)
     - [ ] UI/UX 최종 폴리싱 (전역 제어 최적화)
