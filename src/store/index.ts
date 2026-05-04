@@ -7,6 +7,7 @@ import bookmarkReducer from './slice/bookmarkSlice';
 import weatherReducer from './slice/weatherSlice';
 import popoverReducer from './slice/popoverSlice';
 import authReducer from './slice/authSlice';
+import mediaReducer from './slice/mediaSlice';
 
 export const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ export const store = configureStore({
     weather: weatherReducer,
     popover: popoverReducer,
     auth: authReducer,
+    media: mediaReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
