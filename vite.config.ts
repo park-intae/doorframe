@@ -41,10 +41,13 @@ export default defineConfig({
         main: path.resolve(__dirname, 'index.html'),
         popup: path.resolve(__dirname, 'public/popup.html'),
         background: path.resolve(__dirname, 'service-worker.js'),
+        content: path.resolve(__dirname, 'content.js'),
       },
       output: {
         entryFileNames: (assetInfo) => {
-          return assetInfo.name === 'background' ? 'service-worker.js' : 'assets/[name]-[hash].js';
+          if (assetInfo.name === 'background') return 'service-worker.js';
+          if (assetInfo.name === 'content') return 'content.js';
+          return 'assets/[name]-[hash].js';
         },
         manualChunks: {
           'vendor-core': ['react', 'react-dom', 'react-redux', '@reduxjs/toolkit'],
