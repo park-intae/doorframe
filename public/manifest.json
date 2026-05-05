@@ -32,8 +32,14 @@
       "js": ["content.js"]
     }
   ],
+  "web_accessible_resources": [
+    {
+      "resources": ["*"],
+      "matches": ["*://*.youtube.com/*"]
+    }
+  ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self';"
+    "extension_pages": "script-src 'self' https://www.youtube.com; object-src 'self'; frame-src https://www.youtube.com https://www.youtube-nocookie.com;"
   },
   "icons": {
     "16": "images/icon-16.png",
