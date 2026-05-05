@@ -1,9 +1,11 @@
+import { lazy, Suspense } from "react";
 import Container from "../today/Container";
 import Search from '../search/Search';
-import NewsBriefing from '../news/NewsBrief';
 import Carousel from '../carousel';
-import CoinList from "../../molecules/coin/CoinList";
-import YoutubePlayerSlide from '../carousel/YoutubePlayerSlide';
+
+const NewsBriefing = lazy(() => import('../news/NewsBrief'));
+const CoinList = lazy(() => import("../../molecules/coin/CoinList"));
+const YoutubePlayerSlide = lazy(() => import('../carousel/YoutubePlayerSlide'));
 
 export default function MainSec() {
     return (
@@ -14,11 +16,13 @@ export default function MainSec() {
                     <Container />
                 </div>
                 <div className="flex justify-center gap-3 w-165 h-70 lgDT:h-100">
-                    <Carousel>
-                        <NewsBriefing />
-                        <CoinList />
-                        <YoutubePlayerSlide />
-                    </Carousel>
+                    <Suspense fallback={<div className="w-full h-full flex items-center justify-center">Loading...</div>}>
+                        <Carousel>
+                            <NewsBriefing />
+                            <CoinList />
+                            <YoutubePlayerSlide />
+                        </Carousel>
+                    </Suspense>
                 </div>
             </article>
         </section>

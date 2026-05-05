@@ -10,38 +10,41 @@ interface CarouselViewProps {
 }
 
 export default function CarouselView({ index, direction, total, children, onPaginate }: CarouselViewProps) {
-    const [isAnimating, setIsAnimating] = useState(false);
+    const isAnimating = React.useRef(false);
+
+    const handlePaginate = (newDirection: number) => {
+        if (isAnimating.current) return;
+        
+        onPaginate(newDirection);
+        isAnimating.current = true;
+        setTimeout(() => {
+            isAnimating.current = false;
+        }, 500);
+    };
 
     const handleWheel = (e: React.WheelEvent) => {
-        if (isAnimating) return;
-        
-        // 휠을 아래로 굴리면 index 증가, 위로 굴리면 감소
         if (e.deltaY > 20 && index < total - 1) {
-            onPaginate(1);
-            setIsAnimating(true);
-            setTimeout(() => setIsAnimating(false), 500); // 휠 전환 쿨타임
+            handlePaginate(1);
         } else if (e.deltaY < -20 && index > 0) {
-            onPaginate(-1);
-            setIsAnimating(true);
-            setTimeout(() => setIsAnimating(false), 500);
+            handlePaginate(-1);
         }
     };
 
     return (
         <div className="relative w-full h-full overflow-hidden" onWheel={handleWheel}>
-            <AnimatePresence initial={false} custom={direction}>
+            <AnimatePresence initial={false} custom={direction} mode="wait">
                 <motion.div
                     key={index}
                     custom={direction}
-                    initial={{ y: direction > 0 ? '100%' : '-100%', opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: direction > 0 ? '-100%' : '100%', opacity: 0 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    initial={{ y: direction > 0 ? '20%' : '-20%', opacity: 0, scale: 0.95 }}
+                    animate={{ y: 0, opacity: 1, scale: 1 }}
+                    exit={{ y: direction > 0 ? '-20%' : '20%', opacity: 0, scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 25 }}
                     drag="y"
                     dragConstraints={{ top: 0, bottom: 0 }}
                     onDragEnd={(e, { offset }) => {
                         if (Math.abs(offset.y) > 50) {
-                            onPaginate(offset.y > 0 ? -1 : 1);
+                            handlePaginate(offset.y > 0 ? -1 : 1);
                         }
                     }}
                     className="absolute w-full h-full"

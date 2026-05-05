@@ -1,4 +1,5 @@
 import Popover from "@/util/Popover";
+import ThemeToggle from "../theme/ThemeToggle";
 
 interface LoggedOutViewProps {
     buttonRef: React.RefObject<HTMLButtonElement>;
@@ -18,7 +19,8 @@ export default function LoggedOutView({
     handleGoogleSignIn,
 }: LoggedOutViewProps) {
     return (
-        <div className='login absolute top-4 right-4'>
+        <div className='login absolute top-4 right-4 flex items-center gap-2'>
+            <ThemeToggle />
             <button
                 ref={buttonRef}
                 onClick={handleOpenPopover}
@@ -26,6 +28,7 @@ export default function LoggedOutView({
             >
                 <img src='/images/login.webp' alt="로그인" className="w-8 h-8 block object-cover" width="32" height="32" />
             </button>
+
 
             <Popover
                 isOpen={showPopover}

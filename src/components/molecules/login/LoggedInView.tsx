@@ -1,5 +1,6 @@
 import Popover from '@/util/Popover';
 import { User } from '@supabase/supabase-js';
+import ThemeToggle from '../theme/ThemeToggle';
 
 interface LoggedInViewProps {
     user: User;
@@ -21,7 +22,8 @@ export default function LoggedInView({
     handleSignOut
 }: LoggedInViewProps) {
     return (
-        <div className='login absolute top-1 right-1'>
+        <div className='login absolute top-1 right-1 flex items-center gap-2'>
+            <ThemeToggle />
             <button
                 ref={buttonRef}
                 onClick={handleOpenPopover}
@@ -30,6 +32,7 @@ export default function LoggedInView({
             >
                 <img src={user.user_metadata?.avatar_url ?? ""} alt='프로필 아이콘' className='profile w-8 h-8 rounded-full'></img>
             </button>
+
 
             <Popover
                 isOpen={showPopover}

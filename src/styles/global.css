@@ -10,10 +10,7 @@ body,
 }
 
 @theme {
-    /* 1. 폰트 정의: 이제 'font-paperlogy' 클래스 자동 생성 */
     --font-paperlogy: "Paperlogy", sans-serif;
-
-    /* 2. 색상 정의: 이제 bg-main, text-main, border-main 등이 자동 생성됨 */
     --color-background: rgb(248, 250, 252);
     --color-surface: rgb(226, 232, 240);
     --color-main: rgb(219, 234, 254);
@@ -23,63 +20,54 @@ body,
     --color-context: rgb(71, 85, 105);
     --color-delete: rgb(239, 68, 68);
 
-    /* 3. 커스텀 브레이크포인트: 등록만 하면 smDT:w-56 등을 HTML에서 바로 사용 가능 */
     --breakpoint-smDT: 1336px;
     --breakpoint-mdDT: 1440px;
     --breakpoint-lgDT: 1920px;
 }
 
-/* 기초 스타일 */
-@layer base {
-
-    html,
-    body,
-    #root {
-        height: 100%;
-        margin: 0;
-    }
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --bg-gradient: radial-gradient(at 10% 75%, #ffffff 0%, #e9ffff 10%, transparent 30%),
+                   radial-gradient(at 50% 10%, #e8f6fd 0%, #D0Ebf8 10%, transparent 30%),
+                   radial-gradient(at 75% 75%, #a7efef 0%, #D0Ebf8 10%, transparent 30%),
+                   linear-gradient(135deg, #f4e6ff 0%, #ffffff 36%, #a7efef 75%, #ecf9ff 100%);
 }
 
-/* 유틸리티: Tailwind가 자동으로 만들지 못하는 복합 스타일만 정의 */
+.dark {
+    --color-background: rgb(15, 23, 42);
+    --color-surface: rgb(30, 41, 59);
+    --color-main: rgb(30, 58, 138);
+    --color-point: rgb(96, 165, 250);
+    --color-important: rgb(251, 191, 36);
+    --color-title: rgb(241, 245, 249);
+    --color-context: rgb(148, 163, 184);
+    --color-delete: rgb(248, 113, 113);
+    
+    --glass-bg: rgba(30, 41, 59, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --bg-gradient: radial-gradient(at 10% 75%, #1e1b4b 0%, #0f172a 30%, transparent 60%),
+                   radial-gradient(at 50% 10%, #1e3a8a 0%, #0f172a 30%, transparent 60%),
+                   radial-gradient(at 75% 75%, #312e81 0%, #0f172a 30%, transparent 60%),
+                   linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+@layer base {
+    html, body, #root { height: 100%; margin: 0; }
+}
+
 @layer utilities {
     .scrollbar-hide {
         scrollbar-width: none;
         -ms-overflow-style: none;
-
-        &::-webkit-scrollbar {
-            display: none;
-        }
-    }
-
-    .scrollbar-thin {
-        scrollbar-width: thin;
-        scrollbar-color: #cbd5e1 transparent;
-
-        &::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-        &::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        &::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 2px;
-        }
-        &::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
+        &::-webkit-scrollbar { display: none; }
     }
 
     .dashboard-bg {
         position: fixed;
         inset: 0;
         z-index: -1;
-        background:
-            radial-gradient(at 10% 75%, #ffffff 0%, #e9ffff 10%, transparent 30%),
-            radial-gradient(at 50% 10%, #e8f6fd 0%, #D0Ebf8 10%, transparent 30%),
-            radial-gradient(at 75% 75%, #a7efef 0%, #D0Ebf8 10%, transparent 30%),
-            linear-gradient(135deg, #f4e6ff 0%, #ffffff 36%, #a7efef 75%, #ecf9ff 100%);
+        background: var(--bg-gradient);
 
         &::before {
             content: "";
@@ -90,12 +78,11 @@ body,
         }
     }
 
-    /* Glassmorphism: 변수 활용 */
     .glass {
-        background-color: rgba(255, 255, 255, 0.15);
+        background-color: var(--glass-bg);
         backdrop-filter: blur(24px);
         -webkit-backdrop-filter: blur(24px);
-        border: 1px solid rgba(255, 255, 255, 0.4);
+        border: 1px solid var(--glass-border);
         border-radius: 28px;
         box-shadow: 
             0 8px 32px 0 rgba(0, 0, 0, 0.05),
@@ -103,30 +90,21 @@ body,
     }
 
     .glass-sub {
-        background-color: rgba(255, 255, 255, 0.1);
+        background-color: var(--glass-bg);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border: 1px solid var(--glass-border);
         border-radius: 24px;
         box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.03);
     }
 
     .glass-button {
-        background-color: rgba(255, 255, 255, 0.2);
+        background-color: var(--glass-bg);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.4);
+        border: 1px solid var(--glass-border);
         border-radius: 24px;
         box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.03);
-    }
-
-    .glass-input {
-        background-color: rgba(255, 255, 255, 0.25);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 12px;
-        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.01);
     }
 }
 

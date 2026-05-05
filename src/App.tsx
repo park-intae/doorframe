@@ -2,15 +2,17 @@ import Main from './components/organisms/Main/MainContainer';
 import ListPersistence from './component/ListPersistence';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from './store';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { supabase } from './config/supabase';
 import { loadBookmarksFromStorage } from './thunk/bookmarkThunk';
 import { AuthChangeEvent } from '@supabase/supabase-js';
 import { loadListFromStorage } from './thunk/listThunk';
 import { setUser, setLoading } from './store/slice/authSlice';
+import { useTheme } from './hooks/useTheme';
 
 export default function App() {
   const dispatch = useDispatch<AppDispatch>();
+  useTheme(); // 테마 적용 훅 호출
 
   useEffect(() => {
     // 초기 세션 확인

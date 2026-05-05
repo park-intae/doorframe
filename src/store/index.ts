@@ -8,6 +8,7 @@ import weatherReducer from './slice/weatherSlice';
 import popoverReducer from './slice/popoverSlice';
 import authReducer from './slice/authSlice';
 import mediaReducer from './slice/mediaSlice';
+import themeReducer from './slice/themeSlice';
 
 export const store = configureStore({
   reducer: {
@@ -20,6 +21,7 @@ export const store = configureStore({
     popover: popoverReducer,
     auth: authReducer,
     media: mediaReducer,
+    theme: themeReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
