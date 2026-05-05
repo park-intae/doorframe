@@ -1,13 +1,12 @@
-import React, { useCallback, useEffect, useRef } from 'react';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import React, { useEffect, useRef } from 'react';
+import { useAppDispatch } from '../../../store/hooks';
 import { setPlaying } from '../../../store/slice/mediaSlice';
 
 /**
- * 캐러셀 내 유튜브 재생 슬라이드 (IFrame API 방식)
+ * 캐러셀 내 유튜브 재생 슬라이드 (IFrame API 방식, 기본 컨트롤러 사용)
  */
 export default function YoutubePlayerSlide() {
     const dispatch = useAppDispatch();
-    const isPlaying = useAppSelector((state) => state.media.isPlaying);
     const playerRef = useRef<any>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -25,7 +24,8 @@ export default function YoutubePlayerSlide() {
                 videoId: 'dQw4w9WgXcQ',
                 playerVars: {
                     'enablejsapi': 1,
-                    'origin': window.location.origin
+                    'origin': window.location.origin,
+                    'controls': 1, // 유튜브 내장 컨트롤러 사용
                 },
                 events: {
                     onStateChange: (event: any) => {
@@ -42,23 +42,9 @@ export default function YoutubePlayerSlide() {
         };
     }, [dispatch]);
 
-    const togglePlay = useCallback(() => {
-        chrome.runtime.sendMessage({ command: 'play-pause' }, (response) => {
-            if (response && response.status) {
-                dispatch(setPlaying(response.status === 'playing'));
-            }
-        });
-    }, [dispatch]);
-
     return (
         <div className="w-full h-full bg-black flex flex-col items-center justify-center rounded-lg overflow-hidden relative">
             <div ref={containerRef} className="w-full h-full" />
-            <button
-                onClick={togglePlay}
-                className="absolute bottom-4 left-4 bg-white/80 hover:bg-white text-black px-4 py-2 rounded-full font-bold shadow-lg transition-all"
-            >
-                {isPlaying ? '일시정지' : '재생'}
-            </button>
         </div>
     );
 }
