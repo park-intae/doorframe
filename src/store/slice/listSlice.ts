@@ -8,6 +8,8 @@ export interface ListItem {
   kind: ListKind;
   text: string;
   completed?: boolean;
+  date: string;
+  deadline?: string;
 }
 
 interface ListState {
@@ -45,11 +47,13 @@ const listSlice = createSlice({
   name: 'list',
   initialState,
   reducers: {
-    addItem: (state, action: PayloadAction<{ kind: ListKind; text: string }>) => {
+    addItem: (state, action: PayloadAction<{ kind: ListKind; text: string; date?: string; deadline?: string }>) => {
       const newItem: ListItem = {
         id: state.nextId++,
         kind: action.payload.kind,
         text: action.payload.text,
+        date: action.payload.date || new Date().toISOString().split('T')[0],
+        deadline: action.payload.deadline,
         ...(action.payload.kind === 'todo' && { completed: false }),
       };
       state.items.push(newItem);

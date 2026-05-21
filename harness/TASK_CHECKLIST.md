@@ -1,13 +1,14 @@
 # Doorframe Remaster - Project Advance
 
 ## Back-log Tasks
-- [ ] **메모/할 일 캘린더 연동 (Memo/Todo Calendar Integration)**
-  - [ ] 캘린더 API 연동 및 일정 데이터 구조 설계
-  - [ ] 메모/할 일 매핑 및 대시보드 시각화
 
 ## In-Progress Task
 
 ## Completed Tasks
+- [✔️] **메모/할 일 캘린더 연동 (Memo/Todo Calendar Integration)**
+  - [✔️] 1. 레이아웃 생성
+  - [✔️] 2. 가상의 캘린더에 데이터 저장하는 구조로 제작
+  - [✔️] 3. 날짜 넘기기 기능
 - [✔️] **유튜브 뮤직 라디오 구현 (YouTube Music Radio Integration)**
   - [✔️] YouTube Music API/스트리밍 연동
   - [✔️] 라디오 스테이션 및 플레이리스트 관리

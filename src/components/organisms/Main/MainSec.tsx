@@ -6,6 +6,7 @@ import Carousel from '../carousel';
 const NewsBriefing = lazy(() => import('../news/NewsBrief'));
 const CoinList = lazy(() => import("../../molecules/coin/CoinList"));
 const YoutubePlayerSlide = lazy(() => import('../carousel/YoutubePlayerSlide'));
+const CalendarSlide = lazy(() => import('../calendar/CalendarSlide'));
 
 export default function MainSec() {
     return (
@@ -18,6 +19,7 @@ export default function MainSec() {
                 <div className="flex justify-center gap-3 w-165 h-70 lgDT:h-100">
                     <Suspense fallback={<div className="w-full h-full flex items-center justify-center">Loading...</div>}>
                         <Carousel>
+                            <CalendarSlide />
                             <NewsBriefing />
                             <CoinList />
                             <YoutubePlayerSlide />
