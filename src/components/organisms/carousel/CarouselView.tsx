@@ -31,30 +31,32 @@ export default function CarouselView({ index, direction, total, children, onPagi
     };
 
     return (
-        <div className="relative w-full h-full overflow-hidden" onWheel={handleWheel}>
-            <AnimatePresence initial={false} custom={direction} mode="wait">
-                <motion.div
-                    key={index}
-                    custom={direction}
-                    initial={{ y: direction > 0 ? '20%' : '-20%', opacity: 0, scale: 0.95 }}
-                    animate={{ y: 0, opacity: 1, scale: 1 }}
-                    exit={{ y: direction > 0 ? '-20%' : '20%', opacity: 0, scale: 0.95 }}
-                    transition={{ type: "spring", stiffness: 200, damping: 25 }}
-                    drag="y"
-                    dragConstraints={{ top: 0, bottom: 0 }}
-                    onDragEnd={(e, { offset }) => {
-                        if (Math.abs(offset.y) > 50) {
-                            handlePaginate(offset.y > 0 ? -1 : 1);
-                        }
-                    }}
-                    className="absolute w-full h-full"
-                >
-                    {children[index]}
-                </motion.div>
-            </AnimatePresence>
+        <div className="relative w-full h-full" onWheel={handleWheel}>
+            <div className="w-full h-full overflow-hidden">
+                <AnimatePresence initial={false} custom={direction} mode="wait">
+                    <motion.div
+                        key={index}
+                        custom={direction}
+                        initial={{ y: direction > 0 ? '20%' : '-20%', opacity: 0, scale: 0.95 }}
+                        animate={{ y: 0, opacity: 1, scale: 1 }}
+                        exit={{ y: direction > 0 ? '-20%' : '20%', opacity: 0, scale: 0.95 }}
+                        transition={{ type: "spring", stiffness: 200, damping: 25 }}
+                        drag="y"
+                        dragConstraints={{ top: 0, bottom: 0 }}
+                        onDragEnd={(e, { offset }) => {
+                            if (Math.abs(offset.y) > 50) {
+                                handlePaginate(offset.y > 0 ? -1 : 1);
+                            }
+                        }}
+                        className="absolute w-full h-full"
+                    >
+                        {children[index]}
+                    </motion.div>
+                </AnimatePresence>
+            </div>
 
-            {/* 글래스모피즘 인디케이터 */}
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col justify-center gap-3 z-10 p-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 shadow-lg">
+            {/* 글래스모피즘 인디케이터 (캐러셀 외부 우측 배치) */}
+            <div className="absolute -right-10 top-1/2 -translate-y-1/2 flex flex-col justify-center gap-3 z-10 p-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 shadow-lg">
                 {Array.from({ length: total }).map((_, i) => (
                     <button 
                         key={i}

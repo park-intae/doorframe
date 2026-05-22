@@ -1,6 +1,11 @@
 # Doorframe Remaster - Project Advance
 
 ## Back-log Tasks
+- [ ] **메모/할 일 데이터 통합 및 캘린더 연동 (Data Integration & Calendar Sync)**
+  - [ ] 1. 전역 상태(`listSlice`)와 캐러셀 캘린더 슬라이드 간 데이터 동기화 로직 검증
+  - [ ] 2. 하단 팝업창에서 항목 추가 시 선택된 날짜 정보 자동 매핑 로직 구현
+  - [ ] 3. 캐러셀 캘린더 뷰에서 항목 조작(삭제, 완료) 시 전역 상태 및 DB 실시간 반영
+  - [ ] 4. 하단 팝업 메뉴와 캐러셀 간의 실시간 업데이트(Redux 상태 변화 감지) 보장
 
 ## In-Progress Task
 
