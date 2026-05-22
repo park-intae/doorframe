@@ -11,7 +11,7 @@ export default function CalendarList({ items }: CalendarListProps) {
     const dispatch = useAppDispatch();
 
     return (
-        <div className="flex-1 overflow-y-auto scrollbar-hide pr-1">
+        <div className="flex-1 overflow-y-auto scrollbar-hide pr-1 glass-sub p-3">
             <AnimatePresence mode="popLayout">
                 {items.length > 0 ? (
                     <ul className="flex flex-col gap-2">
@@ -21,7 +21,7 @@ export default function CalendarList({ items }: CalendarListProps) {
                                 initial={{ opacity: 0, y: 5 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
-                                className="flex items-center justify-between p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group"
+                                className="flex items-center justify-between p-2 rounded-lg hover:bg-white/10 transition-colors group"
                             >
                                 <div className="flex items-center gap-2 flex-1 min-w-0">
                                     {item.kind === 'todo' && (

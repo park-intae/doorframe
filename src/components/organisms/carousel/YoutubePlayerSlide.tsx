@@ -31,23 +31,35 @@ export default function YoutubePlayerSlide() {
 
     if (!user) {
         return (
-            <div className="w-full h-full bg-black/90 flex flex-col items-center justify-center rounded-lg text-white p-4 text-center">
-                <p className="text-lg font-bold mb-2">라디오를 이용하려면 로그인이 필요합니다</p>
-                <p className="text-sm text-gray-400">Google 계정으로 로그인하여 나만의 음악 감상을 시작하세요.</p>
+            <div className="flex flex-col w-full h-full p-6 glass font-paperlogy overflow-hidden bg-black/20">
+                <h2 className="text-xl font-bold text-title mb-4 flex items-center gap-2">
+                    <span className="w-2 h-6 bg-point rounded-full" />
+                    뮤직 라디오
+                </h2>
+                <div className="flex-1 flex flex-col items-center justify-center text-center">
+                    <p className="text-lg font-bold mb-2 text-title">라디오를 이용하려면 로그인이 필요합니다</p>
+                    <p className="text-sm text-context">Google 계정으로 로그인하여 나만의 음악 감상을 시작하세요.</p>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="w-full h-full bg-black flex flex-col items-center justify-center rounded-lg overflow-hidden relative">
-            <div ref={containerRef} className="w-full h-full" />
-            
-            <button 
-                onClick={togglePlay}
-                className="absolute bottom-4 left-4 bg-white/20 backdrop-blur-md text-white px-4 py-2 rounded-full z-10"
-            >
-                Play / Pause
-            </button>
+        <div className="flex flex-col w-full h-full p-6 glass font-paperlogy overflow-hidden relative">
+            <h2 className="text-xl font-bold text-title mb-4 flex items-center gap-2">
+                <span className="w-2 h-6 bg-point rounded-full" />
+                뮤직 라디오
+            </h2>
+            <div className="flex-1 bg-black/40 backdrop-blur-md border border-white/10 shadow-inner flex flex-col items-center justify-center rounded-2xl overflow-hidden relative">
+                <div ref={containerRef} className="w-full h-full mix-blend-screen opacity-90" />
+                
+                <button 
+                    onClick={togglePlay}
+                    className="absolute bottom-4 left-4 glass-button text-white px-6 py-2 rounded-full z-10 hover:scale-105 active:scale-95 transition-all text-sm font-medium"
+                >
+                    Play / Pause
+                </button>
+            </div>
         </div>
     );
 }

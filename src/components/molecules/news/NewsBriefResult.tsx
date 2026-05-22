@@ -15,7 +15,7 @@ const NewsBriefResult: React.FC<NewsBriefResultProps> = ({
 }) => {
   return (
     <div id='briefResCon' className="flex-1 flex flex-col min-h-40 mdDT:w-full">
-      <div id='briefRes' className="bg-background/50 flex-1 p-4 rounded-xl border border-main flex flex-col justify-start relative overflow-y-auto scrollbar-thin max-h-38" aria-live="polite" aria-busy={loading}>
+      <div id='briefRes' className="glass-sub flex-1 p-4 flex flex-col justify-start relative overflow-y-auto scrollbar-thin max-h-38" aria-live="polite" aria-busy={loading}>
         {loading ? (
           <div className="flex flex-col items-center justify-center h-full text-context/60 font-paperlogy">
             <Typewriter

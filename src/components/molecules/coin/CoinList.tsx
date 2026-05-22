@@ -29,7 +29,7 @@ export default function CoinList() {
     };
 
     return (
-        <div className="flex flex-col w-full max-w-140 mx-auto p-6 glass font-paperlogy overflow-hidden h-60 lgDT:h-100">
+        <div className="flex flex-col w-full p-6 glass font-paperlogy overflow-hidden h-full">
             <h2 className="text-xl font-bold text-title mb-4 flex items-center gap-2">
                 <span className="w-2 h-6 bg-point rounded-full" />
                 실시간 코인 시세 (KRW)
@@ -46,7 +46,7 @@ export default function CoinList() {
 
                 {/* 데이터 리스트 (스크롤 가능 영역) */}
                 <div 
-                    className="flex-1 overflow-y-auto pr-2 scrollbar-thin bg-white/25 backdrop-blur-sm rounded-2xl p-4 border border-white/20 shadow-[inset_0_1px_6px_rgba(0,0,0,0.03)]"
+                    className="flex-1 overflow-y-auto pr-2 scrollbar-thin glass-sub p-4"
                     onWheel={handleTableWheel}
                 >
                     <div className="flex flex-col gap-1">
