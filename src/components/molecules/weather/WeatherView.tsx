@@ -89,12 +89,12 @@ export default function WeatherView({
                                     <WeatherIcon />
                                 </div>
                                 <div className="flex flex-col justify-center">
-                                    <div className="text-xl font-bold leading-tight">{weather}</div>
-                                    <div className="text-xs opacity-60 font-medium">{displayRegion}</div>
+                                    <div className="text-xl font-bold leading-tight text-title">{weather}</div>
+                                    <div className="text-xs font-medium text-context opacity-80">{displayRegion}</div>
                                 </div>
                             </div>
                             <div className="flex flex-col items-end justify-center">
-                                <div className="text-4xl font-black text-slate-800 leading-none">
+                                <div className="text-4xl font-black text-title leading-none">
                                     {temperature}°
                                 </div>
                             </div>
@@ -114,15 +114,15 @@ export default function WeatherView({
                         transition={{ duration: 0.3 }}
                         className="flex flex-col h-full"
                     >
-                        <div className="text-[10px] font-bold mt-1 mb-2 opacity-50 uppercase tracking-wider text-center">Short-term Forecast</div>
+                        <div className="text-[10px] font-bold mt-1 mb-2 opacity-50 uppercase tracking-wider text-center text-context">Short-term Forecast</div>
                         
                         <div className="flex-1 flex flex-row justify-between items-center gap-1 mb-4">
                             {forecast.map((day, i) => (
                                 <div key={day.date} className="flex flex-col items-center gap-2 flex-1 p-2 rounded-lg bg-white/5 border border-white/5 shadow-sm">
-                                    <div className="text-[10px] font-bold text-slate-500">
+                                    <div className="text-[10px] font-bold text-context">
                                         {i === 0 ? '오늘' : i === 1 ? '내일' : '모레'}
                                     </div>
-                                    <div className="text-xs font-bold text-slate-800">{day.weatherStatus}</div>
+                                    <div className="text-xs font-bold text-title">{day.weatherStatus}</div>
                                     <div className="flex flex-col items-center leading-tight">
                                         {/* 최고 기온 */}
                                         <div 
@@ -173,7 +173,7 @@ export default function WeatherView({
                             y: -35,
                             pointerEvents: 'none',
                         }}
-                        className={`px-2 py-1 bg-slate-900/95 ${tooltip.color} text-[10px] font-black rounded shadow-2xl z-50 whitespace-nowrap border border-white/10`}
+                        className={`px-2 py-1 bg-surface/90 backdrop-blur-md ${tooltip.color} text-[10px] font-black rounded shadow-2xl z-50 whitespace-nowrap border border-white/10`}
                     >
                         {tooltip.text}
                     </motion.div>
@@ -185,21 +185,21 @@ export default function WeatherView({
                 <div 
                     className={`h-1.5 rounded-full transition-all duration-300 shadow-sm ${
                         page === 0 
-                        ? 'w-6 bg-slate-800 ring-2 ring-white/20' 
-                        : 'w-1.5 bg-slate-400/60'
+                        ? 'w-6 bg-point ring-2 ring-white/20' 
+                        : 'w-1.5 bg-context/40'
                     }`} 
                 />
                 <div 
                     className={`h-1.5 rounded-full transition-all duration-300 shadow-sm ${
                         page === 1 
-                        ? 'w-6 bg-slate-800 ring-2 ring-white/20' 
-                        : 'w-1.5 bg-slate-400/60'
+                        ? 'w-6 bg-point ring-2 ring-white/20' 
+                        : 'w-1.5 bg-context/40'
                     }`} 
                 />
             </div>
 
             {/* 데이터 출처 */}
-            <div className="absolute bottom-1 right-2 text-[8px] text-slate-400/50 uppercase select-none">
+            <div className="absolute bottom-1 right-2 text-[8px] text-context opacity-40 uppercase select-none">
                 Data by KMA
             </div>
         </div>
