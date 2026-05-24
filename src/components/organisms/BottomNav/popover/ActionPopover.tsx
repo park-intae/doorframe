@@ -25,12 +25,26 @@ export default function ActionPopover({ name, onClose, anchorEl }: ActionPopover
             isOpen={!!name}
             onClose={onClose}
             anchorRect={anchorRect}
-            width={320}
+            width={400}
             placement="top"
         >
-            <div className="content flex justify-center flex-col rounded-[20px] py-5 max-h-85 glass-input !bg-white/60">
-                {name === 'todo' ? <TodoInput /> : <MemoInput />}
-                <ItemList kind={name} />
+            <div className="flex flex-col rounded-[24px] overflow-hidden glass border border-white/20 shadow-xl w-full">
+                {/* 헤더 영역 */}
+                <div className="px-5 py-3 bg-white/10 border-b border-white/10">
+                    <h3 className="text-sm font-bold text-title">
+                        {name === 'todo' ? '할 일 관리' : '메모장'}
+                    </h3>
+                </div>
+
+                {/* 입력 영역 */}
+                <div className="px-4 py-3 bg-white/5">
+                    {name === 'todo' ? <TodoInput /> : <MemoInput />}
+                </div>
+
+                {/* 리스트 영역 */}
+                <div className="flex-1 overflow-y-auto max-h-[400px] p-2">
+                    <ItemList kind={name} />
+                </div>
             </div>
         </Popover>
     )

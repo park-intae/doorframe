@@ -35,10 +35,10 @@ export default function ItemInput({ kind }: ItemInputProps) {
     };
 
     return (
-        <form className="summitForm border-b w-full max-w-sm overflow-hidden flex justify-center items-center self-center gap-2 mb-2 p-1" onSubmit={handleSubmit}>
+        <form className="flex items-center gap-2 w-full bg-white/10 rounded-xl px-3 py-2 border border-white/10 focus-within:border-point focus-within:shadow-[0_0_8px_rgba(var(--color-point),0.4)] transition-all duration-300" onSubmit={handleSubmit}>
             <input
                 aria-label={`${kind === 'todo' ? '할 일' : '메모'} 입력`}
-                className="focus:outline-none border-none flex-1 bg-transparent text-sm"
+                className="focus:outline-none bg-transparent flex-1 text-sm text-title placeholder-white/40"
                 placeholder={`${kind === 'todo' ? '할 일을 입력하세요' : '메모를 입력하세요'}`}
                 value={value}
                 onChange={handleChange}>
@@ -46,13 +46,13 @@ export default function ItemInput({ kind }: ItemInputProps) {
             
             {kind === 'todo' && (
                 <div className="flex items-center gap-1 border-l pl-2 border-white/20">
-                    <label htmlFor="deadline" className="cursor-pointer opacity-60 hover:opacity-100 transition-opacity">
+                    <label htmlFor="deadline" className={`cursor-pointer transition-colors ${deadline ? 'text-point' : 'opacity-60 hover:opacity-100'}`}>
                         <CalendarIcon className="w-4 h-4" />
                     </label>
                     <input
                         id="deadline"
                         type="date"
-                        className="bg-transparent focus:outline-none text-[10px] w-24 cursor-pointer"
+                        className="bg-transparent focus:outline-none text-[10px] w-24 cursor-pointer text-title"
                         value={deadline}
                         onChange={(e) => setDeadline(e.target.value)}
                         aria-label="마감일 선택"
@@ -60,8 +60,12 @@ export default function ItemInput({ kind }: ItemInputProps) {
                 </div>
             )}
 
-            <button aria-label={`${kind === 'todo' ? '할 일' : '메모'} 추가`} className="summitBTN bg-point rounded-lg p-1 flex items-center focus:outline-none hover:brightness-110 transition-all" type='submit'>
-                <PlusIcon className="w-5 h-5" />
+            <button 
+                aria-label={`${kind === 'todo' ? '할 일' : '메모'} 추가`} 
+                className="bg-point text-white rounded-lg p-1.5 focus:outline-none hover:scale-105 active:scale-95 transition-transform duration-200 shadow-sm" 
+                type='submit'
+            >
+                <PlusIcon className="w-4 h-4" />
             </button>
         </form>
     )
