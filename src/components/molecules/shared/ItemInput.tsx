@@ -11,6 +11,7 @@ type ItemInputProps = {
 
 export default function ItemInput({ kind }: ItemInputProps) {
     const value = useSelector((state: RootState) => state.input.value);
+    const targetDate = useSelector((state: RootState) => state.input.targetDate);
     const [deadline, setDeadline] = useState<string>('');
     const dispatch = useDispatch();
 
@@ -21,6 +22,7 @@ export default function ItemInput({ kind }: ItemInputProps) {
         dispatch(addItem({ 
             kind, 
             text: value, 
+            date: targetDate,
             deadline: kind === 'todo' && deadline ? deadline : undefined 
         }));
         

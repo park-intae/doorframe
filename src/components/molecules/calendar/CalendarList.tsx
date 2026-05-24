@@ -38,10 +38,11 @@ export default function CalendarList({ items }: CalendarListProps) {
                                 </div>
                                 <button 
                                     onClick={() => dispatch(removeItem(item.id))}
-                                    className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-400 transition-all"
-                                    aria-label="삭제"
+                                    className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-400 transition-all hover:scale-110 active:scale-95"
+                                    aria-label="항목 삭제"
+                                    title="항목 삭제"
                                 >
-                                    <ChevronRight size={14} className="rotate-45" />
+                                    <ChevronRight size={16} className="rotate-45" />
                                 </button>
                             </motion.li>
                         ))}

@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface inputState {
+interface InputState {
   value: string;
+  targetDate?: string;
 }
 
-const initialState: inputState = { value: '' };
+const initialState: InputState = { value: '', targetDate: undefined };
 
 const inputSlice = createSlice({
   name: 'input',
@@ -13,11 +14,15 @@ const inputSlice = createSlice({
     setInputValue: (state, action: PayloadAction<string>) => {
       state.value = action.payload;
     },
+    setTargetDate: (state, action: PayloadAction<string | undefined>) => {
+      state.targetDate = action.payload;
+    },
     clearInput: (state) => {
       state.value = '';
+      state.targetDate = undefined;
     },
   },
 });
 
-export const { setInputValue, clearInput } = inputSlice.actions;
+export const { setInputValue, setTargetDate, clearInput } = inputSlice.actions;
 export default inputSlice.reducer;

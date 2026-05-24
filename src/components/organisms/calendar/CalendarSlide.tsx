@@ -1,12 +1,17 @@
+import { useEffect } from 'react';
 import { useCalendar } from '@/hooks/useCalendar';
+import { useAppDispatch } from '@/store/hooks';
+import { setTargetDate } from '@/store/slice/inputSlice';
 import CalendarDateNav from '../../molecules/calendar/CalendarDateNav';
 import CalendarTabs from '../../molecules/calendar/CalendarTabs';
 import CalendarList from '../../molecules/calendar/CalendarList';
 
 export default function CalendarSlide() {
+    const dispatch = useAppDispatch();
     const {
         displayYear,
         displayDate,
+        formattedDate,
         kind,
         setKind,
         filteredItems,
@@ -14,6 +19,10 @@ export default function CalendarSlide() {
         handleNextDay,
         handleGoToday
     } = useCalendar();
+
+    useEffect(() => {
+        dispatch(setTargetDate(formattedDate));
+    }, [dispatch, formattedDate]);
 
     return (
         <div className="flex flex-col w-full h-full p-6 glass font-paperlogy overflow-hidden">
