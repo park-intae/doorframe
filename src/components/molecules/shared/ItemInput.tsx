@@ -47,12 +47,11 @@ export default function ItemInput({ kind }: ItemInputProps) {
             {kind === 'todo' && (
                 <div className="flex items-center gap-1 border-l pl-2 border-white/20">
                     <label htmlFor="deadline" className={`cursor-pointer transition-colors ${deadline ? 'text-point' : 'opacity-60 hover:opacity-100'}`}>
-                        <CalendarIcon className="w-4 h-4" />
                     </label>
                     <input
                         id="deadline"
                         type="date"
-                        className="bg-transparent focus:outline-none text-[10px] w-24 cursor-pointer text-title"
+                        className="bg-transparent focus:outline-none text-[13px] w-24 cursor-pointer text-title"
                         value={deadline}
                         onChange={(e) => setDeadline(e.target.value)}
                         aria-label="마감일 선택"

@@ -25,7 +25,7 @@ export default function ActionPopover({ name, onClose, anchorEl }: ActionPopover
             isOpen={!!name}
             onClose={onClose}
             anchorRect={anchorRect}
-            width={400}
+            width={480}
             placement="top"
         >
             <div className="flex flex-col rounded-[24px] overflow-hidden glass border border-white/20 shadow-xl w-full">

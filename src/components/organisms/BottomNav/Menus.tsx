@@ -19,7 +19,7 @@ export default function Menus({ onOpenPopover }: MenusProps) {
                     }}
                     aria-label={key === 'memo' ? '메모 작성' : '할 일 목록'}
                 >
-                    <img src={icon} alt="" aria-hidden="true" className="w-8 h-8" />
+                    <img src={icon} alt="" aria-hidden="true" className="w-8 h-8 brightness-0 dark:invert dark:brightness-100" />
                 </button>
             ))
             }
