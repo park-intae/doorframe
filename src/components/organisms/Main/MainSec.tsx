@@ -6,7 +6,7 @@ import Carousel from '../carousel';
 const NewsBriefing = lazy(() => import('../news/NewsBrief'));
 const CoinList = lazy(() => import("../../molecules/coin/CoinList"));
 const YoutubePlayerSlide = lazy(() => import('../carousel/YoutubePlayerSlide'));
-const CalendarSlide = lazy(() => import('../calendar/CalendarSlide'));
+import CalendarSlide from '../calendar/CalendarSlide';
 
 export default function MainSec() {
     return (

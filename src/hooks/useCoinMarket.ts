@@ -15,6 +15,7 @@ const COIN_LIST = Object.keys(COIN_NAMES);
 // 공유 소켓 상태 관리
 let sharedSocket: WebSocket | null = null;
 const subscribers = new Set<(data: UpbitTicker) => void>();
+let reconnectTimer: number | null = null;
 
 const transformData = (data: UpbitTicker): CoinData => ({
     symbol: data.code.includes('-') ? data.code.split('-')[1] : data.code,
@@ -34,6 +35,10 @@ const getSharedSocket = () => {
     sharedSocket.binaryType = 'blob';
     
     sharedSocket.onopen = () => {
+        if (reconnectTimer) {
+            window.clearTimeout(reconnectTimer);
+            reconnectTimer = null;
+        }
         sharedSocket?.send(JSON.stringify([
             { ticket: 'doorframe-ticket' },
             { type: 'ticker', codes: COIN_LIST }
@@ -47,7 +52,14 @@ const getSharedSocket = () => {
     };
 
     sharedSocket.onerror = (e) => console.error('Shared WebSocket error', e);
-    sharedSocket.onclose = () => { sharedSocket = null; };
+    sharedSocket.onclose = () => { 
+        sharedSocket = null; 
+        if (subscribers.size > 0) {
+            reconnectTimer = window.setTimeout(() => {
+                getSharedSocket();
+            }, 3000);
+        }
+    };
 
     return sharedSocket;
 };
@@ -69,15 +81,27 @@ export function useCoinMarket() {
 
         fetchInitialPrices();
 
-        // 구독자 추가
+        // 구독자 추가 (쓰로틀링/배치 업데이트 적용)
+        let pendingUpdates: Record<string, CoinData> = {};
+        let rafId: number | null = null;
+
         const handler = (data: UpbitTicker) => {
-            setCoins(prev => ({ ...prev, [data.code]: transformData(data) }));
+            pendingUpdates[data.code] = transformData(data);
+            if (rafId === null) {
+                // 초당 약 3~4회 렌더링되도록 300ms 주기로 배치 업데이트
+                rafId = window.setTimeout(() => {
+                    setCoins(prev => ({ ...prev, ...pendingUpdates }));
+                    pendingUpdates = {};
+                    rafId = null;
+                }, 300);
+            }
         };
         subscribers.add(handler);
         getSharedSocket();
 
         return () => {
             subscribers.delete(handler);
+            if (rafId !== null) window.clearTimeout(rafId);
         };
     }, []);
 

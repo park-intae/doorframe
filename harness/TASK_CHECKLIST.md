@@ -5,6 +5,9 @@
 ## In-Progress Task
 
 ## Completed Tasks
+- [✔️] **라이트 모드 테두리 가시성 개선 (Light Mode Border Visibility Improvement)**
+  - [✔️] 1. 주요 컴포넌트 테두리 클래스 동적 변경 (border-black/50 적용)
+  - [✔️] 2. 라이트 모드 가시성 확보 및 인코딩 오류 복구 완료
 - [✔️] **메모/할 일 팝업 UI 디자인 개선 (Memo/Todo Popup UI Enhancement)**
   - [✔️] 1. 팝업 레이아웃의 정보 계층 구조 개선 (입력창, 날짜 선택, 카테고리 분리)
   - [✔️] 2. 입력 창(ItemInput)의 가시성 및 인터랙션 피드백 강화

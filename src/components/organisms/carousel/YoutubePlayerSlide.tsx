@@ -50,7 +50,7 @@ export default function YoutubePlayerSlide() {
                 <span className="w-2 h-6 bg-point rounded-full" />
                 뮤직 라디오
             </h2>
-            <div className="flex-1 bg-black/40 backdrop-blur-md border border-white/10 shadow-inner flex flex-col items-center justify-center rounded-2xl overflow-hidden relative">
+            <div className="flex-1 bg-black/40 backdrop-blur-md border border-black/50 dark:border-white/10 shadow-inner flex flex-col items-center justify-center rounded-2xl overflow-hidden relative">
                 <div ref={containerRef} className="w-full h-full mix-blend-screen opacity-90" />
                 
                 <button 

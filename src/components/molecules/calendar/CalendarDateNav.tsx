@@ -16,7 +16,7 @@ export default function CalendarDateNav({
     onToday 
 }: CalendarDateNavProps) {
     return (
-        <div className="flex flex-col justify-center items-center w-full border-r border-white/20 pr-4 h-full">
+        <div className="flex flex-col justify-center items-center w-full border-r border-black/50 dark:border-white/20 pr-4 h-full">
             <div className="text-sm opacity-70 mb-1">{displayYear}</div>
             <div className="text-4xl font-bold mb-4 whitespace-nowrap">{displayDate}</div>
             

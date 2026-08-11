@@ -29,7 +29,7 @@ export default function CalendarList({ items }: CalendarListProps) {
                                             type="checkbox"
                                             checked={item.completed}
                                             onChange={() => dispatch(toggleItem(item.id))}
-                                            className="w-4 h-4 rounded border-white/30 bg-transparent cursor-pointer"
+                                            className="w-4 h-4 rounded border-black/20 dark:border-white/30 bg-transparent cursor-pointer"
                                         />
                                     )}
                                     <span className={`truncate text-sm ${item.completed ? 'line-through opacity-50' : ''}`}>

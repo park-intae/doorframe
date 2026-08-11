@@ -35,7 +35,7 @@ export default function ItemInput({ kind }: ItemInputProps) {
     };
 
     return (
-        <form className="flex items-center gap-2 w-full bg-white/10 rounded-xl px-3 py-2 border border-white/10 focus-within:border-point focus-within:shadow-[0_0_8px_rgba(var(--color-point),0.4)] transition-all duration-300" onSubmit={handleSubmit}>
+        <form className="flex items-center gap-2 w-full bg-white/10 rounded-xl px-3 py-2 border border-black/50 dark:border-white/10 focus-within:border-point focus-within:shadow-[0_0_8px_rgba(var(--color-point),0.4)] transition-all duration-300" onSubmit={handleSubmit}>
             <input
                 aria-label={`${kind === 'todo' ? '할 일' : '메모'} 입력`}
                 className="focus:outline-none bg-transparent flex-1 text-sm text-title placeholder-white/40"
@@ -45,7 +45,7 @@ export default function ItemInput({ kind }: ItemInputProps) {
             </input>
             
             {kind === 'todo' && (
-                <div className="flex items-center gap-1 border-l pl-2 border-white/20">
+                <div className="flex items-center gap-1 border-l pl-2 border-black/50 dark:border-white/20">
                     <label htmlFor="deadline" className={`cursor-pointer transition-colors ${deadline ? 'text-point' : 'opacity-60 hover:opacity-100'}`}>
                     </label>
                     <input

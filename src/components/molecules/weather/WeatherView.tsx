@@ -118,7 +118,7 @@ export default function WeatherView({
                         
                         <div className="flex-1 flex flex-row justify-between items-center gap-1 mb-4">
                             {forecast.map((day, i) => (
-                                <div key={day.date} className="flex flex-col items-center gap-2 flex-1 p-2 rounded-lg bg-white/5 border border-white/5 shadow-sm">
+                                <div key={day.date} className="flex flex-col items-center gap-2 flex-1 p-2 rounded-lg bg-white/5 border border-black/50 dark:border-white/5 shadow-sm">
                                     <div className="text-[10px] font-bold text-context">
                                         {i === 0 ? '오늘' : i === 1 ? '내일' : '모레'}
                                     </div>

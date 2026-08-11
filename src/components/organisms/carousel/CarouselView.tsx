@@ -56,7 +56,7 @@ export default function CarouselView({ index, direction, total, children, onPagi
             </div>
 
             {/* 글래스모피즘 인디케이터 (캐러셀 외부 우측 배치) */}
-            <div className="absolute -right-10 top-1/2 -translate-y-1/2 flex flex-col justify-center gap-3 z-10 p-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 shadow-lg">
+            <div className="absolute -right-10 top-1/2 -translate-y-1/2 flex flex-col justify-center gap-3 z-10 p-2 rounded-full bg-white/10 backdrop-blur-md border border-black/50 dark:border-white/20 shadow-lg">
                 {Array.from({ length: total }).map((_, i) => (
                     <button 
                         key={i}

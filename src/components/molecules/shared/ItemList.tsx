@@ -20,7 +20,7 @@ export default function List({ kind }: ListProps) {
         <ul className="flex flex-col gap-2 p-1">
             {filteredItems.map(item => (
                 <li 
-                    className="flex items-center justify-between p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-white/5" 
+                    className="flex items-center justify-between p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-black/50 dark:border-white/10" 
                     key={item.id}
                 >
                     {kind === 'todo' ? (
@@ -30,7 +30,7 @@ export default function List({ kind }: ListProps) {
                                 type="checkbox"
                                 checked={item.completed}
                                 onChange={() => dispatch(toggleItem(item.id))}
-                                className="w-4 h-4 rounded border-white/20 bg-white/10 checked:bg-point focus:ring-0 cursor-pointer"
+                                className="w-4 h-4 rounded border-black/20 dark:border-white/20 bg-white/10 checked:bg-point focus:ring-0 cursor-pointer"
                             />
                             <span 
                                 className={`text-sm truncate transition-all ${item.completed ? 'line-through opacity-50' : 'text-title'}`}

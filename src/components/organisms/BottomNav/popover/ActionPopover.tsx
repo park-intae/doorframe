@@ -28,9 +28,9 @@ export default function ActionPopover({ name, onClose, anchorEl }: ActionPopover
             width={480}
             placement="top"
         >
-            <div className="flex flex-col rounded-[24px] overflow-hidden glass border border-white/20 shadow-xl w-full">
+            <div className="flex flex-col rounded-[24px] overflow-hidden glass border border-black/50 dark:border-white/20 shadow-xl w-full">
                 {/* 헤더 영역 */}
-                <div className="px-5 py-3 bg-white/10 border-b border-white/10">
+                <div className="px-5 py-3 bg-white/10 border-b border-black/50 dark:border-white/10">
                     <h3 className="text-sm font-bold text-title">
                         {name === 'todo' ? '할 일 관리' : '메모장'}
                     </h3>

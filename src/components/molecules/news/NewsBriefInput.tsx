@@ -47,7 +47,7 @@ const NewsBriefInput: React.FC<NewsBriefInputProps> = ({
         {/* Dropdown */}
         {isOpen && (
           <ul
-            className="absolute z-50 top-full w-full rounded-xl bg-white/80 backdrop-blur-xl border border-white/20 shadow-lg shadow-black/10 overflow-hidden">
+            className="absolute z-50 top-full w-full rounded-xl bg-white/80 backdrop-blur-xl border border-black/50 dark:border-white/20 shadow-lg shadow-black/10 overflow-hidden">
             {Object.entries(googleNewsCategories).map(([name, value]) => (
               <li
                 key={value}
