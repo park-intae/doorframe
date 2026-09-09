@@ -23,7 +23,8 @@
   ],
   "host_permissions": [
     "https://*.supabase.co/*",
-    "*://*.youtube.com/*"
+    "*://*.youtube.com/*",
+    "https://api.upbit.com/*"
   ],
   "background": {
     "service_worker": "service-worker.js"

@@ -11,7 +11,11 @@
 - **JSDOM 테스트 환경 보강**: `setup.ts`에 JSDOM 환경용 `localStorage` 모킹을 추가하여 스토리지 의존 컴포넌트 테스트 오류 해소.
 - **Redux 구조 변경에 따른 테스트 동기화**: `useAuth`, `useFavBar`, `useRadioPlayer`, `listThunk`, `WeatherContainer`의 Provider 래퍼 및 파라미터 불일치를 최신 상태로 갱신하여 17개 테스트 파일(37개 테스트 항목) 100% 통과 보장.
 
-#### 4. 크롬 확장 프로그램 프로덕션 빌드 완료
+#### 4. Manifest V3 호환성 및 위치 안전장치(Fallback) 강화
+- **위치 권한 및 서울 기본 위치 안전장치**: `public/manifest.json`에 `geolocation` 권한 추가 및 권한 거부 시 서울 기준 날씨로 안전하게 폴백되고 UI에 `[기본 위치]` 안내 배지 노출.
+- **Upbit API CORS 차단 해결**: `host_permissions`에 `https://api.upbit.com/*`를 명시적으로 등록하여 코인 시세 조회 시 발생하는 CORS 차단 원천 해소.
+
+#### 5. 크롬 확장 프로그램 프로덕션 빌드 완료
 - 원격 Supabase Cloud 백엔드와 연동 검증 및 `npm run build`를 통한 최종 `dist/` 빌드 번들 산출 완료. Chrome 개발자 모드 탑재 준비 완료.
 
 ---

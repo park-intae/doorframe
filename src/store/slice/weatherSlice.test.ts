@@ -11,6 +11,7 @@ describe('weatherSlice reducer', () => {
     hourly: [],
     loading: false,
     error: null,
+    isFallback: false,
   };
 
   const mockWeatherData: WeatherResponse = {
