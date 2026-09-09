@@ -6,6 +6,7 @@ interface LoggedOutViewProps {
     buttonRef: React.RefObject<HTMLButtonElement>;
     showPopover: boolean;
     anchorRect: DOMRect | null;
+    isSigningIn?: boolean;
     handleOpenPopover: () => void;
     setShowPopover: (show: boolean) => void;
     handleGoogleSignIn: () => void;
@@ -15,6 +16,7 @@ export default function LoggedOutView({
     buttonRef,
     showPopover,
     anchorRect,
+    isSigningIn = false,
     handleOpenPopover,
     setShowPopover,
     handleGoogleSignIn,
@@ -42,7 +44,8 @@ export default function LoggedOutView({
                 <div className="p-2">
                     <button
                         onClick={handleGoogleSignIn}
-                        className="w-full py-3 px-4 bg-white dark:bg-slate-800/90 border border-black/10 dark:border-white/10 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-all flex items-center justify-center gap-3 shadow-sm hover:shadow group"
+                        disabled={isSigningIn}
+                        className="w-full py-3 px-4 bg-white dark:bg-slate-800/90 border border-black/10 dark:border-white/10 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-all flex items-center justify-center gap-3 shadow-sm hover:shadow group disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {/* 구글 로고 SVG */}
                         <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" aria-hidden="true">
@@ -52,7 +55,7 @@ export default function LoggedOutView({
                             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                         </svg>
                         <span className="font-medium text-sm text-title group-hover:text-main transition-colors">
-                            Google 계정으로 로그인
+                            {isSigningIn ? '로그인 창 대기 중...' : 'Google 계정으로 로그인'}
                         </span>
                     </button>
                 </div>

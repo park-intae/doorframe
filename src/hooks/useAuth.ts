@@ -13,6 +13,9 @@ export function useAuth() {
     const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
 
+    const isSigningInRef = useRef(false);
+    const [isSigningIn, setIsSigningIn] = useState(false);
+
     const launchWebAuthFlowAsync = (url: string): Promise<string | undefined> => {
         return new Promise((resolve, reject) => {
             chrome.identity.launchWebAuthFlow(
@@ -46,6 +49,10 @@ export function useAuth() {
     };
 
     const handleGoogleSignIn = async () => {
+        if (isSigningInRef.current) return;
+        isSigningInRef.current = true;
+        setIsSigningIn(true);
+
         try {
             const isChromeExtension = typeof chrome !== 'undefined' && !!chrome.identity?.launchWebAuthFlow;
 
@@ -137,7 +144,15 @@ export function useAuth() {
             }
         } catch (error: any) {
             console.error('로그인 에러:', error);
-            alert(`로그인에 실패했습니다.\n\n오류 내용: ${error?.message || error || '알 수 없는 오류'}`);
+            const message = error?.message || String(error);
+            if (message.includes('Only one web auth flow')) {
+                alert('이미 로그인 창이 백그라운드에 열려 있습니다.\n\n작업 표시줄이나 브라우저 창 뒤에 숨겨진 구글 로그인 창이 있는지 확인해 주세요.\n만약 창이 보이지 않는다면 크롬 확장 프로그램 관리자(chrome://extensions)에서 Doorframe 새로고침을 누른 후 다시 시도해 주세요.');
+            } else {
+                alert(`로그인에 실패했습니다.\n\n오류 내용: ${message}`);
+            }
+        } finally {
+            isSigningInRef.current = false;
+            setIsSigningIn(false);
         }
     };
 
@@ -161,6 +176,7 @@ export function useAuth() {
     return {
         user,
         loading,
+        isSigningIn,
         showPopover,
         anchorRect,
         buttonRef,

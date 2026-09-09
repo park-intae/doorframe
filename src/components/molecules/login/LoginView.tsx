@@ -5,6 +5,7 @@ import LoggedOutView from './LoggedOutView';
 interface LoginViewProps {
     user: User | null;
     loading: boolean;
+    isSigningIn?: boolean;
     showPopover: boolean;
     anchorRect: DOMRect | null;
     buttonRef: React.RefObject<HTMLButtonElement>;
@@ -17,6 +18,7 @@ interface LoginViewProps {
 export default function LoginView({
     user,
     loading,
+    isSigningIn = false,
     showPopover,
     anchorRect,
     buttonRef,
@@ -52,6 +54,7 @@ export default function LoginView({
             buttonRef={buttonRef}
             showPopover={showPopover}
             anchorRect={anchorRect}
+            isSigningIn={isSigningIn}
             handleOpenPopover={handleOpenPopover}
             setShowPopover={setShowPopover}
             handleGoogleSignIn={handleGoogleSignIn}
