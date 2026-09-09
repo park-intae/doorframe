@@ -6,7 +6,23 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const BASE_URL = 'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0';
+const BASE_URL = 'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0';
+
+/**
+ * Open-Meteo WMO 날씨 코드를 한글 텍스트로 변환
+ */
+function getWmoStatus(code: number): string {
+  if (code === 0) return '맑음';
+  if (code === 1 || code === 2) return '구름많음';
+  if (code === 3) return '흐림';
+  if (code >= 45 && code <= 48) return '안개';
+  if (code >= 51 && code <= 67) return '비';
+  if (code >= 71 && code <= 77) return '눈';
+  if (code >= 80 && code <= 82) return '소나기';
+  if (code >= 85 && code <= 86) return '눈';
+  if (code >= 95 && code <= 99) return '뇌우';
+  return '맑음';
+}
 
 /**
  * 기상청 하늘상태(SKY) 및 강수형태(PTY) 코드를 텍스트로 변환
@@ -97,7 +113,7 @@ Deno.serve(async (req) => {
     const [currentRes, forecastRes, geoRes] = await Promise.all([
       fetch(`${BASE_URL}/getUltraSrtNcst?serviceKey=${encodedWeatherKey}&dataType=JSON&base_date=${baseDateForNcst}&base_time=${formattedNcstTime}&nx=${nx}&ny=${ny}`),
       fetch(`${BASE_URL}/getVilageFcst?serviceKey=${encodedWeatherKey}&dataType=JSON&base_date=${baseDate}&base_time=${formattedBaseTime}&nx=${nx}&ny=${ny}&numOfRows=1000`),
-      fetch(`https://api.vworld.kr/req/address?service=address&request=getAddress&point=${lon},${lat}&key=${VWORLD_API_KEY}&type=both`)
+      fetch(`https://api.vworld.kr/req/address?service=address&request=getAddress&crs=EPSG:4326&point=${lon},${lat}&key=${VWORLD_API_KEY}&type=both`)
     ]);
 
     const currentText = await currentRes.text();
@@ -118,13 +134,73 @@ Deno.serve(async (req) => {
 
     // 3. 지역 정보
     let region = '알 수 없는 지역';
-    if (geoData.response?.status === 'OK') {
+    if (geoData.response?.status === 'OK' && geoData.response.result?.length > 0) {
       const addr = geoData.response.result[0].structure;
-      region = `${addr.level1} ${addr.level2}`;
+      region = `${addr.level1 || ''} ${addr.level2 || ''}`.trim() || addr.level4L || '알 수 없는 지역';
+    }
+    // VWorld 실패 시 무료 역지오코딩 백업
+    if (region === '알 수 없는 지역') {
+      try {
+        const bgRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=ko`);
+        if (bgRes.ok) {
+          const bgData = await bgRes.json();
+          const p1 = bgData.principalSubdivision || '';
+          const p2 = bgData.locality || bgData.city || '';
+          if (p1 || p2) region = `${p1} ${p2}`.trim();
+        }
+      } catch (e) {
+        console.warn('[Weather Backend] BigDataCloud 지오코딩 실패:', e);
+      }
     }
     console.log('[Weather Backend] 🏷️ 최종 파싱된 지역명(region):', region);
 
     const forecastItems = forecastData.response?.body?.items?.item || [];
+
+    // 4. 기상청 데이터 누락 시 Open-Meteo 실시간 기상 데이터로 자동 백업
+    if (forecastItems.length === 0) {
+      console.log('[Weather Backend] ⚠️ 기상청 데이터 누락 -> Open-Meteo 실시간 기상 데이터로 자동 백업 연동');
+      try {
+        const meteoRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FSeoul&forecast_days=3`);
+        if (meteoRes.ok) {
+          const meteo = await meteoRes.json();
+          const curTemp = Math.round(meteo.current?.temperature_2m ?? 0).toString();
+          const curWeather = getWmoStatus(meteo.current?.weather_code ?? 0);
+
+          const hourly = (meteo.hourly?.time || []).slice(0, 24).map((t: string, idx: number) => ({
+            time: t.slice(11, 16),
+            temp: Math.round(meteo.hourly.temperature_2m[idx]).toString(),
+            weather: getWmoStatus(meteo.hourly.weather_code[idx]),
+          }));
+
+          const forecast = (meteo.daily?.time || []).slice(0, 3).map((d: string, idx: number) => ({
+            date: d.replace(/-/g, ''),
+            minTemp: Math.round(meteo.daily.temperature_2m_min[idx]).toString(),
+            maxTemp: Math.round(meteo.daily.temperature_2m_max[idx]).toString(),
+            weatherStatus: getWmoStatus(meteo.daily.weather_code[idx]),
+            precipitation: (meteo.daily.precipitation_probability_max?.[idx] ?? 0) + '%',
+          }));
+
+          const fallbackResponse = {
+            current: {
+              temperature: curTemp,
+              weather: curWeather,
+              region,
+            },
+            forecast,
+            hourly,
+          };
+
+          console.log('[Weather Backend] 📤 Open-Meteo 백업 데이터 반환:', JSON.stringify(fallbackResponse));
+          return new Response(JSON.stringify(fallbackResponse), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 200,
+          });
+        }
+      } catch (meteoErr) {
+        console.error('[Weather Backend] Open-Meteo 호출 실패:', meteoErr);
+      }
+    }
+
     const nowHourStr = currentHour.toString().padStart(2, '0') + '00';
 
     // 4. Hourly 데이터 가공

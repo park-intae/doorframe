@@ -86,7 +86,7 @@ export const fetchWeather = createAsyncThunk('weather/fetchWeather', async (_, {
       },
       forecast: Array.isArray(rawData.forecast) ? rawData.forecast : [],
       hourly: Array.isArray(rawData.hourly) ? rawData.hourly : [],
-      isFallback: isLocationFallback || !rawData.current || rawData.temperature === 'N/A',
+      isFallback: isLocationFallback,
     };
 
     // 3. 정상 위치 데이터만 캐싱 (기본 위치 폴백일 때는 캐시를 삭제하여 다음 탭에서 재시도)
