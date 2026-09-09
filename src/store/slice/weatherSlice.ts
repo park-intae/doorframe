@@ -44,7 +44,7 @@ export const fetchWeather = createAsyncThunk('weather/fetchWeather', async (_, {
     let isLocationFallback = false;
     try {
       const pos = await new Promise<GeolocationPosition>((res, rej) =>
-        navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: false, timeout: 3000 }),
+        navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: false, timeout: 10000 }),
       );
       latitude = pos.coords.latitude;
       longitude = pos.coords.longitude;
