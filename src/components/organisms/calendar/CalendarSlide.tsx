@@ -5,6 +5,7 @@ import { setTargetDate } from '@/store/slice/inputSlice';
 import CalendarDateNav from '../../molecules/calendar/CalendarDateNav';
 import CalendarTabs from '../../molecules/calendar/CalendarTabs';
 import CalendarList from '../../molecules/calendar/CalendarList';
+import ItemInput from '../../molecules/shared/ItemInput';
 
 export default function CalendarSlide() {
     const dispatch = useAppDispatch();
@@ -42,13 +43,16 @@ export default function CalendarSlide() {
                     />
                 </div>
 
-                {/* 우측: 리스트 영역 (Molecules 조합) */}
-                <div className="flex flex-col flex-1 pl-2 overflow-hidden">
+                {/* 우측: 탭, 입력창, 리스트 영역 (Molecules 조합) */}
+                <div className="flex flex-col flex-1 pl-2 overflow-hidden gap-2.5">
                     <CalendarTabs 
                         kind={kind}
                         setKind={setKind}
                         itemCount={filteredItems.length}
                     />
+                    <div className="flex-shrink-0">
+                        <ItemInput kind={kind} />
+                    </div>
                     <div className="flex-1 overflow-hidden">
                         <CalendarList 
                             items={filteredItems}

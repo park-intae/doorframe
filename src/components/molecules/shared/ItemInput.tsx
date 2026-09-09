@@ -38,7 +38,7 @@ export default function ItemInput({ kind }: ItemInputProps) {
         <form className="flex items-center gap-2 w-full bg-white/10 rounded-xl px-3 py-2 border border-black/50 dark:border-white/10 focus-within:border-point focus-within:shadow-[0_0_8px_rgba(var(--color-point),0.4)] transition-all duration-300" onSubmit={handleSubmit}>
             <input
                 aria-label={`${kind === 'todo' ? '할 일' : '메모'} 입력`}
-                className="focus:outline-none bg-transparent flex-1 text-sm text-title placeholder-white/40"
+                className="focus:outline-none bg-transparent flex-1 text-sm text-title placeholder:text-context/50"
                 placeholder={`${kind === 'todo' ? '할 일을 입력하세요' : '메모를 입력하세요'}`}
                 value={value}
                 onChange={handleChange}>
