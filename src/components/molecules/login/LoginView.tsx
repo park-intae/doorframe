@@ -26,7 +26,11 @@ export default function LoginView({
     handleOpenPopover
 }: LoginViewProps) {
     if (loading) {
-        return <div className='absolute top-4 right-4 w-11 h-11'>Loading...</div>;
+        return (
+            <div className='login absolute top-4 right-4 flex items-center gap-2'>
+                <div className='w-9 h-9 rounded-full glass-button opacity-40 animate-pulse' />
+            </div>
+        );
     }
 
     if (user && !user.is_anonymous) {
