@@ -26,9 +26,13 @@ describe('WeatherContainer Component', () => {
         (global.fetch as Mock).mockResolvedValue({
             ok: true,
             json: async () => ({
-                temperature: '20',
-                weather: '맑음',
-                region: '서울특별시 중구 명동',
+                current: {
+                    temperature: '20',
+                    weather: '맑음',
+                    region: '서울특별시 중구 명동',
+                },
+                forecast: [],
+                hourly: [],
             }),
         });
 
@@ -41,7 +45,7 @@ describe('WeatherContainer Component', () => {
         );
 
         // 로딩이 끝나고 데이터가 렌더링될 때까지 대기
-        const tempElement = await findByText('20');
+        const tempElement = await findByText(/20/);
         const weatherElement = await findByText('맑음');
         const regionElement = await findByText('명동');
 

@@ -1,16 +1,18 @@
-import { renderHook, waitFor, act } from '@testing-library/react';
+import React from 'react';
+import { renderHook, act } from '@testing-library/react';
 import { useAuth } from './useAuth';
 import { supabase } from '@/config/supabase';
 import { vi, describe, it, expect, beforeEach, Mock } from 'vitest';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import authReducer, { setUser } from '@/store/slice/authSlice';
+import { User } from '@supabase/supabase-js';
 
 // 1. Supabase 모킹
 vi.mock('@/config/supabase', () => ({
     supabase: {
         auth: {
-            getSession: vi.fn(),
-            onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
             signInWithOAuth: vi.fn(),
-            signInAnonymously: vi.fn(),
             signOut: vi.fn(),
         }
     }
@@ -21,48 +23,85 @@ describe('useAuth 훅 테스트', () => {
         vi.clearAllMocks();
     });
 
-    it('초기에는 로딩 상태여야 함', () => {
-        (supabase.auth.getSession as Mock).mockResolvedValue({ data: { session: null } });
-        (supabase.auth.signInAnonymously as Mock).mockResolvedValue({ data: { user: null } });
-        const { result } = renderHook(() => useAuth());
+    const createTestStore = (initialUser: User | null = null, initialLoading: boolean = true) => {
+        return configureStore({
+            reducer: {
+                auth: authReducer,
+            },
+            preloadedState: {
+                auth: {
+                    user: initialUser,
+                    loading: initialLoading,
+                }
+            }
+        });
+    };
+
+    const createWrapper = (store: ReturnType<typeof createTestStore>) => {
+        return ({ children }: { children: React.ReactNode }) =>
+            React.createElement(Provider, { store }, children);
+    };
+
+    it('스토어의 초기 상태(로딩 중)를 올바르게 반환해야 함', () => {
+        const store = createTestStore(null, true);
+        const { result } = renderHook(() => useAuth(), { wrapper: createWrapper(store) });
         expect(result.current.loading).toBe(true);
+        expect(result.current.user).toBeNull();
     });
 
-    it('세션 로드 성공 시 로딩이 끝나고 유저가 설정되어야 함', async () => {
-        const mockUser = { id: '123' };
-        (supabase.auth.getSession as Mock).mockResolvedValue({ data: { session: { user: mockUser } } });
+    it('스토어에 유저가 설정되면 유저 정보와 로딩 종료 상태를 반환해야 함', () => {
+        const mockUser = { id: 'user-123', email: 'test@example.com' } as unknown as User;
+        const store = createTestStore(null, true);
+        const { result } = renderHook(() => useAuth(), { wrapper: createWrapper(store) });
 
-        const { result } = renderHook(() => useAuth());
-
-        await waitFor(() => {
-            expect(result.current.loading).toBe(false);
+        act(() => {
+            store.dispatch(setUser(mockUser));
         });
 
+        expect(result.current.loading).toBe(false);
         expect(result.current.user).toEqual(mockUser);
     });
 
-    it('세션이 없으면 익명 로그인을 시도해야 함', async () => {
-        // 1. 시뮬레이션: 세션이 없는 상황
-        (supabase.auth.getSession as Mock).mockResolvedValue({ data: { session: null } });
-        
-        // 2. signInAnonymously를 Promise 객체로 저장하여 해결 대기
-        let resolveAnon: any;
-        const anonPromise = new Promise((resolve) => { resolveAnon = resolve; });
-        (supabase.auth.signInAnonymously as Mock).mockReturnValue(anonPromise);
-        
-        (supabase.auth.onAuthStateChange as Mock).mockReturnValue({ 
-            data: { subscription: { unsubscribe: vi.fn() } } 
+    it('handleGoogleSignIn 호출 시 supabase.auth.signInWithOAuth를 호출해야 함', async () => {
+        (supabase.auth.signInWithOAuth as Mock).mockResolvedValue({ error: null });
+        const store = createTestStore();
+        const { result } = renderHook(() => useAuth(), { wrapper: createWrapper(store) });
+
+        await act(async () => {
+            await result.current.handleGoogleSignIn();
         });
 
-        // 3. 훅 실행
-        renderHook(() => useAuth());
+        expect(supabase.auth.signInWithOAuth).toHaveBeenCalledWith(expect.objectContaining({
+            provider: 'google'
+        }));
+    });
 
-        // 4. 익명 로그인이 호출될 때까지 대기
-        await waitFor(() => {
-            expect(supabase.auth.signInAnonymously).toHaveBeenCalled();
-        }, { timeout: 2000 });
-        
-        // 5. 해결
-        resolveAnon({ data: { user: { id: 'anon_123' } } });
+    it('handleSignOut 호출 시 supabase.auth.signOut을 호출해야 함', async () => {
+        (supabase.auth.signOut as Mock).mockResolvedValue({ error: null });
+        const store = createTestStore();
+        const { result } = renderHook(() => useAuth(), { wrapper: createWrapper(store) });
+
+        await act(async () => {
+            await result.current.handleSignOut();
+        });
+
+        expect(supabase.auth.signOut).toHaveBeenCalled();
+    });
+
+    it('handleOpenPopover 및 setShowPopover 상태를 올바르게 제어해야 함', () => {
+        const store = createTestStore();
+        const { result } = renderHook(() => useAuth(), { wrapper: createWrapper(store) });
+
+        expect(result.current.showPopover).toBe(false);
+
+        act(() => {
+            result.current.handleOpenPopover();
+        });
+        expect(result.current.showPopover).toBe(true);
+
+        act(() => {
+            result.current.setShowPopover(false);
+        });
+        expect(result.current.showPopover).toBe(false);
     });
 });

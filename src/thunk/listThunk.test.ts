@@ -28,7 +28,7 @@ describe('listThunk 로그인 분기 테스트', () => {
         (supabase.auth.getSession as any).mockResolvedValue({ data: { session: null } });
         (chromeStorage.get as any).mockResolvedValue(null);
 
-        await loadListFromStorage()(vi.fn(), () => {}, undefined);
+        await loadListFromStorage(undefined)(vi.fn(), () => {}, undefined);
 
         expect(chromeStorage.get).toHaveBeenCalledWith('guest_list_items');
     });
@@ -38,7 +38,7 @@ describe('listThunk 로그인 분기 테스트', () => {
         (supabase.auth.getSession as any).mockResolvedValue({ data: { session: { user: { id: userId } } } });
         (chromeStorage.get as any).mockResolvedValue(null);
 
-        await loadListFromStorage()(vi.fn(), () => {}, undefined);
+        await loadListFromStorage(userId)(vi.fn(), () => {}, undefined);
 
         expect(chromeStorage.get).toHaveBeenCalledWith(`${userId}_list_items`);
     });

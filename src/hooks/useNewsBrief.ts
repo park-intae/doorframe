@@ -27,7 +27,12 @@ export const useNewsBrief = () => {
 
       setCategorySummary(data as CategorySummary);
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : '뉴스 요약 중 알 수 없는 오류가 발생했습니다.';
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : (err && typeof err === 'object' && 'message' in err && typeof (err as any).message === 'string')
+            ? (err as any).message
+            : '뉴스 요약 중 알 수 없는 오류가 발생했습니다.';
       console.error('뉴스 요약 중 오류 발생:', err);
       setError(errorMessage);
     } finally {

@@ -5,7 +5,7 @@ import Carousel from '../carousel';
 
 const NewsBriefing = lazy(() => import('../news/NewsBrief'));
 const CoinList = lazy(() => import("../../molecules/coin/CoinList"));
-const YoutubePlayerSlide = lazy(() => import('../carousel/YoutubePlayerSlide'));
+// const YoutubePlayerSlide = lazy(() => import('../carousel/YoutubePlayerSlide'));
 import CalendarSlide from '../calendar/CalendarSlide';
 
 export default function MainSec() {
@@ -22,7 +22,7 @@ export default function MainSec() {
                             <CalendarSlide />
                             <NewsBriefing />
                             <CoinList />
-                            <YoutubePlayerSlide />
+                            {/* <YoutubePlayerSlide /> */}
                         </Carousel>
                     </Suspense>
                 </div>

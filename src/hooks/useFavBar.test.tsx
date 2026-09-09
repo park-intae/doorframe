@@ -5,6 +5,7 @@ import { useFavBar } from './useFavBar';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import bookmarkReducer from '@/store/slice/bookmarkSlice';
+import authReducer from '@/store/slice/authSlice';
 
 describe('useFavBar Drag & Drop 테스트', () => {
     it('handleDragEnd 호출 시 순서가 변경되어야 함', () => {
@@ -12,6 +13,7 @@ describe('useFavBar Drag & Drop 테스트', () => {
         const store = configureStore({
             reducer: {
                 bookmarks: bookmarkReducer,
+                auth: authReducer,
             }
         });
 
