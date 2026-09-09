@@ -41,6 +41,12 @@ Deno.serve(async (req) => {
 
     const { nx, ny } = ConvertToGrid(lat, lon);
 
+    console.log('[Weather Backend] 📍 수신된 위치 좌표:', { lat, lon, nx, ny });
+    console.log('[Weather Backend] 🔑 API 키 설정 상태:', {
+      weatherKey: WEATHER_API_KEY ? `${WEATHER_API_KEY.slice(0, 5)}...` : '없음',
+      vworldKey: VWORLD_API_KEY ? `${VWORLD_API_KEY.slice(0, 5)}...` : '없음',
+    });
+
     const now = new Date();
     const kstOffset = 9 * 60 * 60 * 1000;
     const kstTime = new Date(now.getTime() + kstOffset);
@@ -76,16 +82,39 @@ Deno.serve(async (req) => {
     }
     const formattedBaseTime = baseHour.toString().padStart(2, '0') + '00';
 
+    const encodedWeatherKey = encodeURIComponent(decodeURIComponent(WEATHER_API_KEY));
+
+    console.log('[Weather Backend] ⏰ 기상청 조회 기준:', {
+      ncstDate: baseDateForNcst,
+      ncstTime: formattedNcstTime,
+      baseDate,
+      baseTime: formattedBaseTime,
+      nx,
+      ny
+    });
+
     // 2. API 호출 (numOfRows를 1000으로 늘려 3일치 데이터를 확실히 확보)
     const [currentRes, forecastRes, geoRes] = await Promise.all([
-      fetch(`${BASE_URL}/getUltraSrtNcst?serviceKey=${WEATHER_API_KEY}&dataType=JSON&base_date=${baseDateForNcst}&base_time=${formattedNcstTime}&nx=${nx}&ny=${ny}`),
-      fetch(`${BASE_URL}/getVilageFcst?serviceKey=${WEATHER_API_KEY}&dataType=JSON&base_date=${baseDate}&base_time=${formattedBaseTime}&nx=${nx}&ny=${ny}&numOfRows=1000`),
+      fetch(`${BASE_URL}/getUltraSrtNcst?serviceKey=${encodedWeatherKey}&dataType=JSON&base_date=${baseDateForNcst}&base_time=${formattedNcstTime}&nx=${nx}&ny=${ny}`),
+      fetch(`${BASE_URL}/getVilageFcst?serviceKey=${encodedWeatherKey}&dataType=JSON&base_date=${baseDate}&base_time=${formattedBaseTime}&nx=${nx}&ny=${ny}&numOfRows=1000`),
       fetch(`https://api.vworld.kr/req/address?service=address&request=getAddress&point=${lon},${lat}&key=${VWORLD_API_KEY}&type=both`)
     ]);
 
-    const currentData = await currentRes.json();
-    const forecastData = await forecastRes.json();
-    const geoData = await geoRes.json();
+    const currentText = await currentRes.text();
+    const forecastText = await forecastRes.text();
+    const geoText = await geoRes.text();
+
+    let currentData: any = {};
+    let forecastData: any = {};
+    let geoData: any = {};
+
+    try { currentData = JSON.parse(currentText); } catch { console.error('[Weather Backend] ❌ 기상청 초단기실황 JSON 파싱 실패 (원본):', currentText); }
+    try { forecastData = JSON.parse(forecastText); } catch { console.error('[Weather Backend] ❌ 기상청 단기예보 JSON 파싱 실패 (원본):', forecastText); }
+    try { geoData = JSON.parse(geoText); } catch { console.error('[Weather Backend] ❌ VWorld 지오코더 JSON 파싱 실패 (원본):', geoText); }
+
+    console.log('[Weather Backend] 🗺️ VWorld 역지오코딩 원본 응답:', JSON.stringify(geoData));
+    console.log('[Weather Backend] 🌤️ 기상청 초단기실황 응답 헤더/코드:', currentData?.response?.header);
+    console.log('[Weather Backend] 📅 기상청 단기예보 응답 헤더/코드:', forecastData?.response?.header);
 
     // 3. 지역 정보
     let region = '알 수 없는 지역';
@@ -93,6 +122,7 @@ Deno.serve(async (req) => {
       const addr = geoData.response.result[0].structure;
       region = `${addr.level1} ${addr.level2}`;
     }
+    console.log('[Weather Backend] 🏷️ 최종 파싱된 지역명(region):', region);
 
     const forecastItems = forecastData.response?.body?.items?.item || [];
     const nowHourStr = currentHour.toString().padStart(2, '0') + '00';
@@ -163,6 +193,8 @@ Deno.serve(async (req) => {
       forecast,
       hourly
     };
+
+    console.log('[Weather Backend] 📤 클라이언트로 반환하는 최종 데이터:', JSON.stringify(response));
 
     return new Response(JSON.stringify(response), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
