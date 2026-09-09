@@ -25,6 +25,7 @@ export function useFavBar() {
 
     const bookmarks = useSelector((state: RootState) => state.bookmarks);
     const userId = useSelector((state: RootState) => state.auth.user?.id);
+    const prevBookmarksRef = useRef(bookmarks);
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -38,10 +39,14 @@ export function useFavBar() {
 
         if (isInitialMount.current) {
             isInitialMount.current = false;
+            prevBookmarksRef.current = bookmarks;
             return;
         }
 
-        dispatch(saveBookmarksToStorage({ bookmarks, userId }));
+        if (prevBookmarksRef.current !== bookmarks) {
+            prevBookmarksRef.current = bookmarks;
+            dispatch(saveBookmarksToStorage({ bookmarks, userId }));
+        }
 
     }, [bookmarks, mounted, userId, dispatch]);
 

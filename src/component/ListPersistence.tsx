@@ -9,18 +9,23 @@ export default function ListPersistence() {
     const listState = useSelector((state: RootState) => state.list);
     const userId = useSelector((state: RootState) => state.auth.user?.id);
     const isInitialMount = useRef(true);
+    const prevListStateRef = useRef(listState);
 
     useEffect(() => {
         if (isInitialMount.current) {
             isInitialMount.current = false;
+            prevListStateRef.current = listState;
             return;
         }
 
-        const handler = setTimeout(() => {
-            dispatch(saveListToStorage({ listState, userId }));
-        }, 500);
+        if (prevListStateRef.current !== listState) {
+            prevListStateRef.current = listState;
+            const handler = setTimeout(() => {
+                dispatch(saveListToStorage({ listState, userId }));
+            }, 500);
 
-        return () => clearTimeout(handler);
+            return () => clearTimeout(handler);
+        }
     }, [listState, userId, dispatch]);
 
     return null;

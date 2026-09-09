@@ -35,6 +35,10 @@
 - **입력 필드 배경 경량화 및 플레이스홀더 대비 개선**: 입력 필드 배경색이 너무 어두워 글자가 묻히지 않도록 은은하게 연한 배경(`bg-black/[0.02] dark:bg-white/[0.04]`)으로 조정하고, placeholder 텍스트 대비(`placeholder:text-context/60`)를 높여 안내 문구가 한눈에 선명하게 들어오도록 최적화.
 - **레이블 연결 및 포커스 인터랙션 정돈**: 하드코딩되어 있던 레이블 `htmlFor` 속성을 각 인풋 `id`와 정확히 연결하고 포커스 링 적용.
 
+#### 9. 비로그인/게스트 북마크 및 메모/할 일 영속성(Persistence) 버그 원천 해결
+- **초기 로딩 누락 버그 해결**: `App.tsx`의 세션 초기화(`initSession`) 및 인증 리스너(`onAuthStateChange`)에서 세션이 없는 경우(비로그인 상태) `loadBookmarksFromStorage` 및 `loadListFromStorage` 호출이 누락되어 새로고침 시 저장된 북마크와 메모/할 일이 불러와지지 않고 초기화되던 치명적인 오류 원천 해결.
+- **빈 배열 덮어쓰기 방어**: `useFavBar` 및 `ListPersistence`에 이전 상태 참조(`prevBookmarksRef`, `prevListStateRef`)를 적용하여, 초기 마운트 시점이나 사용자 인증 상태 변경 시 저장소를 빈 배열로 덮어쓰지 않도록 안전 가드 강화.
+
 ---
 
 ## [2026-09-09] 확장 프로그램 프로덕션 배포 및 보안 프록시 아키텍처 확립 (v1.3.01)
