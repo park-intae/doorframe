@@ -1,3 +1,21 @@
+## [2026-09-09] 확장 프로그램 프로덕션 배포 및 보안 프록시 아키텍처 확립 (v1.3.01)
+### 주요 변경 사항
+#### 1. 보안 프록시 아키텍처 구축 및 환경 변수 격리
+- **클라이언트 키 노출 차단**: 기상청 Open API, VWorld Geocoder, Google Gemini API 등 일일 호출량과 비용이 연계된 민감한 외부 키를 클라이언트 번들(`dist/`)에서 전면 배제하고 Supabase Edge Functions Secrets로 완전 격리.
+- **클라이언트 공개 키 표준화**: 프론트엔드 `.env`에는 RLS 및 Supabase Auth 정책으로 보호되는 `VITE_SUPABASE_URL` 및 `VITE_SUPABASE_ANON_KEY`만 주입되도록 재설계하여 로컬 확장 프로그램 환경에서도 개발자 키가 안전하게 보호되도록 조치.
+
+#### 2. 캐러셀 슬라이드 컴팩트화 및 안정성 제고
+- **유튜브 슬라이드 비활성화**: 과도한 권한(Google OAuth scope) 및 유지보수 부담이 큰 유튜브 플레이어 슬라이드(`YoutubePlayerSlide`)를 비활성화(코드는 보존)하여 핵심 3종 슬라이드(캘린더/메모, AI 뉴스, 실시간 코인 시세)로 캐러셀을 컴팩트하게 재편.
+
+#### 3. 단위 테스트 스위트 전수 정상화 (17/17 통과)
+- **JSDOM 테스트 환경 보강**: `setup.ts`에 JSDOM 환경용 `localStorage` 모킹을 추가하여 스토리지 의존 컴포넌트 테스트 오류 해소.
+- **Redux 구조 변경에 따른 테스트 동기화**: `useAuth`, `useFavBar`, `useRadioPlayer`, `listThunk`, `WeatherContainer`의 Provider 래퍼 및 파라미터 불일치를 최신 상태로 갱신하여 17개 테스트 파일(37개 테스트 항목) 100% 통과 보장.
+
+#### 4. 크롬 확장 프로그램 프로덕션 빌드 완료
+- 원격 Supabase Cloud 백엔드와 연동 검증 및 `npm run build`를 통한 최종 `dist/` 빌드 번들 산출 완료. Chrome 개발자 모드 탑재 준비 완료.
+
+---
+
 ## [2026-05-25] UI/UX 폴리싱 (내비게이션 및 팝업 최적화)
 ### 주요 변경 사항
 #### 1. 내비게이션 Popover 최적화
