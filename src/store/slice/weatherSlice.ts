@@ -34,7 +34,11 @@ export const fetchWeather = createAsyncThunk('weather/fetchWeather', async (_, {
       const now = Date.now();
 
       if (lastFetch && cached && now - parseInt(lastFetch) < CACHE_DURATION) {
-        return JSON.parse(cached) as WeatherResponse;
+        const parsed = JSON.parse(cached) as WeatherResponse;
+        // 기본 위치(폴백) 캐시가 아닐 때만 유효한 캐시로 재사용
+        if (!parsed.isFallback) {
+          return parsed;
+        }
       }
     }
 
@@ -85,10 +89,15 @@ export const fetchWeather = createAsyncThunk('weather/fetchWeather', async (_, {
       isFallback: isLocationFallback || !rawData.current || rawData.temperature === 'N/A',
     };
 
-    // 3. 캐싱 및 데이터 반환
+    // 3. 정상 위치 데이터만 캐싱 (기본 위치 폴백일 때는 캐시를 삭제하여 다음 탭에서 재시도)
     if (typeof window !== 'undefined') {
+      if (!data.isFallback) {
         localStorage.setItem('lastWeatherFetch', Date.now().toString());
         localStorage.setItem('cachedWeather', JSON.stringify(data));
+      } else {
+        localStorage.removeItem('cachedWeather');
+        localStorage.removeItem('lastWeatherFetch');
+      }
     }
     return data;
   } catch (err: unknown) {
