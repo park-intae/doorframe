@@ -1,7 +1,11 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # error log
-errorLogs/*.txt
+errorLogs/
+
+# bundle stats & build cache
+stats.html
+vite.config.ts.timestamp-*
 
 # dependencies
 /node_modules

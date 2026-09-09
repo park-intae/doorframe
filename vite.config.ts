@@ -5,12 +5,13 @@ import path from 'path';
 import tailwindcss from '@tailwindcss/vite';
 import { visualizer } from 'rollup-plugin-visualizer';
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+  base: command === 'serve' ? '/' : (process.env.VITE_BASE_PATH || './'),
   plugins: [
     react(),
     tailwindcss(),
     visualizer({
-      open: true,
+      open: process.env.VISUALIZER_OPEN === 'true',
       filename: 'stats.html',
       gzipSize: true,
       brotliSize: true,
@@ -39,7 +40,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'index.html'),
-        popup: path.resolve(__dirname, 'public/popup.html'),
+        popup: path.resolve(__dirname, 'popup.html'),
         background: path.resolve(__dirname, 'service-worker.js'),
         content: path.resolve(__dirname, 'content.js'),
       },
@@ -65,4 +66,4 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts',
   },
-});
+}));

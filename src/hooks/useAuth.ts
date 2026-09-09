@@ -147,10 +147,8 @@ export function useAuth() {
                     chrome.tabs.onRemoved.addListener(onRemovedListener);
                 });
             } else {
-                // 일반 웹 브라우저 환경 폴백
-                const redirectTo = window.location.origin.endsWith('/')
-                    ? window.location.origin
-                    : `${window.location.origin}/`;
+                // 일반 웹 브라우저 환경 폴백 (GitHub Pages 등 서브패스 지원)
+                const redirectTo = window.location.href.split('?')[0].split('#')[0];
 
                 const { error } = await supabase.auth.signInWithOAuth({
                     provider: 'google',

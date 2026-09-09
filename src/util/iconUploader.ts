@@ -4,7 +4,7 @@ import { supabase } from "@/config/supabase";
  * 외부 파비콘 URL을 가져와 Supabase Storage에 업로드하고 공개 URL을 반환합니다.
  */
 export async function uploadFavicon(urlString: string): Promise<string> {
-    const defaultIcon = '/images/internet.svg';
+    const defaultIcon = `${import.meta.env.BASE_URL}images/internet.svg`;
 
     try {
         const urlObj = new URL(urlString);

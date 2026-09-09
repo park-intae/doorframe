@@ -1,3 +1,31 @@
+## [2026-09-09] 확장 프로그램 빌드 파이프라인 정규화 및 GitHub Pages 웹 데모 자동 배포 구축
+
+### 주요 변경 사항
+
+#### 1. 크롬 확장 프로그램 `popup.html` 엔트리 정규화 및 번들링 버그 해결
+- **팝업 엔트리 프로젝트 루트 재배치**: `public/popup.html`에 위치하여 Vite 정적 복사 시 비번들링 원본이 `dist/popup.html`로 복사되던 구조를 개선. `popup.html`을 프로젝트 루트로 이전하고 `vite.config.ts`의 Rollup input 경로를 재지정하여 번들링된 정상 스크립트가 `dist/popup.html`로 즉각 연결되도록 교정.
+
+#### 2. 크로스 플랫폼 빌드 스크립트 정규화 및 Windows 종속성 제거
+- **중복 복사 명령 제거**: `package.json`의 `build` 명령에 포함되어 있던 Windows 전용 명령어(`copy`, `xcopy`)를 제거하고 `vite build`로 일원화. Vite 내장 정적 에셋 복사(`publicDir`) 기능을 온전히 활용하여 Linux(GitHub Actions CI), macOS, Windows 전 환경에서 동일하게 확장 프로그램 빌드가 수행되도록 안정화.
+
+#### 3. 확장 프로그램 우선 기본값 유지 및 GitHub Pages 배포 환경 분리
+- **동적 `base` 경로 바인딩**: 평소 로컬 확장 프로그램 빌드 시에는 상대경로(`base: './'`)를 유지하며, GitHub Pages 배포 환경(CI)에서만 `VITE_BASE_PATH` 환경 변수를 주입받아 서브 도메인(`/doorframe/`)으로 빌드되도록 분리 설계.
+- **정적 에셋 경로 호환성 확보**: `BookmarkBar`, `Menus`, `iconUploader` 등 코드 내 에셋 참조 경로에 `import.meta.env.BASE_URL`을 적용하여 확장 프로그램과 웹 데모 양쪽에서 리소스 깨짐 없이 안전하게 로드되도록 호환성 부여.
+
+#### 4. 날씨 아이콘 로컬 에셋 참조 경로 상대경로화 및 중복 정리
+- **로컬 에셋 기반 경로 수정**: `public/style/wu-icons-style.css` 내의 하드코딩된 절대경로(`/style/icons/`)를 상대경로(`./icons/`)로 보정하여 외부 의존성 없이 순수 로컬 SVG 아이콘 파일들을 오프라인 및 서브패스 환경에서도 무결하게 렌더링되도록 수정. 미사용 중복 파일(`wu-icons-style.min.css`) 정리.
+
+#### 5. 웹 데모 환경 OAuth 리디렉션 서브패스 지원
+- **동적 콜백 오리진 지원**: 확장 프로그램 외 일반 웹 브라우저 환경에서 로그인 시, GitHub Pages와 같은 서브패스 URL 구조에서도 정확히 현재 데모 페이지로 리디렉션되도록 `redirectTo` 로직 개선.
+
+#### 6. GitHub Actions 기반 GitHub Pages 자동 배포 파이프라인 구축
+- **`.github/workflows/deploy.yml` 추가**: `new-master` 브랜치에 푸시될 때 자동으로 의존성 설치, 웹 데모 빌드, GitHub Pages 배포가 원스톱으로 처리되는 공식 워크플로우 도입.
+
+#### 7. 빌드 캐시 및 불필요한 산출물 Git 관리 대상 정리
+- **`.gitignore` 보강**: 번들 분석 결과물(`stats.html`), 에러 로그 디렉토리(`errorLogs/`), Vite 임시 타임스탬프 캐시를 gitignore에 추가하고 원격 추적 해제.
+
+---
+
 ## [2026-09-09] 날씨 백엔드 엣지 함수 배포 및 이중 장애 복구(Dual Fallback) 아키텍처 확립 (v1.3.02)
 ### 주요 변경 사항
 #### 1. 날씨 백엔드(Supabase Edge Functions) 프로덕션 배포 완료
