@@ -135,8 +135,9 @@ Chrome 확장 프로그램 특성상 클라이언트 코드(`dist/`)에 민감�
 | 서비스/기능 | 외부 API 발급처 | 사용 목적 및 연동 엔드포인트 | 저장 위치 |
 | :--- | :--- | :--- | :--- |
 | **인증 & 백엔드 연동** | [Supabase](https://supabase.com/dashboard) | Google OAuth 로그인, 파비콘 Storage 업로드, 엣지 함수 호출 | 클라이언트 [`.env`](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/doorframe/.env)<br>(`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`) |
-| **단기/초단기 날씨 예보** | [공공데이터포털](https://www.data.go.kr/)<br>(`기상청_단기예보 조회서비스`) | - `getUltraSrtNcst`: 현재 시각 실시간 기온/강수 실황<br>- `getVilageFcst`: 24시간 시간별 기온 및 3일 예보 데이터 | Supabase Secrets<br>(`VITE_PUBLIC_WEATHER_API_KEY`) |
-| **위치 역지오코딩** | [VWorld 국가공간정보포털](https://www.vworld.kr/)<br>(`오픈API 지오코더`) | GPS 위경도(`lat`, `lon`) 좌표를 '서울특별시 중구' 등 사용자 친화적 행정동 명칭으로 변환 | Supabase Secrets<br>(`VITE_PUBLIC_GEOCODER_API_KEY`) |
+| **단기/초단기 날씨 예보**<br>(1순위 주 엔진) | [공공데이터포털](https://www.data.go.kr/)<br>(`기상청_단기예보 조회서비스`) | - `getUltraSrtNcst`: 현재 시각 실시간 기온/강수 실황<br>- `getVilageFcst`: 24시간 시간별 기온 및 3일 예보 데이터 | Supabase Secrets<br>(`VITE_PUBLIC_WEATHER_API_KEY`) |
+| **위치 역지오코딩**<br>(1순위 주 엔진) | [VWorld 국가공간정보포털](https://www.vworld.kr/)<br>(`오픈API 지오코더`) | GPS 위경도(`lat`, `lon`, `EPSG:4326`) 좌표를 '서울특별시 중구 명동' 등 사용자 친화적 행정동 명칭으로 변환 | Supabase Secrets<br>(`VITE_PUBLIC_GEOCODER_API_KEY`) |
+| **무료 기상/지오코딩 백업**<br>(2순위 장애 대비 엔진) | [Open-Meteo](https://open-meteo.com/)<br>& [BigDataCloud](https://www.bigdatacloud.com/) | 공공데이터포털/VWorld 서버 점검, 일일 할당량 초과, 키 만료 시 실시간 기온/24시간 차트 및 한글 주소를 무중단 대리 공급 | Supabase Edge Function 내부<br>(별도 키 발급 불필요, 무제한 오픈 API) |
 | **AI 뉴스 요약 및 키워드** | [Google AI Studio](https://aistudio.google.com/)<br>(`Gemini API`) | 최신 구글/네이버 뉴스 피드를 분석하여 카테고리별 핵심 키워드 추출 및 트렌드 3줄 요약 | Supabase Secrets<br>(`GEMINI_API_KEY`) |
 
 ## 📁 프로젝트 구조
