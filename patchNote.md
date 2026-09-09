@@ -47,10 +47,15 @@
   - 다크 모드에서 부자연스럽던 흰색 사각형 배경(`bg-white`)을 다크 글래스 스타일과 어우러지는 반투명 글래스 컨테이너로 정돈.
   - 로그아웃 버튼에 직관적인 `LogOut` 아이콘을 배치하고 호버 모션 및 반응형 피드백 적용.
 
-#### 11. Chrome 확장 프로그램 전용 OAuth 웹 인증 흐름(`chrome.identity`) 도입 및 로그인 무한로딩 해결
-- **외부 리디렉션 차단 및 무한로딩 근본 해결**: 브라우저 일반 탭 리디렉션 방식의 경우 구글 로그인 완료 후 외부 웹(`https://...supabase.co`)에서 확장 프로그램 스킴(`chrome-extension://`)으로의 복귀가 크롬 보안 정책에 의해 차단되어 흰 화면 무한로딩에 빠지던 문제를 원천 해결.
-- **`chrome.identity.launchWebAuthFlow` 팝업 파이프라인 구축**: 크롬 확장 프로그램 표준 API를 연동하여 독립 팝업 창에서 구글 로그인이 원활히 완료되도록 개선. 사용자가 계정을 선택하면 백그라운드에서 인증 토큰/코드를 자동 파싱하여 `setSession`/`exchangeCodeForSession`으로 세션을 즉시 복원하고 사용자 맞춤 데이터를 로드하도록 구현.
-- **사용자 취소 예외 안전 처리**: 사용자가 로그인 팝업 창을 닫거나 취소한 경우 불필요한 실패 경고창(`alert`)을 띄우지 않고 부드럽게 창을 닫도록 방어 처리.
+#### 11. Chrome 확장 프로그램 전용 Google OAuth 탭 인증 및 다중 콜백 인터셉트 아키텍처 확립
+- **Google OAuth 웹뷰 차단(`400 Bad Request`) 원천 해결**: 구글 보안 정책상 크롬 임베디드 웹뷰(`launchWebAuthFlow`)에서 발생하던 `Authorization page could not be loaded` 오류를 극복하기 위해 `chrome.tabs.create` 기반의 브라우저 독립 탭 인증 파이프라인으로 전환.
+- **코드 레벨 리디렉션 주소 지정 및 다중 오리진 콜백 가로채기(Interception)**:
+  - `supabase.auth.signInWithOAuth` 호출 시 확장 프로그램 고유 엔트리(`chrome.runtime.getURL('index.html')`)를 `redirectTo`로 명시 주입.
+  - Supabase 대시보드 설정(Site URL 또는 Redirect URLs)에 따라 `chrome-extension://`, `localhost`, `127.0.0.1`, `*.chromiumapp.org` 중 어떤 콜백 주소로 반환되더라도 `chrome.tabs.onUpdated` 리스너가 인증 페이로드(`code`, `access_token`, `error`)를 코드 레벨에서 가로채 PKCE 세션 교환(`exchangeCodeForSession`) 또는 해시 토큰 설정(`setSession`)을 완벽하게 처리.
+  - 인증 성공 즉시 로그인 탭 자동 정리(`chrome.tabs.remove`) 및 사용자 북마크/리스트 동기화 수행.
+- **중복 요청 방지 및 우아한 취소(Graceful Cleanup)**:
+  - 로그인 진행 중 다중 클릭으로 인한 중복 인증 요청을 차단하기 위해 `isSigningInRef` 락 적용.
+  - 사용자가 로그인 도중 탭을 닫을 경우(`chrome.tabs.onRemoved`) 오류 팝업 없이 리스너를 안전하게 해제하도록 처리.
 
 ---
 

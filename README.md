@@ -212,9 +212,11 @@ doorframe/
 
 ### 로그인 안 됨
 
-- Supabase 프로젝트에서 Google Provider가 활성화되어 있는지 확인
-- Google OAuth 리디렉션 URI 설정 확인
-- `.env` 파일의 Supabase 키 확인
+- Supabase 대시보드 (`Authentication > URL Configuration > Redirect URLs`)에 확장 프로그램 ID 기반 URI 등록 확인:
+  - `chrome-extension://<YOUR_EXTENSION_ID>/**`
+  - `https://<YOUR_EXTENSION_ID>.chromiumapp.org/**`
+- Supabase 대시보드 (`Authentication > Providers > Google`) 활성화 및 Client ID / Secret 설정 확인
+- 클라이언트 `.env` 파일의 `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` 확인
 
 ### 위치 권한 오류
 
@@ -254,9 +256,10 @@ doorframe/
 - **로그인/로그아웃 아이콘 벡터화 및 계정 관리 UI 폴리싱**:
   - 래스터 이미지 파일 에셋(`public/images/login.webp`) 의존성을 제거하고, `lucide-react` 고화질 벡터 아이콘(`LogIn`, `LogOut`, `User`)으로 전면 교체.
   - 상단 헤더 컨트롤 규격을 통일하고, 팝오버 내 다크 모드 스타일 조화 및 로그아웃 버튼 시인성·모션 개선.
-- **Chrome 확장 프로그램 전용 OAuth 웹 인증 흐름(`chrome.identity`) 연동**:
-  - 일반 웹 리디렉션 시 외부 사이트에서 `chrome-extension://` 스킴 복귀가 차단되어 발생하던 로그인 무한로딩 문제 해결.
-  - `chrome.identity.launchWebAuthFlow` 기반 독립 팝업 로그인 파이프라인을 구축하여 사용자 구글 계정 선택 시 세션 토큰을 백그라운드 자동 수신하도록 최적화.
+- **Chrome 확장 프로그램 전용 Google OAuth 탭 인증 및 다중 콜백 인터셉트 아키텍처 확립**:
+  - 구글 보안 정책상 크롬 임베디드 웹뷰(`launchWebAuthFlow`)에서 발생하는 웹뷰 차단(`400 Bad Request` / `Authorization page could not be loaded`) 문제를 완전히 극복하기 위해 `chrome.tabs.create` 기반의 브라우저 전용 탭 인증 흐름으로 전환.
+  - `supabase.auth.signInWithOAuth` 호출 시 `chrome.runtime.getURL('index.html')`을 코드 레벨에서 명시적으로 지정하고, Supabase 대시보드 리디렉션 설정에 따라 `chrome-extension://`, `localhost`, `127.0.0.1`, `*.chromiumapp.org` 등 어떤 콜백 오리진으로 반환되더라도 `chrome.tabs.onUpdated` 리스너가 인증 페이로드(`code`, `access_token`)를 감지하여 세션 복원 및 사용자 맞춤 데이터를 로드하고 로그인 탭을 자동 정리하도록 완벽 구현.
+  - 다중 클릭 방지 락(`isSigningInRef`) 및 사용자 탭 닫기 감지(`chrome.tabs.onRemoved`)를 통한 안전한 세션 정리(Graceful Cleanup) 적용.
 
 ### v1.3.01 (2026-09-09)
 - **확장 프로그램 프로덕션 배포 완료**:

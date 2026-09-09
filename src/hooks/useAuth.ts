@@ -16,48 +16,17 @@ export function useAuth() {
     const isSigningInRef = useRef(false);
     const [isSigningIn, setIsSigningIn] = useState(false);
 
-    const launchWebAuthFlowAsync = (url: string): Promise<string | undefined> => {
-        return new Promise((resolve, reject) => {
-            chrome.identity.launchWebAuthFlow(
-                { url, interactive: true },
-                (responseUrl) => {
-                    if (chrome.runtime?.lastError) {
-                        const message = chrome.runtime.lastError.message || '';
-                        // 사용자가 창을 닫거나 취소한 경우 정상 취소로 처리 (영문/한글 메시지 대응)
-                        if (
-                            message.includes('The user did not approve') ||
-                            message.includes('closed by the user') ||
-                            message.includes('User cancelled') ||
-                            message.includes('사용자가') ||
-                            message.includes('닫았습니다') ||
-                            message.includes('닫혔습니다')
-                        ) {
-                            resolve(undefined);
-                            return;
-                        }
-                        reject(new Error(`[인증 창 오류] ${message}`));
-                        return;
-                    }
-                    if (!responseUrl) {
-                        resolve(undefined);
-                        return;
-                    }
-                    resolve(responseUrl);
-                }
-            );
-        });
-    };
-
     const handleGoogleSignIn = async () => {
         if (isSigningInRef.current) return;
         isSigningInRef.current = true;
         setIsSigningIn(true);
 
         try {
-            const isChromeExtension = typeof chrome !== 'undefined' && !!chrome.identity?.launchWebAuthFlow;
+            const isChromeExtension = typeof chrome !== 'undefined' && !!chrome.tabs?.create;
 
             if (isChromeExtension) {
-                const redirectUrl = chrome.identity.getRedirectURL();
+                // 확장 프로그램의 실제 내부 index.html 주소를 명시적으로 리디렉션 주소로 지정
+                const redirectUrl = chrome.runtime.getURL('index.html');
 
                 const { data, error } = await supabase.auth.signInWithOAuth({
                     provider: 'google',
@@ -71,59 +40,114 @@ export function useAuth() {
                     }
                 });
 
-                if (error) throw new Error(`[Supabase OAuth 요청 실패] ${error.message}`);
+                if (error) throw new Error(`[OAuth 요청 실패] ${error.message}`);
                 if (!data?.url) throw new Error('인증 URL을 생성하지 못했습니다.');
 
-                const responseUrl = await launchWebAuthFlowAsync(data.url);
-                if (!responseUrl) {
-                    // 사용자가 팝업을 닫음
-                    return;
+                // 새 브라우저 탭으로 구글 로그인 열기 (웹뷰 차단 회피)
+                const loginTab = await chrome.tabs.create({ url: data.url });
+                const loginTabId = loginTab.id;
+
+                if (!loginTabId) {
+                    throw new Error('로그인 탭을 열 수 없습니다.');
                 }
 
-                const url = new URL(responseUrl);
-                // OAuth 에러 파라미터 확인
-                const hashParams = new URLSearchParams(url.hash.replace(/^#/, ''));
-                const errorParam = url.searchParams.get('error') || hashParams.get('error');
-                const errorDesc = url.searchParams.get('error_description') || hashParams.get('error_description');
-                if (errorParam) {
-                    throw new Error(`[인증 거부: ${errorParam}] ${errorDesc || ''}`);
-                }
+                // 탭 URL 변경 감지 리스너
+                await new Promise<void>((resolve, reject) => {
+                    let cleanedUp = false;
 
-                const code = url.searchParams.get('code');
+                    const cleanup = () => {
+                        if (cleanedUp) return;
+                        cleanedUp = true;
+                        chrome.tabs.onUpdated.removeListener(onUpdatedListener);
+                        chrome.tabs.onRemoved.removeListener(onRemovedListener);
+                    };
 
-                if (code) {
-                    // PKCE 코드 교환
-                    const { data: sessionData, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-                    if (exchangeError) throw new Error(`[세션 코드 교환 실패] ${exchangeError.message}`);
-                    if (sessionData.session?.user) {
-                        dispatch(setUser(sessionData.session.user));
-                        dispatch(loadBookmarksFromStorage(sessionData.session.user.id));
-                        dispatch(loadListFromStorage(sessionData.session.user.id));
-                    }
-                } else {
-                    // Implicit / Hash 토큰 교환
-                    const accessToken = hashParams.get('access_token');
-                    const refreshToken = hashParams.get('refresh_token');
-
-                    if (accessToken && refreshToken) {
-                        const { data: sessionData, error: setSessionError } = await supabase.auth.setSession({
-                            access_token: accessToken,
-                            refresh_token: refreshToken,
-                        });
-                        if (setSessionError) throw new Error(`[세션 설정 실패] ${setSessionError.message}`);
-                        if (sessionData.session?.user) {
-                            dispatch(setUser(sessionData.session.user));
-                            dispatch(loadBookmarksFromStorage(sessionData.session.user.id));
-                            dispatch(loadListFromStorage(sessionData.session.user.id));
+                    const onRemovedListener = (tabId: number) => {
+                        if (tabId === loginTabId) {
+                            cleanup();
+                            resolve(); // 사용자가 탭을 닫음 (정상 취소)
                         }
-                    } else {
-                        throw new Error(`인증 응답에서 토큰이나 코드를 찾을 수 없습니다.\n수신 URL: ${responseUrl}`);
-                    }
-                }
+                    };
 
-                setShowPopover(false);
+                    const onUpdatedListener = async (tabId: number, changeInfo: chrome.tabs.TabChangeInfo) => {
+                        if (tabId !== loginTabId || !changeInfo.url) return;
+
+                        try {
+                            const currentUrl = new URL(changeInfo.url);
+
+                            // 콜백 URL의 실제 origin에 도달하고 인증 파라미터가 있는지 엄격히 검사
+                            // (chrome-extension://, localhost, 127.0.0.1, chromiumapp.org 모두 코드 단위에서 완벽 포착)
+                            const isCallbackOrigin =
+                                currentUrl.protocol === 'chrome-extension:' ||
+                                currentUrl.hostname === 'localhost' ||
+                                currentUrl.hostname === '127.0.0.1' ||
+                                currentUrl.hostname.endsWith('.chromiumapp.org');
+
+                            const hasAuthPayload =
+                                currentUrl.searchParams.has('code') ||
+                                currentUrl.searchParams.has('error') ||
+                                currentUrl.hash.includes('access_token') ||
+                                currentUrl.hash.includes('error');
+
+                            if (isCallbackOrigin && hasAuthPayload) {
+                                cleanup();
+                                try {
+                                    // 로그인 완료 탭 자동 닫기
+                                    await chrome.tabs.remove(loginTabId);
+                                } catch {}
+
+                                const hashParams = new URLSearchParams(currentUrl.hash.replace(/^#/, ''));
+                                const errorParam = currentUrl.searchParams.get('error') || hashParams.get('error');
+                                const errorDesc = currentUrl.searchParams.get('error_description') || hashParams.get('error_description');
+
+                                if (errorParam) {
+                                    throw new Error(`[인증 거부: ${errorParam}] ${errorDesc || ''}`);
+                                }
+
+                                const code = currentUrl.searchParams.get('code');
+
+                                if (code) {
+                                    // PKCE 코드 교환
+                                    const { data: sessionData, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+                                    if (exchangeError) throw new Error(`[세션 코드 교환 실패] ${exchangeError.message}`);
+                                    if (sessionData.session?.user) {
+                                        dispatch(setUser(sessionData.session.user));
+                                        dispatch(loadBookmarksFromStorage(sessionData.session.user.id));
+                                        dispatch(loadListFromStorage(sessionData.session.user.id));
+                                    }
+                                } else {
+                                    // Implicit / Hash 토큰 교환
+                                    const accessToken = hashParams.get('access_token');
+                                    const refreshToken = hashParams.get('refresh_token');
+
+                                    if (accessToken && refreshToken) {
+                                        const { data: sessionData, error: setSessionError } = await supabase.auth.setSession({
+                                            access_token: accessToken,
+                                            refresh_token: refreshToken,
+                                        });
+                                        if (setSessionError) throw new Error(`[세션 설정 실패] ${setSessionError.message}`);
+                                        if (sessionData.session?.user) {
+                                            dispatch(setUser(sessionData.session.user));
+                                            dispatch(loadBookmarksFromStorage(sessionData.session.user.id));
+                                            dispatch(loadListFromStorage(sessionData.session.user.id));
+                                        }
+                                    }
+                                }
+
+                                setShowPopover(false);
+                                resolve();
+                            }
+                        } catch (err) {
+                            cleanup();
+                            reject(err);
+                        }
+                    };
+
+                    chrome.tabs.onUpdated.addListener(onUpdatedListener);
+                    chrome.tabs.onRemoved.addListener(onRemovedListener);
+                });
             } else {
-                // 웹 브라우저 환경 폴백
+                // 일반 웹 브라우저 환경 폴백
                 const redirectTo = window.location.origin.endsWith('/')
                     ? window.location.origin
                     : `${window.location.origin}/`;
@@ -144,12 +168,7 @@ export function useAuth() {
             }
         } catch (error: any) {
             console.error('로그인 에러:', error);
-            const message = error?.message || String(error);
-            if (message.includes('Only one web auth flow')) {
-                alert('이미 로그인 창이 백그라운드에 열려 있습니다.\n\n작업 표시줄이나 브라우저 창 뒤에 숨겨진 구글 로그인 창이 있는지 확인해 주세요.\n만약 창이 보이지 않는다면 크롬 확장 프로그램 관리자(chrome://extensions)에서 Doorframe 새로고침을 누른 후 다시 시도해 주세요.');
-            } else {
-                alert(`로그인에 실패했습니다.\n\n오류 내용: ${message}`);
-            }
+            alert(`로그인에 실패했습니다.\n\n오류 내용: ${error?.message || error || '알 수 없는 오류'}`);
         } finally {
             isSigningInRef.current = false;
             setIsSigningIn(false);
