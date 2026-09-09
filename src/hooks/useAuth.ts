@@ -20,16 +20,23 @@ export function useAuth() {
                 (responseUrl) => {
                     if (chrome.runtime?.lastError) {
                         const message = chrome.runtime.lastError.message || '';
-                        // 사용자가 로그인 팝업을 직접 닫은 경우 예외가 아닌 정상 취소로 처리
+                        // 사용자가 창을 닫거나 취소한 경우 정상 취소로 처리 (영문/한글 메시지 대응)
                         if (
                             message.includes('The user did not approve') ||
                             message.includes('closed by the user') ||
-                            message.includes('User cancelled')
+                            message.includes('User cancelled') ||
+                            message.includes('사용자가') ||
+                            message.includes('닫았습니다') ||
+                            message.includes('닫혔습니다')
                         ) {
                             resolve(undefined);
                             return;
                         }
-                        reject(new Error(message));
+                        reject(new Error(`[인증 창 오류] ${message}`));
+                        return;
+                    }
+                    if (!responseUrl) {
+                        resolve(undefined);
                         return;
                     }
                     resolve(responseUrl);
@@ -57,8 +64,8 @@ export function useAuth() {
                     }
                 });
 
-                if (error) throw error;
-                if (!data?.url) throw new Error('인증 URL을 가져오지 못했습니다.');
+                if (error) throw new Error(`[Supabase OAuth 요청 실패] ${error.message}`);
+                if (!data?.url) throw new Error('인증 URL을 생성하지 못했습니다.');
 
                 const responseUrl = await launchWebAuthFlowAsync(data.url);
                 if (!responseUrl) {
@@ -67,12 +74,20 @@ export function useAuth() {
                 }
 
                 const url = new URL(responseUrl);
+                // OAuth 에러 파라미터 확인
+                const hashParams = new URLSearchParams(url.hash.replace(/^#/, ''));
+                const errorParam = url.searchParams.get('error') || hashParams.get('error');
+                const errorDesc = url.searchParams.get('error_description') || hashParams.get('error_description');
+                if (errorParam) {
+                    throw new Error(`[인증 거부: ${errorParam}] ${errorDesc || ''}`);
+                }
+
                 const code = url.searchParams.get('code');
 
                 if (code) {
                     // PKCE 코드 교환
                     const { data: sessionData, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-                    if (exchangeError) throw exchangeError;
+                    if (exchangeError) throw new Error(`[세션 코드 교환 실패] ${exchangeError.message}`);
                     if (sessionData.session?.user) {
                         dispatch(setUser(sessionData.session.user));
                         dispatch(loadBookmarksFromStorage(sessionData.session.user.id));
@@ -80,22 +95,22 @@ export function useAuth() {
                     }
                 } else {
                     // Implicit / Hash 토큰 교환
-                    const hash = url.hash.startsWith('#') ? url.hash.substring(1) : url.hash;
-                    const params = new URLSearchParams(hash);
-                    const accessToken = params.get('access_token');
-                    const refreshToken = params.get('refresh_token');
+                    const accessToken = hashParams.get('access_token');
+                    const refreshToken = hashParams.get('refresh_token');
 
                     if (accessToken && refreshToken) {
                         const { data: sessionData, error: setSessionError } = await supabase.auth.setSession({
                             access_token: accessToken,
                             refresh_token: refreshToken,
                         });
-                        if (setSessionError) throw setSessionError;
+                        if (setSessionError) throw new Error(`[세션 설정 실패] ${setSessionError.message}`);
                         if (sessionData.session?.user) {
                             dispatch(setUser(sessionData.session.user));
                             dispatch(loadBookmarksFromStorage(sessionData.session.user.id));
                             dispatch(loadListFromStorage(sessionData.session.user.id));
                         }
+                    } else {
+                        throw new Error(`인증 응답에서 토큰이나 코드를 찾을 수 없습니다.\n수신 URL: ${responseUrl}`);
                     }
                 }
 
@@ -120,9 +135,9 @@ export function useAuth() {
                 if (error) throw error;
                 setShowPopover(false);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('로그인 에러:', error);
-            alert('로그인에 실패했습니다.');
+            alert(`로그인에 실패했습니다.\n\n오류 내용: ${error?.message || error || '알 수 없는 오류'}`);
         }
     };
 
