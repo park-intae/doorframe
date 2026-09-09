@@ -41,7 +41,7 @@ export default function ItemInput({ kind }: ItemInputProps) {
         >
             <input
                 aria-label={`${kind === 'todo' ? '할 일' : '메모'} 입력`}
-                className="focus:outline-none bg-transparent flex-1 text-sm text-title placeholder:text-context/50 min-w-0"
+                className="focus:outline-none bg-transparent flex-1 text-sm text-title placeholder:text-context/60 min-w-0"
                 placeholder={kind === 'todo' ? '새로운 할 일을 입력하세요...' : '새로운 메모를 입력하세요...'}
                 value={value}
                 onChange={handleChange}

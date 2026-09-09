@@ -23,11 +23,11 @@ export default function Modal({
 
     return createPortal(
         <div
-            className="background fixed inset-0 bg-white/5 backdrop-blur-sm flex items-center justify-center z-[999]"
+            className="background fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-[999] transition-opacity"
             onClick={onClose}
         >
             <div
-                className="modal glass p-8 max-w-full w-[450px] m-5 relative"
+                className="modal bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-black/10 dark:border-white/10 rounded-[28px] shadow-2xl p-8 max-w-full w-[450px] m-5 relative"
                 onClick={(e) => e.stopPropagation()}
             >
                 {(title || showCloseButton) && (
@@ -37,7 +37,7 @@ export default function Modal({
                             <button
                                 onClick={onClose}
                                 aria-label="모달 닫기"
-                                className="glass-button p-2 text-context hover:text-delete transition-all active:scale-90"
+                                className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-context hover:text-delete transition-all active:scale-90"
                             >
                                 <X className="w-5 h-5" aria-hidden="true" />
                             </button>
