@@ -84,14 +84,14 @@ npm install
 
 3. **환경 변수 설정**
 
-`.env` 파일 생성:
+프로젝트 루트에 `.env` 파일 생성 (클라이언트 번들에는 공개용 Supabase 키만 주입됩니다):
 
 ```env
-VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_URL=https://your_project.supabase.co
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-VITE_WEATHER_API_KEY=your_weather_api_key
-VITE_GEOCODER_API_KEY=your_geocoder_api_key
 ```
+
+> 💡 **보안 안내**: 기상청, VWorld, Gemini 등 외부 API 키는 클라이언트 번들에 노출되지 않도록 **Supabase Edge Functions Secrets**에서 안전하게 관리됩니다.
 
 4. **개발 서버 실행**
 
@@ -115,26 +115,29 @@ npm run build
    - "압축해제된 확장 프로그램을 로드합니다" 클릭
    - `dist/` 폴더 선택
 
-## 🔧 설정 가이드
+## 🔧 아키텍처 및 외부 API 연동 가이드
 
-### Supabase 설정
+### 🛡️ 보안 프록시 아키텍처 (Secure Edge Proxy Architecture)
 
-1. [Supabase](https://supabase.com) 프로젝트 생성
-2. Authentication > Providers > Google 활성화
-3. Google OAuth Client ID/Secret 입력
-4. Project URL과 anon key를 `.env`에 추가
+Chrome 확장 프로그램 특성상 클라이언트 코드(`dist/`)에 민감한 API 키가 포함되면 누구나 개발자 도구를 통해 키를 탈취할 수 있습니다. 이를 근본적으로 방지하기 위해 **Supabase Edge Functions**를 보안 프록시 계층으로 구축했습니다:
 
-### 기상청 API 키 발급
+1. **클라이언트 (Frontend)**:
+   * 오직 공개 가능한 **Supabase Project URL**과 **Anon Public Key**만 `.env`에 포함합니다.
+   * `anon` 키는 RLS(행 단위 보안) 및 Auth 정책으로 안전하게 보호됩니다.
+2. **서버리스 백엔드 (Supabase Edge Functions)**:
+   * 비용 및 호출 할당량이 연결된 민감한 외부 API 키들을 **Supabase Secrets**에만 안전하게 격리 보관합니다.
+   * 클라이언트 요청을 받아 외부 API를 대리 호출(Proxy)하고, 응답 데이터를 정제/가공하여 클라이언트에 반환합니다.
 
-1. [공공데이터포털](https://www.data.go.kr/) 회원가입
-2. "기상청\_단기예보 조회서비스" 신청
-3. 발급받은 서비스키를 `.env`에 추가
+---
 
-### VWorld API 키 발급
+### 🔑 외부 API 발급처 및 연동 내역
 
-1. [VWorld](https://www.vworld.kr/) 회원가입
-2. 오픈API 신청
-3. 발급받은 키를 `.env`에 추가
+| 서비스/기능 | 외부 API 발급처 | 사용 목적 및 연동 엔드포인트 | 저장 위치 |
+| :--- | :--- | :--- | :--- |
+| **인증 & 백엔드 연동** | [Supabase](https://supabase.com/dashboard) | Google OAuth 로그인, 파비콘 Storage 업로드, 엣지 함수 호출 | 클라이언트 [`.env`](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/doorframe/.env)<br>(`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`) |
+| **단기/초단기 날씨 예보** | [공공데이터포털](https://www.data.go.kr/)<br>(`기상청_단기예보 조회서비스`) | - `getUltraSrtNcst`: 현재 시각 실시간 기온/강수 실황<br>- `getVilageFcst`: 24시간 시간별 기온 및 3일 예보 데이터 | Supabase Secrets<br>(`VITE_PUBLIC_WEATHER_API_KEY`) |
+| **위치 역지오코딩** | [VWorld 국가공간정보포털](https://www.vworld.kr/)<br>(`오픈API 지오코더`) | GPS 위경도(`lat`, `lon`) 좌표를 '서울특별시 중구' 등 사용자 친화적 행정동 명칭으로 변환 | Supabase Secrets<br>(`VITE_PUBLIC_GEOCODER_API_KEY`) |
+| **AI 뉴스 요약 및 키워드** | [Google AI Studio](https://aistudio.google.com/)<br>(`Gemini API`) | 최신 구글/네이버 뉴스 피드를 분석하여 카테고리별 핵심 키워드 추출 및 트렌드 3줄 요약 | Supabase Secrets<br>(`GEMINI_API_KEY`) |
 
 ## 📁 프로젝트 구조
 
@@ -177,27 +180,25 @@ doorframe/
 
 ---
 
-### Supabase Edge Function 설정
+### Supabase Edge Function 설정 및 배포
 
-1. [Supabase CLI](https://supabase.com/docs/guides/cli) 설치 및 로그인
-2. `supabase/functions/news-briefing/` 경로의 환경 변수 설정
-3. Google Gemini API 키 발급 및 Edge Function Secret에 추가:
+1. [Supabase CLI](https://supabase.com/docs/guides/cli) 로그인 및 프로젝트 연결:
    ```bash
-   supabase secrets set GEMINI_API_KEY=your_gemini_key
+   npx supabase login
+   npx supabase link --project-ref <your-project-ref>
    ```
-4. Edge Function 배포:
+2. 외부 API 키 Secrets 등록:
    ```bash
-   ### 기상청 API 키 발급
-
-1. [공공데이터포털](https://www.data.go.kr/) 회원가입
-2. "기상청_단기예보 조회서비스" 신청
-3. 발급받은 서비스키를 `.env`에 추가
-
-### VWorld API 키 발급
-
-1. [VWorld](https://www.vworld.kr/) 회원가입
-2. 오픈API 신청
-3. 발급받은 키를 `.env`에 추가
+   npx supabase secrets set VITE_PUBLIC_WEATHER_API_KEY="your_weather_key"
+   npx supabase secrets set VITE_PUBLIC_GEOCODER_API_KEY="your_vworld_key"
+   npx supabase secrets set GEMINI_API_KEY="your_gemini_key"
+   ```
+3. Edge Functions 배포:
+   ```bash
+   npx supabase functions deploy weather
+   npx supabase functions deploy news-briefing
+   npx supabase functions deploy favicon-proxy
+   ```
 
 ## 🐛 트러블슈팅
 
@@ -223,6 +224,28 @@ doorframe/
 - 야간 모드
 
 ## 🚀 릴리스 노트
+
+### v1.3.01 (2026-09-09)
+- **확장 프로그램 프로덕션 배포 완료**:
+  - 원격 Supabase Cloud 연동 및 최신 프로덕션 번들 빌드(`npm run build`) 완료 (`dist/` 생성)
+  - Chrome 확장 프로그램(`chrome://extensions`) 로컬 배포 파이프라인 검증
+- **보안 프록시 아키텍처 확립**:
+  - 클라이언트 번들 내 민감 키(기상청, VWorld, Gemini) 노출 방지를 위해 Supabase Edge Functions Secrets로 완벽 격리
+  - 프론트엔드는 RLS 및 Auth 정책으로 보호되는 Supabase 공개(`anon`) 키만 사용하는 안전한 아키텍처 구축
+- **캐러셀 슬라이드 컴팩트화**:
+  - 미완성/과도한 권한의 유튜브 슬라이드를 제외하고 핵심 3종 슬라이드(캘린더/메모, AI 뉴스, 실시간 코인 시세)로 최적화
+- **단위 테스트 스위트 전수 정상화**:
+  - JSDOM 환경용 `localStorage` 모킹 추가 및 최신 Redux 구조 기반 테스트 전수 갱신 (17개 파일 37개 테스트 100% 통과)
+
+### v1.3.0 (2026-05-25)
+- **UI/UX 폴리싱 및 레이아웃 최적화**:
+  - 내비게이션 Popover 너비 제어 일관성 확보 및 테마별 아이콘 가시성 개선
+  - 메모/할 일 팝업 정보 계층화, 입력 피드백 강화 및 글래스모피즘 테마 통일
+  - 캘린더 슬라이드 연동 및 날짜 기반 메모/할 일 관리 시스템 구축
+  - 하단 캐러셀 슬라이드 표준화 (캘린더 연동, AI 뉴스, 실시간 코인 시세 3종 중심 재편)
+- **보안 및 테스트 스위트 강화**:
+  - 클라이언트 번들 내 민감 키 제거 및 Supabase Edge Functions Secrets로 환경 격리
+  - Vitest 단위 테스트 스위트 전수 최신화 및 100% 정상 통과 보장 (17개 파일 37개 테스트)
 
 ### v1.2.0.1 (2026-05-03)
 - **확장 프로그램 아키텍처 재구조화**:
