@@ -1,7 +1,7 @@
 import { RootState } from "@/store";
 import { clearInput, setInputValue } from "@/store/slice/inputSlice";
 import { addItem } from "@/store/slice/listSlice";
-import { PlusIcon, CalendarIcon } from "lucide-react";
+import { Plus, Calendar as CalendarIcon } from "lucide-react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -21,7 +21,7 @@ export default function ItemInput({ kind }: ItemInputProps) {
 
         dispatch(addItem({ 
             kind, 
-            text: value, 
+            text: value.trim(), 
             date: targetDate,
             deadline: kind === 'todo' && deadline ? deadline : undefined 
         }));
@@ -35,23 +35,31 @@ export default function ItemInput({ kind }: ItemInputProps) {
     };
 
     return (
-        <form className="flex items-center gap-2 w-full bg-white/10 rounded-xl px-3 py-2 border border-black/50 dark:border-white/10 focus-within:border-point focus-within:shadow-[0_0_8px_rgba(var(--color-point),0.4)] transition-all duration-300" onSubmit={handleSubmit}>
+        <form 
+            onSubmit={handleSubmit}
+            className="flex items-center gap-2 w-full glass-sub !rounded-xl px-3.5 py-2 hover:border-point/40 focus-within:!border-point focus-within:ring-2 focus-within:ring-point/20 transition-all duration-200"
+        >
             <input
                 aria-label={`${kind === 'todo' ? '할 일' : '메모'} 입력`}
-                className="focus:outline-none bg-transparent flex-1 text-sm text-title placeholder:text-context/50"
-                placeholder={`${kind === 'todo' ? '할 일을 입력하세요' : '메모를 입력하세요'}`}
+                className="focus:outline-none bg-transparent flex-1 text-sm text-title placeholder:text-context/50 min-w-0"
+                placeholder={kind === 'todo' ? '새로운 할 일을 입력하세요...' : '새로운 메모를 입력하세요...'}
                 value={value}
-                onChange={handleChange}>
-            </input>
+                onChange={handleChange}
+            />
             
             {kind === 'todo' && (
-                <div className="flex items-center gap-1 border-l pl-2 border-black/50 dark:border-white/20">
-                    <label htmlFor="deadline" className={`cursor-pointer transition-colors ${deadline ? 'text-point' : 'opacity-60 hover:opacity-100'}`}>
+                <div className="flex items-center gap-1.5 pl-2.5 border-l border-context/20 shrink-0">
+                    <label 
+                        htmlFor="deadline" 
+                        className={`flex items-center cursor-pointer transition-colors ${deadline ? 'text-point' : 'text-context/50 hover:text-point'}`}
+                        title="마감일 선택"
+                    >
+                        <CalendarIcon className="w-4 h-4" />
                     </label>
                     <input
                         id="deadline"
                         type="date"
-                        className="bg-transparent focus:outline-none text-[13px] w-24 cursor-pointer text-title"
+                        className="bg-transparent focus:outline-none text-xs cursor-pointer text-title dark:[color-scheme:dark]"
                         value={deadline}
                         onChange={(e) => setDeadline(e.target.value)}
                         aria-label="마감일 선택"
@@ -61,11 +69,12 @@ export default function ItemInput({ kind }: ItemInputProps) {
 
             <button 
                 aria-label={`${kind === 'todo' ? '할 일' : '메모'} 추가`} 
-                className="bg-point text-white rounded-lg p-1.5 focus:outline-none hover:scale-105 active:scale-95 transition-transform duration-200 shadow-sm" 
-                type='submit'
+                className="bg-point hover:brightness-105 active:scale-95 text-white font-medium text-xs px-2.5 py-1.5 rounded-lg flex items-center gap-1 shadow-sm transition-all duration-150 shrink-0 cursor-pointer" 
+                type="submit"
             >
-                <PlusIcon className="w-4 h-4" />
+                <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>추가</span>
             </button>
         </form>
-    )
+    );
 }

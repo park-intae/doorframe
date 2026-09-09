@@ -1,6 +1,6 @@
 import { ListItem, toggleItem, removeItem } from '@/store/slice/listSlice';
 import { useAppDispatch } from '@/store/hooks';
-import { ChevronRight } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface CalendarListProps {
@@ -38,11 +38,11 @@ export default function CalendarList({ items }: CalendarListProps) {
                                 </div>
                                 <button 
                                     onClick={() => dispatch(removeItem(item.id))}
-                                    className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-400 transition-all hover:scale-110 active:scale-95"
+                                    className="opacity-40 group-hover:opacity-100 hover:!opacity-100 p-1.5 text-context/60 hover:text-rose-500 hover:bg-rose-500/10 rounded-md transition-all hover:scale-110 active:scale-95 shrink-0"
                                     aria-label="항목 삭제"
-                                    title="항목 삭제"
+                                    title="삭제"
                                 >
-                                    <ChevronRight size={16} className="rotate-45" />
+                                    <Trash2 size={15} />
                                 </button>
                             </motion.li>
                         ))}

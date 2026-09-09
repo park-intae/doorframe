@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface CarouselViewProps {
@@ -8,6 +8,23 @@ interface CarouselViewProps {
     children: React.ReactNode[];
     onPaginate: (newDirection: number) => void;
 }
+
+const slideVariants = {
+    enter: (direction: number) => ({
+        y: direction >= 0 ? '100%' : '-100%',
+        opacity: 0,
+    }),
+    center: {
+        zIndex: 1,
+        y: 0,
+        opacity: 1,
+    },
+    exit: (direction: number) => ({
+        zIndex: 0,
+        y: direction >= 0 ? '-100%' : '100%',
+        opacity: 0,
+    }),
+};
 
 export default function CarouselView({ index, direction, total, children, onPaginate }: CarouselViewProps) {
     const isAnimating = React.useRef(false);
@@ -32,17 +49,22 @@ export default function CarouselView({ index, direction, total, children, onPagi
 
     return (
         <div className="relative w-full h-full" onWheel={handleWheel}>
-            <div className="w-full h-full overflow-hidden">
-                <AnimatePresence initial={false} custom={direction} mode="wait">
+            <div className="w-full h-full overflow-hidden relative">
+                <AnimatePresence initial={false} custom={direction}>
                     <motion.div
                         key={index}
                         custom={direction}
-                        initial={{ y: direction > 0 ? '20%' : '-20%', opacity: 0, scale: 0.95 }}
-                        animate={{ y: 0, opacity: 1, scale: 1 }}
-                        exit={{ y: direction > 0 ? '-20%' : '20%', opacity: 0, scale: 0.95 }}
-                        transition={{ type: "spring", stiffness: 200, damping: 25 }}
+                        variants={slideVariants}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{
+                            y: { type: "spring", stiffness: 300, damping: 30 },
+                            opacity: { duration: 0.2 }
+                        }}
                         drag="y"
                         dragConstraints={{ top: 0, bottom: 0 }}
+                        dragElastic={0.2}
                         onDragEnd={(e, { offset }) => {
                             if (Math.abs(offset.y) > 50) {
                                 handlePaginate(offset.y > 0 ? -1 : 1);
@@ -56,7 +78,7 @@ export default function CarouselView({ index, direction, total, children, onPagi
             </div>
 
             {/* 글래스모피즘 인디케이터 (캐러셀 외부 우측 배치) */}
-            <div className="absolute -right-10 top-1/2 -translate-y-1/2 flex flex-col justify-center gap-3 z-10 p-2 rounded-full bg-white/10 backdrop-blur-md border border-black/50 dark:border-white/20 shadow-lg">
+            <div className="absolute -right-10 top-1/2 -translate-y-1/2 flex flex-col justify-center gap-3 z-10 p-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 shadow-lg">
                 {Array.from({ length: total }).map((_, i) => (
                     <button 
                         key={i}

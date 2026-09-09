@@ -49,7 +49,7 @@ export default function List({ kind }: ListProps) {
                     )}
                     <button
                         aria-label={`${item.text} 삭제`}
-                        className="p-1 text-white/50 hover:text-red-400 transition-colors focus:outline-none"
+                        className="opacity-60 hover:opacity-100 p-1.5 text-context/60 hover:text-rose-500 hover:bg-rose-500/10 rounded-md transition-all hover:scale-110 active:scale-95 focus:outline-none"
                         onClick={() => dispatch(removeItem(item.id))}
                     >
                         <Trash2 className="w-4 h-4" />

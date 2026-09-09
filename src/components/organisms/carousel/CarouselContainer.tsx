@@ -13,7 +13,7 @@ export default function CarouselContainer({ children }: CarouselContainerProps) 
         const nextIndex = index + newDirection;
         if (nextIndex >= 0 && nextIndex < children.length) {
             setIndex(nextIndex);
-            setDirection(newDirection);
+            setDirection(newDirection > 0 ? 1 : -1);
         }
     };
 
