@@ -9,6 +9,7 @@ interface WeatherState {
   hourly: WeatherHourly[];
   loading: boolean;
   error: string | null;
+  isFallback: boolean;
 }
 
 const initialState: WeatherState = {
@@ -19,6 +20,7 @@ const initialState: WeatherState = {
   hourly: [],
   loading: false,
   error: null,
+  isFallback: false,
 };
 
 const CACHE_DURATION = 10 * 60 * 1000;
@@ -36,11 +38,20 @@ export const fetchWeather = createAsyncThunk('weather/fetchWeather', async (_, {
       }
     }
 
-    // 1. 사용자 위치 정보 획득
-    const pos = await new Promise<GeolocationPosition>((res, rej) =>
-      navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true, timeout: 5000 }),
-    );
-    const { latitude, longitude } = pos.coords;
+    // 1. 사용자 위치 정보 획득 (실패 시 서울 기본 좌표로 폴백)
+    let latitude = 37.5665;
+    let longitude = 126.9780;
+    let isLocationFallback = false;
+    try {
+      const pos = await new Promise<GeolocationPosition>((res, rej) =>
+        navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: false, timeout: 3000 }),
+      );
+      latitude = pos.coords.latitude;
+      longitude = pos.coords.longitude;
+    } catch (geoErr) {
+      isLocationFallback = true;
+      console.warn('위치 권한을 얻지 못해 기본 좌표(서울)를 사용합니다.', geoErr);
+    }
 
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const baseUrl = isLocal 
@@ -57,10 +68,22 @@ export const fetchWeather = createAsyncThunk('weather/fetchWeather', async (_, {
       },
     });
 
-    if (!res.ok) throw new Error('날씨 정보 가져오기 실패');
+    if (!res.ok) throw new Error('날씨 서버 응답 실패');
 
-    const data: WeatherResponse = await res.json();
-    console.log('[Weather Redux Debug] Raw Data from Server:', data);
+    const rawData = await res.json();
+    console.log('[Weather Redux Debug] Raw Data from Server:', rawData);
+
+    // 하위 호환성: 신규 스키마(current)와 구버전 플랫 스키마 모두 지원
+    const data: WeatherResponse = {
+      current: rawData.current || {
+        temperature: rawData.temperature && rawData.temperature !== 'N/A' ? rawData.temperature : '0',
+        weather: rawData.weather || '맑음',
+        region: rawData.region || '서울특별시',
+      },
+      forecast: Array.isArray(rawData.forecast) ? rawData.forecast : [],
+      hourly: Array.isArray(rawData.hourly) ? rawData.hourly : [],
+      isFallback: isLocationFallback || !rawData.current || rawData.temperature === 'N/A',
+    };
 
     // 3. 캐싱 및 데이터 반환
     if (typeof window !== 'undefined') {
@@ -69,7 +92,12 @@ export const fetchWeather = createAsyncThunk('weather/fetchWeather', async (_, {
     }
     return data;
   } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : '날씨 정보를 가져오는 중 오류가 발생했습니다.';
+    const errorMessage =
+      err instanceof Error
+        ? err.message
+        : (err && typeof err === 'object' && 'message' in err && typeof (err as any).message === 'string')
+          ? (err as any).message
+          : '날씨 정보를 가져오는 중 오류가 발생했습니다.';
     console.error('날씨 데이터 페칭 오류:', err);
     return rejectWithValue(errorMessage);
   }
@@ -93,6 +121,7 @@ const weatherSlice = createSlice({
         state.region = action.payload.current.region;
         state.forecast = action.payload.forecast;
         state.hourly = action.payload.hourly;
+        state.isFallback = action.payload.isFallback ?? false;
         console.log('[Weather Redux Debug] Updated State Temperature:', state.temperature);
       })
       .addCase(fetchWeather.rejected, (state, action) => {

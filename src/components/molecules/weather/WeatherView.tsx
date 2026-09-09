@@ -12,6 +12,7 @@ interface WeatherViewProps {
     hourly: WeatherHourly[];
     loading: boolean;
     error: string | null;
+    isFallback?: boolean;
 }
 
 /**
@@ -19,7 +20,7 @@ interface WeatherViewProps {
  * 마우스 커서를 추적하는 고도화된 툴팁 시스템 포함
  */
 export default function WeatherView({ 
-    temperature, weather, region, forecast, hourly, loading, error 
+    temperature, weather, region, forecast, hourly, loading, error, isFallback 
 }: WeatherViewProps) {
     const [page, setPage] = useState(0);
     const [tooltip, setTooltip] = useState<{ text: string; color: string } | null>(null);
@@ -90,7 +91,17 @@ export default function WeatherView({
                                 </div>
                                 <div className="flex flex-col justify-center">
                                     <div className="text-xl font-bold leading-tight text-title">{weather}</div>
-                                    <div className="text-xs font-medium text-context opacity-80">{displayRegion}</div>
+                                    <div className="flex items-center gap-1.5 mt-0.5">
+                                        <span className="text-xs font-medium text-context opacity-80">{displayRegion}</span>
+                                        {isFallback && (
+                                            <span 
+                                                className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-600 dark:text-amber-400 font-semibold cursor-help"
+                                                title="위치 권한 미허용 등으로 인해 기본 위치(서울) 기준으로 날씨가 표시됩니다."
+                                            >
+                                                기본 위치
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                             <div className="flex flex-col items-end justify-center">
@@ -198,9 +209,14 @@ export default function WeatherView({
                 />
             </div>
 
-            {/* 데이터 출처 */}
-            <div className="absolute bottom-1 right-2 text-[8px] text-context opacity-40 uppercase select-none">
-                Data by KMA
+            {/* 데이터 출처 및 상태 안내 */}
+            <div className="absolute bottom-1 right-2 flex items-center gap-2 text-[8px] text-context opacity-60 uppercase select-none">
+                {isFallback && (
+                    <span className="text-amber-600 dark:text-amber-400 font-medium normal-case">
+                        *위치 권한 필요 (기본 위치)
+                    </span>
+                )}
+                <span>Data by KMA</span>
             </div>
         </div>
     );

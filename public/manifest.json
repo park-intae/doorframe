@@ -18,7 +18,8 @@
     "storage",
     "tabs",
     "scripting",
-    "identity"
+    "identity",
+    "geolocation"
   ],
   "host_permissions": [
     "https://*.supabase.co/*",

@@ -20,4 +20,5 @@ export interface WeatherResponse {
   };
   forecast: DailyForecast[]; // 단기(3일) 요약 데이터
   hourly: WeatherHourly[];   // 시각화를 위한 24시간 상세 데이터
+  isFallback?: boolean;      // 위치 권한 미허용 등으로 인한 기본 위치(서울) 폴백 여부
 }
