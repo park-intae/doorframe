@@ -208,21 +208,38 @@ doorframe/
 
 ## 🐛 트러블슈팅
 
-### Rate Limit 에러
+### 1. 비로그인/새로고침 시 껍데기 계정('사용자') 표시 및 데이터 초기화 문제
+- **증상**:
+  - 새로고침 시 프로필이 로그인 상태로 인식되지만, 실제 계정 정보(이름, 아바타, 이메일)는 불러오지 못하고 '사용자'라는 이름과 기본 아이콘(껍데기 계정)만 노출됨.
+  - 기존에 저장해 둔 북마크와 메모/할 일 목록이 사라지거나 기본값(Google, Naver 등)으로 초기화됨.
+- **원인 분석**:
+  - **스토리지 RLS 통과를 위한 익명 세션의 무분별한 전역 반영**: 즐겨찾기 파비콘 업로드 시 Supabase Storage RLS 정책(`auth.uid()` 필요)을 통과하기 위해 호출되던 `signInAnonymously()`(익명 로그인)의 임시 세션 유저 객체를 Redux 전역 상태(`setUser(data.user)`)에 무조건 등록함.
+  - **식별자 불일치 및 데이터 소실**: 익명 계정은 프로필 메타데이터가 없는 임의의 무작위 UUID이므로 UI가 '로그인된 상태'로 오인하여 빈 껍데기 프로필을 렌더링함. 또한 매 새로고침/접속 시마다 새로운 임의의 익명 UUID가 발급되어, 기존 고정 게스트 키(`guest_fav_items`, `guest_list_items`)가 아닌 새 UUID 키를 조회함으로써 데이터를 찾지 못하고 기본값으로 덮어쓰는 문제가 발생함.
+- **해결 방법**:
+  1. **백엔드 익명 세션과 프론트엔드 전역 상태의 완전 분리**:
+     - 실제 구글 로그인 사용자(`session.user && !session.user.is_anonymous`)인 경우에만 Redux `user`에 등록하고, 필요 시 `getUser()`를 통해 프로필 메타데이터를 안전하게 보강.
+     - 비로그인이거나 익명 세션(`is_anonymous: true`)인 경우 Redux `user`를 명시적으로 `null`(게스트 모드)로 설정하여 껍데기 프로필 노출을 차단하고, 스토리지 조회 키는 항상 안정적인 고정 키(`guest_fav_items`, `guest_list_items`)를 사용하도록 보장.
+     - 백그라운드 `signInAnonymously()`는 세션이 아예 없을 때 파비콘 업로드 등 백엔드 Storage API 통신만을 위해 조용히 유지.
+  2. **게스트 ➡️ 로그인 전환 시 데이터 자동 마이그레이션**:
+     - 사용자가 게스트 상태에서 데이터를 작성하다가 처음 구글 계정으로 로그인했을 때, 기존 `guest_` 스토리지 데이터를 유저 전용 스토리지 키(`user.id`)로 자동 복사/마이그레이션(`migrateGuestDataToUser`)하여 데이터 연속성 보장.
+  3. **데이터 저장 영속성 강화 (언마운트 / 탭 닫힘 플러시)**:
+     - 500ms 디바운스 대기 중 탭을 닫거나 새로고침할 때 발생할 수 있는 데이터 유실을 방지하기 위해 `beforeunload`, `pagehide` 이벤트 및 컴포넌트 언마운트 시 미반영 데이터를 즉시 동기식(`localStorage`)으로 강제 저장(Flush)하는 안전 가드 적용.
 
-기상청 API 및 Gemini API는 호출 제한이 있을 수 있습니다. 캐싱이 적용되어 있으나, 반복적인 요청 시 잠시 기다려주세요.
+### 2. Google OAuth 웹뷰 차단 (`disallowed_useragent` / `400 Bad Request`)
+- **증상**: 크롬 확장 프로그램에서 로그인 팝업 호출 시 구글 로그인 페이지에서 "보안되지 않은 브라우저" 또는 `400 disallowed_useragent` 오류 출력.
+- **원인**: 구글 보안 정책상 크롬 임베디드 웹뷰(`launchWebAuthFlow`) 환경에서의 OAuth 로그인이 전면 차단됨.
+- **해결 방법**: `launchWebAuthFlow`를 제거하고 브라우저 전용 탭(`chrome.tabs.create`) 기반 인증 흐름으로 전환하여 탭 URL 감지(`chrome.tabs.onUpdated`)를 통해 인증 코드를 인터셉트하고 로그인 탭을 자동 종료하도록 구현.
 
-### 로그인 안 됨
-
+### 3. Supabase 리디렉션 URI 설정
 - Supabase 대시보드 (`Authentication > URL Configuration > Redirect URLs`)에 확장 프로그램 ID 기반 URI 등록 확인:
   - `chrome-extension://<YOUR_EXTENSION_ID>/**`
   - `https://<YOUR_EXTENSION_ID>.chromiumapp.org/**`
 - Supabase 대시보드 (`Authentication > Providers > Google`) 활성화 및 Client ID / Secret 설정 확인
 - 클라이언트 `.env` 파일의 `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` 확인
 
-### 위치 권한 오류
-
-브라우저에서 위치 권한을 허용해주세요.
+### 4. API Rate Limit 및 위치 권한 오류
+- **Rate Limit**: 기상청 API 및 Gemini API는 일일/분당 호출 제한이 있습니다. 엣지 함수 프록시 캐싱이 적용되어 있으나, 단시간 내 과도한 요청 시 잠시 대기 후 이용해주세요.
+- **위치 권한 오류**: 실시간 날씨 조회를 위해 브라우저 설정에서 위치 정보 접근 권한을 허용해주세요. (미허용 시 백업 날씨 엔진으로 자동 폴백)
 
 ## 🔮 향후 계획
 
@@ -232,6 +249,13 @@ doorframe/
 - 야간 모드
 
 ## 🚀 릴리스 노트
+### v1.3.03 (2026-09-11)
+- **비로그인(게스트) 익명 세션 프로필 껍데기 오류 및 데이터 영속성(Persistence) 결함 해결**:
+  - **백엔드 익명 세션과 프론트엔드 Redux 상태 분리**: 파비콘 업로드 RLS 통과를 위해 호출되는 `signInAnonymously()`의 임시 UUID 객체가 전역 `user`에 등록되어 빈 껍데기 프로필('사용자')이 노출되고 스토리지 키가 유실되던 문제를 해결. 익명 계정은 Redux `user`를 `null`(게스트 UI 유지)로 유지하고 안정적인 고정 키(`guest_fav_items`, `guest_list_items`)를 사용하도록 교정.
+  - **게스트 ➡️ 로그인 시 데이터 자동 마이그레이션**: 사용자가 비로그인 상태에서 작업하던 북마크와 메모/할 일 데이터를 처음 구글 계정으로 로그인했을 때 유저 전용 스토리지 키로 안전하게 자동 복사·이전(`migrateGuestDataToUser`)하는 로직 구현.
+  - **새로고침/탭 닫힘 시 데이터 유실 방지 플러시(Flush) 가드**: 500ms 디바운스 타이머 대기 중 브라우저가 종료되거나 새로고침될 때 변경 사항이 유실되지 않도록 `beforeunload`, `pagehide` 및 컴포넌트 언마운트 시 미반영 데이터를 즉시 동기식(`localStorage`)으로 강제 저장하도록 보강.
+  - **단위 테스트 스위트 보강**: 게스트 데이터 로드, 유저 데이터 로드, 자동 마이그레이션 시나리오를 검증하는 단위 테스트(`bookmarkThunk.test.ts`, `listThunk.test.ts`) 추가 및 18개 테스트 파일(41개 테스트) 100% 통과 완료.
+
 ### v1.3.02 (2026-09-09)
 - **날씨 백엔드 엣지 함수 배포 및 이중 장애 복구(Dual Fallback) 아키텍처 확립**:
   - 원격 Supabase Cloud 프로젝트에 최신 `weather` 엣지 함수 배포 및 VWorld 좌표계(`crs=EPSG:4326`) 보정으로 행정동 변환 버그 해결.

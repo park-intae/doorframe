@@ -42,4 +42,20 @@ describe('listThunk 로그인 분기 테스트', () => {
 
         expect(chromeStorage.get).toHaveBeenCalledWith(`${userId}_list_items`);
     });
+
+    it('로그인 시 사용자 키가 비어있고 게스트 데이터가 있으면 게스트 데이터를 마이그레이션해야 함', async () => {
+        const userId = 'user-123';
+        const guestData = { items: [{ id: 1, kind: 'todo', text: '게스트 할일', date: '2026-09-11' }], nextId: 2 };
+
+        (chromeStorage.get as any).mockImplementation((key: string) => {
+            if (key === `${userId}_list_items`) return Promise.resolve(null);
+            if (key === 'guest_list_items') return Promise.resolve(guestData);
+            return Promise.resolve(null);
+        });
+
+        const result = await loadListFromStorage(userId)(vi.fn(), () => {}, undefined);
+
+        expect(chromeStorage.set).toHaveBeenCalledWith(`${userId}_list_items`, guestData);
+        expect(result.payload).toEqual(guestData);
+    });
 });

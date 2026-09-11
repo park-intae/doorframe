@@ -5,6 +5,24 @@
 ## In-Progress Task
 
 ## Completed Tasks
+- [✔️] **데이터 영속성 및 저장/인증 안정화 (Data Persistence & Storage Reliability Fix)**
+  - [✔️] 1. 백엔드 익명 인증과 프론트엔드 전역 세션 분리 (Separate Anonymous Auth from UI State)
+    - 파비콘 업로드(`iconUploader`)를 위한 Supabase 익명 세션 기능은 백엔드용으로 안전하게 유지
+    - `App.tsx`에서 익명 계정(`is_anonymous: true`)이 Redux `auth.user`로 들어와 껍데기 프로필이 노출되던 문제 차단
+    - Google 소셜 로그인 시 `user_metadata`(아바타, 이름, 이메일) 온전한 복원 및 프로필 정상 노출 (문제 1 해결)
+  - [✔️] 2. 스토리지 키 일원화 및 게스트 ↔ 소셜 로그인 데이터 마이그레이션 (Storage Key Normalization & Migration)
+    - 임의의 익명 UUID로 인한 로컬 스토리지 키 분절 방지: 비로그인/익명 상태에서는 항상 안정적인 고정 키(`guest_fav_items`, `guest_list_items`) 사용
+    - 비로그인(게스트) 상태에서 저장된 북마크/할 일/메모가 소셜 로그인 시 소실되지 않고 사용자 계정 키로 안전 병합(Merge) (문제 2, 4 해결)
+  - [✔️] 3. 비동기 로딩 대기 가드 및 초기화 전 덮어쓰기 방지 (Prevent Premature Overwrite & Default Reset)
+    - `loadBookmarksFromStorage`, `loadListFromStorage` 완료 전 Redux의 빈 초기 상태(`[]`)가 스토리지에 저장되는 경합 차단
+    - 저장소에 기존 데이터가 있음에도 로딩 타이밍이나 `null` 판정으로 기본값(`defaultBookmarks`, 빈 배열)으로 리셋되는 버그 해결 (문제 2, 4 해결)
+  - [✔️] 4. 메모/할 일 영속성 관리자 및 디바운스 즉시 플러시(Flush) 강화 (Memo/Todo Persistence & Flush)
+    - `ListPersistence`의 500ms 디바운스 중 브라우저 새로고침/탭 닫힘/언마운트 시 미저장 데이터 즉시 플러시(`beforeunload`, `pagehide`)
+    - 북마크(`useFavBar`) 및 리스트(`ListPersistence`)의 영속성 로직 라이프사이클 통일 (문제 3 해결)
+  - [✔️] 5. 단위 테스트 및 실환경(웹/확장프로그램) 시나리오 검증 (Testing & Verification)
+    - 세션 복구 및 프로필 노출 테스트 보강
+    - 재접속 시 북마크 및 메모/할 일 데이터 보존 검증
+    - 전체 테스트 스위트 100% 통과 보장 (18개 테스트 파일, 41개 테스트 전수 통과)
 - [✔️] **라이트 모드 테두리 가시성 개선 (Light Mode Border Visibility Improvement)**
   - [✔️] 1. 주요 컴포넌트 테두리 클래스 동적 변경 (border-black/50 적용)
   - [✔️] 2. 라이트 모드 가시성 확보 및 인코딩 오류 복구 완료
