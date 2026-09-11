@@ -16,11 +16,11 @@ export default function Search() {
 
     return (
         <>
-            <form onSubmit={handleSearch} className="rounded-full m-2 h-15 w-186 flex justify-around item-center bg-indigo-50 border border-indigo-200 focus-within:ring-4 focus-within:ring-indigo-300/30 transition-all">
-                <div className="my-auto ml-5">
-                    <SearchIcon className="w-full h-5 text-title" />
+            <form onSubmit={handleSearch} className="rounded-full m-2 h-15 w-186 flex justify-around items-center bg-indigo-50 border border-indigo-200 focus-within:ring-4 focus-within:ring-indigo-300/30 transition-all">
+                <div className="my-auto ml-5 flex items-center justify-center">
+                    <SearchIcon className="w-6 h-6 text-title" />
                 </div>
-                <input aria-label="검색어 입력" className="w-[85%] mr-[5%] focus:outline-none text-title placeholder:text-context bg-transparent" type="text" value={keyword} onChange={(e) => setKeyword(e.target.value)} />
+                <input aria-label="검색어 입력" className="w-[85%] mr-[5%] focus:outline-none text-title text-[25px] placeholder:text-context bg-transparent" type="text" value={keyword} onChange={(e) => setKeyword(e.target.value)} />
             </form>
         </>
     )
