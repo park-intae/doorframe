@@ -1,4 +1,4 @@
-import { Menu, X } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import AddFav from "./BookmarkAdd";
 import {
     DndContext,
@@ -36,10 +36,11 @@ export default function BookmarkBar() {
                 <div className={`flex ${isOpen ? 'justify-end' : 'justify-center'}`}>
                     <button
                         onClick={() => setIsOpen(!isOpen)}
-                        className="p-2 bg-point rounded text-main shrink-0"
-                        aria-label={isOpen ? "북마크바 닫기" : "북마크바 열기"}
+                        className="p-1.5 rounded-lg text-context hover:text-point hover:bg-point/10 dark:hover:bg-white/10 transition-colors shrink-0 cursor-pointer"
+                        aria-label={isOpen ? "사이드바 접기" : "사이드바 펼치기"}
+                        title={isOpen ? "사이드바 접기" : "사이드바 펼치기"}
                     >
-                        {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                        {isOpen ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
                     </button>
                 </div>
                 <DndContext
