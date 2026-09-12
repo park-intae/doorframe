@@ -32,6 +32,8 @@
   - [✔️] 7. 날씨 카드 글래스모피즘 스켈레톤 UI 도입 (`WeatherSkeleton.tsx`, `WeatherView.tsx`)
     - 로딩 지연 시 실황 아이콘, 기온, 텍스트, 차트, 우측 도트 구조와 100% 일치하는 스켈레톤 UI 노출
     - 레이아웃 시프트(CLS) 방지 및 부드러운 글래스 펄스 애니메이션 적용
+  - [✔️] 8. 3일 단기 예보 날씨 아이콘 시각화 (`WeatherIcon.tsx`, `WeatherView.tsx`)
+    - 3일 예보 카드(오늘/내일/모레)에 원형 글래스 날씨 아이콘 탑재 및 다크 모드 가시성(`dark:invert`) 확보
 - [✔️] **크롬 맞춤설정 세션 영역 확보 및 전반적인 세로 레이아웃 축소 (Vertical Layout Optimization for Chrome Extension UI)**
   - [✔️] 1. 메인 섹션(`MainSec.tsx`) 상단 마진(`mt-0`) 제거 및 요소 간 세로 간격(`gap-2.5`) 축소
   - [✔️] 2. 시계/날씨 상단 영역(`Container.tsx`) 세로 높이(`py-1.5`) 및 내부 요소 폰트/패딩 다이어트

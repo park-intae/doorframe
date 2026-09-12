@@ -197,6 +197,9 @@ export default function WeatherView({
                                     <div className="text-xs font-bold text-context">
                                         {i === 0 ? '오늘' : i === 1 ? '내일' : '모레'}
                                     </div>
+                                    <div className="w-10 h-10 my-0.5 rounded-full bg-main/50 dark:bg-main/30 flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
+                                        <WeatherIcon weather={day.weatherStatus} isNight={false} className="w-full h-full p-1.5 flex items-center justify-center" />
+                                    </div>
                                     <div className="text-xs font-bold text-title">{day.weatherStatus}</div>
                                     <div className="flex flex-col items-center leading-tight">
                                         {/* 최고 기온 */}

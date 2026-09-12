@@ -27,9 +27,21 @@ export const getWeatherIconClass = (weather: string, isNight: boolean = false): 
     안개: 'wu-fog',
     황사: 'wu-hazy',
     알수없음: 'wu-unknown',
+    clear: 'wu-clear',
+    sunny: 'wu-sunny',
+    clouds: 'wu-cloudy',
+    cloudy: 'wu-cloudy',
+    'partly cloudy': 'wu-partlycloudy',
+    'mostly cloudy': 'wu-mostlycloudy',
+    rain: 'wu-rain',
+    snow: 'wu-snow',
+    sleet: 'wu-sleet',
+    thunderstorm: 'wu-tstorms',
+    fog: 'wu-fog',
+    haze: 'wu-hazy',
   };
   // 날씨 클래스
-  const weatherClass = weatherMap[weather] || 'wu-unknown';
+  const weatherClass = weatherMap[weather] || weatherMap[weatherLower] || 'wu-unknown';
 
   return `${baseClass} ${nightClass} ${weatherClass}`.trim();
 };

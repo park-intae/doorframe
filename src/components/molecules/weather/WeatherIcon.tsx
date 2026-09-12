@@ -2,17 +2,25 @@ import { RootState } from "@/store";
 import { getWeatherIconClass, isNightTime } from "@/util/WeatherIconMapper";
 import { useSelector } from "react-redux";
 
-export function WeatherIcon() {
-    const { weather } = useSelector((state: RootState) => state.weather);
+interface WeatherIconProps {
+    weather?: string;
+    isNight?: boolean;
+    className?: string;
+}
 
-    if (!weather) return null;
+export function WeatherIcon({ weather: propWeather, isNight, className }: WeatherIconProps = {}) {
+    const reduxWeather = useSelector((state: RootState) => state.weather.weather);
+    const targetWeather = propWeather || reduxWeather;
 
-    const iconClass = getWeatherIconClass(weather, isNightTime());
+    if (!targetWeather) return null;
+
+    const night = isNight !== undefined ? isNight : isNightTime();
+    const iconClass = getWeatherIconClass(targetWeather, night);
 
     return (
-        <div className="flex items-center justify-center w-full h-full p-2">
+        <div className={className || "flex items-center justify-center w-full h-full p-2"}>
             <div 
-                className={iconClass} 
+                className={`${iconClass} dark:invert`} 
                 style={{ 
                     width: '100%', 
                     height: '100%', 
