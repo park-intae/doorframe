@@ -126,7 +126,7 @@ export default function WeatherView({
                                 isDraggingRef.current = false;
                             }, 50);
                         }}
-                        className="flex flex-col h-full touch-none"
+                        className="flex flex-col h-full touch-none pr-3"
                     >
                         {/* 상단: 실황 */}
                         <div className="flex flex-row items-center justify-between flex-1 min-h-0">
@@ -186,11 +186,11 @@ export default function WeatherView({
                                 isDraggingRef.current = false;
                             }, 50);
                         }}
-                        className="flex flex-col h-full touch-none"
+                        className="flex flex-col h-full touch-none pr-3"
                     >
                         <div className="text-xs font-bold mt-1 mb-2.5 opacity-60 uppercase tracking-wider text-center text-context">단기 예보 (3일간)</div>
                         
-                        <div className="flex-1 flex flex-row justify-between items-stretch gap-2 mb-4">
+                        <div className="flex-1 flex flex-row justify-between items-stretch gap-2 mb-2">
                             {forecast.map((day, i) => (
                                 <div key={day.date} className="flex flex-col items-center justify-between flex-1 p-2.5 rounded-xl bg-white/10 dark:bg-white/5 border border-black/10 dark:border-white/10 shadow-sm">
                                     <div className="text-xs font-bold text-context">
@@ -254,8 +254,8 @@ export default function WeatherView({
                 )}
             </AnimatePresence>
 
-            {/* 페이지 인디케이터 (가시성 강화) */}
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 items-center z-10">
+            {/* 세로 페이지 도트 인디케이터 (상하 슬라이드 UX 일치) */}
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1 z-20 py-1.5 px-0.5 rounded-full bg-black/5 dark:bg-white/5 backdrop-blur-sm border border-black/5 dark:border-white/10 shadow-xs">
                 <button 
                     type="button"
                     onClick={(e) => {
@@ -266,12 +266,17 @@ export default function WeatherView({
                         }
                     }}
                     aria-label="실황 날씨 보기"
-                    className={`h-1.5 rounded-full transition-all duration-300 shadow-sm cursor-pointer ${
-                        page === 0 
-                        ? 'w-6 bg-point ring-2 ring-white/20' 
-                        : 'w-1.5 bg-context/40 hover:bg-context/60'
-                    }`} 
-                />
+                    title="실황 날씨"
+                    className="p-1 cursor-pointer flex items-center justify-center focus:outline-none"
+                >
+                    <div 
+                        className={`w-1.5 rounded-full transition-all duration-300 shadow-sm ${
+                            page === 0 
+                            ? 'h-5 bg-point ring-2 ring-white/20' 
+                            : 'h-1.5 bg-context/40 hover:bg-context/60'
+                        }`} 
+                    />
+                </button>
                 <button 
                     type="button"
                     onClick={(e) => {
@@ -282,12 +287,17 @@ export default function WeatherView({
                         }
                     }}
                     aria-label="단기 예보 보기"
-                    className={`h-1.5 rounded-full transition-all duration-300 shadow-sm cursor-pointer ${
-                        page === 1 
-                        ? 'w-6 bg-point ring-2 ring-white/20' 
-                        : 'w-1.5 bg-context/40 hover:bg-context/60'
-                    }`} 
-                />
+                    title="단기 예보"
+                    className="p-1 cursor-pointer flex items-center justify-center focus:outline-none"
+                >
+                    <div 
+                        className={`w-1.5 rounded-full transition-all duration-300 shadow-sm ${
+                            page === 1 
+                            ? 'h-5 bg-point ring-2 ring-white/20' 
+                            : 'h-1.5 bg-context/40 hover:bg-context/60'
+                        }`} 
+                    />
+                </button>
             </div>
 
             {/* 데이터 출처 및 상태 안내 */}

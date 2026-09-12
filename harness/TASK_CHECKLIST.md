@@ -28,7 +28,7 @@
   - [✔️] 6. 날씨 카드 상하(y축) 슬라이드 및 수직 드래그/휠 제스처 적용 (`WeatherView.tsx`)
     - 데스크탑 2열 구조에 맞춘 직관적인 상하(y축) 전환 애니메이션
     - Framer Motion 기반 수직 드래그(스와이프) 제스처(`drag="y"`, `dragConstraints`, `dragElastic`) 연동
-    - 드래그 중 오동작 클릭 방지 및 클릭 가능한 페이지 인디케이터 버튼 고도화
+    - 드래그 중 오동작 클릭 방지 및 상하 전환 UX 축에 맞춘 우측 세로형 도트 인디케이터 개편
 - [✔️] **크롬 맞춤설정 세션 영역 확보 및 전반적인 세로 레이아웃 축소 (Vertical Layout Optimization for Chrome Extension UI)**
   - [✔️] 1. 메인 섹션(`MainSec.tsx`) 상단 마진(`mt-0`) 제거 및 요소 간 세로 간격(`gap-2.5`) 축소
   - [✔️] 2. 시계/날씨 상단 영역(`Container.tsx`) 세로 높이(`py-1.5`) 및 내부 요소 폰트/패딩 다이어트
