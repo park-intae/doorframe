@@ -57,8 +57,9 @@ export const fetchWeather = createAsyncThunk('weather/fetchWeather', async (_, {
       console.warn('위치 권한을 얻지 못해 기본 좌표(서울)를 사용합니다.', geoErr);
     }
 
-    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const baseUrl = isLocal 
+    // TODO: Lighthouse 성능 검사 및 로컬 테스트용 (추후 삭제 및 원복 예정)
+    const useLocalEdgeFunction = import.meta.env.VITE_USE_LOCAL_SUPABASE === 'true';
+    const baseUrl = useLocalEdgeFunction
       ? 'http://127.0.0.1:54321/functions/v1' 
       : `${import.meta.env.VITE_SUPABASE_URL}/functions/v1`;
     const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;

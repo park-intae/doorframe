@@ -38,6 +38,9 @@
     - 휠 이벤트 전파 방지(`e.stopPropagation`)로 캐러셀 슬라이드 오동작 넘김 방지 및 `.scrollbar-thin` 적용
   - [✔️] 10. 확장 프로그램 성능 진단용 web_accessible_resources 블록 확장 (`manifest.json`)
     - `["*.html", "*.js", "*.css"]` 패턴에 대해 `<all_urls>` 허용 블록 등록
+  - [✔️] 11. 외부 CDN 웹폰트 로컬화 및 SEO 최적화 (`global.css`, `public/fonts/`, `index.html`, `public/robots.txt`)
+    - CDN 의존성 제거 및 WOFF2 로컬 서빙(`@font-face`, `font-display: swap`)
+    - 메타 디스크립션 및 `robots.txt` 설정
 - [✔️] **크롬 맞춤설정 세션 영역 확보 및 전반적인 세로 레이아웃 축소 (Vertical Layout Optimization for Chrome Extension UI)**
   - [✔️] 1. 메인 섹션(`MainSec.tsx`) 상단 마진(`mt-0`) 제거 및 요소 간 세로 간격(`gap-2.5`) 축소
   - [✔️] 2. 시계/날씨 상단 영역(`Container.tsx`) 세로 높이(`py-1.5`) 및 내부 요소 폰트/패딩 다이어트

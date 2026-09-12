@@ -5,6 +5,7 @@ errorLogs/
 
 # bundle stats & build cache
 stats.html
+*.report.html
 vite.config.ts.timestamp-*
 
 # dependencies

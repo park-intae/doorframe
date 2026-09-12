@@ -54,6 +54,11 @@
 #### 11. 확장 프로그램 성능 검사용 web_accessible_resources 블록 확장 (`manifest.json`)
 - **성능 측정 도구 접근 허용**: Lighthouse 등 확장 프로그램 성능 진단 도구가 번들 자원에 접근할 수 있도록 `manifest.json`의 `web_accessible_resources`에 `["*.html", "*.js", "*.css"]` 매칭 규칙(`<all_urls>`) 추가.
 
+#### 12. 외부 CDN 웹폰트 로컬화 및 SEO 최적화 (`global.css`, `public/fonts/`, `index.html`, `public/robots.txt`)
+- **외부 CDN 웹폰트 로컬화 및 렌더링 블로킹 해소**: 기존 `cdn.jsdelivr.net` 외부 CSS 호출을 제거하고 `public/fonts/`에 Paperlogy WOFF2 폰트를 직접 탑재하여 `@font-face`(`font-display: swap`)로 로컬 서빙하도록 개선.
+- **검색 엔진 최적화(SEO) 및 크롤러 대응**: 메타 디스크립션(`<meta name="description">`) 및 검색 로봇 접근 허용을 위한 `robots.txt` 추가.
+- **성능 진단용 로컬/클라우드 엣지 함수 플래그 추가 (`weatherSlice.ts`)**: `VITE_USE_LOCAL_SUPABASE` 환경 변수를 통해 로컬 성능 진단 시 엣지 함수 호출 대상을 제어할 수 있도록 개선.
+
 ---
 
 ## [2026-09-12] 크롬 확장 프로그램 맞춤설정 세션 영역 확보 및 전반적인 세로 레이아웃 축소
