@@ -33,58 +33,60 @@ const NewsBriefInput: React.FC<NewsBriefInputProps> = ({
   }, []);
 
   return (
-    <div className="flex flex-col gap-3 smDT:w-[220px] lgDT:w-full">
-      <div ref={dropdownRef} id="BriefCateContainer" className="flex flex-col w-48 relative">
-        <button
-          type="button"
-          onClick={() => setIsOpen((prev) => !prev)}
-          id='categoryList'
-          className="w-full py-2 text-sm font-paperlogy text-left transition-all glass-input hover:!bg-white/15 focus:outline-none flex justify-center items-center"
-        >
-          {category ? (categoryLabelMap[category] || '카테고리 선택') : '카테고리 선택'}
-        </button>
+    <div className="flex flex-col gap-2.5 w-full flex-shrink-0">
+      <div className="flex gap-2 w-full">
+        <div ref={dropdownRef} id="BriefCateContainer" className="flex flex-col w-36 smDT:w-40 relative flex-shrink-0">
+          <button
+            type="button"
+            onClick={() => setIsOpen((prev) => !prev)}
+            id='categoryList'
+            className="w-full py-2 text-sm font-paperlogy text-left transition-all glass-input hover:!bg-white/15 focus:outline-none flex justify-center items-center"
+          >
+            {category ? (categoryLabelMap[category] || '카테고리 선택') : '카테고리 선택'}
+          </button>
 
-        {/* Dropdown */}
-        {isOpen && (
-          <ul
-            className="absolute z-50 top-full w-full rounded-xl bg-white/80 backdrop-blur-xl border border-black/50 dark:border-white/20 shadow-lg shadow-black/10 overflow-hidden">
-            {Object.entries(googleNewsCategories).map(([name, value]) => (
-              <li
-                key={value}
-                onClick={() => {
-                  setCategory(value);
-                  setIsOpen(false);
-                }}
-                className={`px-4 py-2 text-sm font-paperlogy cursor-pointer transition-all hover:bg-blue-300 hover:text-point
-                  ${category === value
-                    ? 'text-point border-l-2 border-point bg-white/10'
-                    : 'text-title border-l-2 border-transparent'
-                  }
-               `}
-              >
-                {name}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+          {/* Dropdown */}
+          {isOpen && (
+            <ul
+              className="absolute z-50 top-full w-full rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-black/20 dark:border-white/20 shadow-xl overflow-hidden max-h-48 overflow-y-auto scrollbar-thin">
+              {Object.entries(googleNewsCategories).map(([name, value]) => (
+                <li
+                  key={value}
+                  onClick={() => {
+                    setCategory(value);
+                    setIsOpen(false);
+                  }}
+                  className={`px-3 py-1.5 text-xs sm:text-sm font-paperlogy cursor-pointer transition-all hover:bg-point/10 hover:text-point
+                    ${category === value
+                      ? 'text-point border-l-2 border-point bg-point/10 font-bold'
+                      : 'text-title border-l-2 border-transparent'
+                    }
+                 `}
+                >
+                  {name}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
-      <div id="keywordContainer" className="flex flex-col">
-        <input
-          type="text"
-          id="searchQuery"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="예: AI, 금리, 삼성전자"
-          className="block smDT:w-48 lgDT:w-80 px-3 py-2 text-sm font-paperlogy transition-all placeholder:text-context/50 glass-input hover:bg-white focus:outline-none focus:border-point/50 focus:!bg-white focus:shadow-lg focus:shadow-point/10"
-        />
+        <div id="keywordContainer" className="flex flex-col flex-1 min-w-0">
+          <input
+            type="text"
+            id="searchQuery"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="예: AI, 반도체"
+            className="w-full px-3 py-2 text-sm font-paperlogy transition-all placeholder:text-context/50 glass-input hover:bg-white focus:outline-none focus:border-point/50 focus:!bg-white focus:shadow-lg focus:shadow-point/10"
+          />
+        </div>
       </div>
 
       <button
         onClick={handleSummarize}
         disabled={loading}
         id="sumBtn"
-        className="mt-2 w-full bg-point text-main py-2.5 px-4 rounded-xl font-bold font-paperlogy hover:brightness-105 active:scale-95 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-point/20"
+        className="w-full bg-point text-main py-2 px-4 rounded-xl font-bold font-paperlogy hover:brightness-105 active:scale-95 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-point/20"
       >
         {loading ? '요약 중...' : '뉴스 요약하기'}
       </button>

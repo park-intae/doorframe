@@ -22,9 +22,12 @@ body,
     --color-context: rgb(71, 85, 105);
     --color-delete: rgb(239, 68, 68);
 
-    --breakpoint-smDT: 1336px;
-    --breakpoint-mdDT: 1440px;
-    --breakpoint-lgDT: 1920px;
+    /* 데스크탑 중심 반응형 브레이크포인트 체계 */
+    /* 기본 / 창 분할 (~1024px): 상하 1열 컴팩트 스택 */
+    /* lg (1024px~): 기본 2열 진입선 (Tailwind 기본 프리셋) */
+    --breakpoint-smDT: 1336px; /* 13~14인치 노트북 컴팩트 2열 */
+    --breakpoint-mdDT: 1440px; /* 일반 모니터 / 맥북 표준 2열 */
+    --breakpoint-lgDT: 1920px; /* FHD / QHD / 4K 대화면 와이드 2열 */
 }
 
 :root {

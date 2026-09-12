@@ -10,7 +10,7 @@ export default function Main() {
             <nav aria-label="북마크 바">
                 <BookmarkBar />
             </nav>
-            <article className="mainSec flex flex-1 flex-col justify-center items-center h-full overflow-hidden pl-20">
+            <article className="mainSec flex flex-1 flex-col justify-start lg:justify-center items-center h-full overflow-y-auto lg:overflow-hidden pl-20 py-4 lg:py-0 scrollbar-hide">
                 <MainSec />
             </article>
         </main>

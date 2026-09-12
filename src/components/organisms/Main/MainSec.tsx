@@ -8,13 +8,13 @@ import CoinList from "../../molecules/coin/CoinList";
 
 export default function MainSec() {
     return (
-        <section id="mainSection" className="relative smDT:mt-15 mdDT:mt-10 lgDT:mt-15 flex flex-col items-center gap-6 lgDT:gap-5">
+        <section id="mainSection" className="relative mt-0 pb-10 flex flex-col items-center gap-3 w-full">
             <Search />
-            <article id="center-area" className="flex flex-row mdDT:flex-col justify-center items-center gap-2 lgDT:gap-5 w-full">
-                <div className="flex-shrink-0 flex flex-col justify-center items-center gap-5 w-fit smDT:w-115 mdDT:w-full">
+            <article id="center-area" className="flex flex-col lg:flex-row justify-center items-center lg:items-start gap-5 lg:gap-6 w-full">
+                <div className="flex-shrink-0 flex flex-col justify-center items-center w-full max-w-[390px] smDT:w-[390px] mdDT:w-[400px]">
                     <Container />
                 </div>
-                <div className="flex-shrink-0 flex justify-center gap-3 w-full max-w-186 h-70 lgDT:h-100 px-5">
+                <div className="flex-shrink-0 flex justify-center w-full max-w-[480px] smDT:w-[480px] mdDT:w-[500px] h-[440px] mdDT:h-[450px]">
                     <Carousel>
                         <CalendarSlide />
                         <NewsBriefing />

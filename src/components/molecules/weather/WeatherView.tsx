@@ -55,8 +55,8 @@ export default function WeatherView({
     };
 
     // 로딩 및 에러 상태 처리
-    if (loading) return <div className="w-66 h-52 flex items-center justify-center glass-sub rounded-xl">로딩 중...</div>;
-    if (error) return <div className="w-66 h-52 flex items-center justify-center glass-sub rounded-xl text-red-500 text-xs p-4 text-center">{error}</div>;
+    if (loading) return <div className="w-full h-[276px] flex items-center justify-center glass rounded-2xl text-context/70 font-paperlogy">로딩 중...</div>;
+    if (error) return <div className="w-full h-[276px] flex items-center justify-center glass rounded-2xl text-red-500 text-xs p-4 text-center font-paperlogy">{error}</div>;
 
     const regionParts = region?.split(' ') || [];
     const displayRegion = regionParts[regionParts.length - 1] || region;
@@ -64,7 +64,7 @@ export default function WeatherView({
     return (
         <div 
             id="weather-container" 
-            className="relative overflow-hidden rounded-xl w-66 h-52 p-4 mr-4 flex flex-col bg-background glass-sub cursor-pointer select-none"
+            className="relative overflow-hidden rounded-2xl w-full h-[276px] p-4.5 flex flex-col glass cursor-pointer select-none font-paperlogy"
             onClick={(e) => {
                 if ((e.target as HTMLElement).closest('.group')) return;
                 setPage(prev => (prev === 0 ? 1 : 0));
@@ -85,12 +85,12 @@ export default function WeatherView({
                     >
                         {/* 상단: 실황 */}
                         <div className="flex flex-row items-center justify-between flex-1 min-h-0">
-                            <div className="flex flex-row items-center gap-4">
-                                <div className="w-14 h-14 rounded-full bg-main flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
+                            <div className="flex flex-row items-center gap-3">
+                                <div className="w-12 h-12 rounded-full bg-main flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
                                     <WeatherIcon />
                                 </div>
                                 <div className="flex flex-col justify-center">
-                                    <div className="text-xl font-bold leading-tight text-title">{weather}</div>
+                                    <div className="text-lg font-bold leading-tight text-title">{weather}</div>
                                     <div className="flex items-center gap-1.5 mt-0.5">
                                         <span className="text-xs font-medium text-context opacity-80">{displayRegion}</span>
                                         {isFallback && (
@@ -105,7 +105,7 @@ export default function WeatherView({
                                 </div>
                             </div>
                             <div className="flex flex-col items-end justify-center">
-                                <div className="text-4xl font-black text-title leading-none">
+                                <div className="text-3xl font-black text-title leading-none">
                                     {temperature}°
                                 </div>
                             </div>
@@ -125,12 +125,12 @@ export default function WeatherView({
                         transition={{ duration: 0.3 }}
                         className="flex flex-col h-full"
                     >
-                        <div className="text-[10px] font-bold mt-1 mb-2 opacity-50 uppercase tracking-wider text-center text-context">Short-term Forecast</div>
+                        <div className="text-xs font-bold mt-1 mb-2.5 opacity-60 uppercase tracking-wider text-center text-context">단기 예보 (3일간)</div>
                         
-                        <div className="flex-1 flex flex-row justify-between items-center gap-1 mb-4">
+                        <div className="flex-1 flex flex-row justify-between items-stretch gap-2 mb-4">
                             {forecast.map((day, i) => (
-                                <div key={day.date} className="flex flex-col items-center gap-2 flex-1 p-2 rounded-lg bg-white/5 border border-black/50 dark:border-white/5 shadow-sm">
-                                    <div className="text-[10px] font-bold text-context">
+                                <div key={day.date} className="flex flex-col items-center justify-between flex-1 p-2.5 rounded-xl bg-white/10 dark:bg-white/5 border border-black/10 dark:border-white/10 shadow-sm">
+                                    <div className="text-xs font-bold text-context">
                                         {i === 0 ? '오늘' : i === 1 ? '내일' : '모레'}
                                     </div>
                                     <div className="text-xs font-bold text-title">{day.weatherStatus}</div>

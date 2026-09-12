@@ -1,7 +1,7 @@
 import { RootState } from "@/store";
 import { clearInput, setInputValue } from "@/store/slice/inputSlice";
 import { addItem } from "@/store/slice/listSlice";
-import { Plus, Calendar as CalendarIcon } from "lucide-react";
+import { Plus, Calendar as CalendarIcon, PenLine } from "lucide-react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -39,13 +39,18 @@ export default function ItemInput({ kind }: ItemInputProps) {
             onSubmit={handleSubmit}
             className="flex items-center gap-2 w-full glass-sub !rounded-xl px-3.5 py-2 hover:border-point/40 focus-within:!border-point focus-within:ring-2 focus-within:ring-point/20 transition-all duration-200"
         >
+            <PenLine className="w-4 h-4 text-context/50 shrink-0 ml-0.5" />
             <input
                 aria-label={`${kind === 'todo' ? '할 일' : '메모'} 입력`}
                 className="focus:outline-none bg-transparent flex-1 text-sm text-title placeholder:text-context/60 min-w-0"
-                placeholder={kind === 'todo' ? '새로운 할 일을 입력하세요...' : '새로운 메모를 입력하세요...'}
+                placeholder={kind === 'todo' ? '할 일을 입력하세요...' : '메모를 입력하세요...'}
+                maxLength={200}
                 value={value}
                 onChange={handleChange}
             />
+            <span className="text-[10px] text-context/40 shrink-0 hidden sm:inline select-none">
+                {value.length}/200
+            </span>
             
             {kind === 'todo' && (
                 <div className="flex items-center gap-1.5 pl-2.5 border-l border-context/20 shrink-0">

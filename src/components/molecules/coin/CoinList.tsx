@@ -10,15 +10,15 @@ export default function CoinList() {
     };
 
     return (
-        <div className="flex flex-col w-full p-6 glass font-paperlogy overflow-hidden h-full">
-            <h2 className="text-xl font-bold text-title mb-4 flex items-center gap-2">
+        <div className="flex flex-col w-full p-4.5 glass font-paperlogy overflow-hidden h-full">
+            <h2 className="text-xl font-bold text-title mb-2.5 flex items-center gap-2 flex-shrink-0">
                 <span className="w-2 h-6 bg-point rounded-full" />
                 실시간 코인 시세 (KRW)
             </h2>
             
-            <div className="w-full flex-1 overflow-hidden flex flex-col">
+            <div className="w-full flex-1 min-h-0 overflow-hidden flex flex-col">
                 {/* 헤더 */}
-                <div className="grid grid-cols-5 gap-2 pb-2 mb-2 border-b border-black/50 dark:border-white/20 text-sm font-bold text-context">
+                <div className="grid grid-cols-5 gap-2 pb-2 mb-2 border-b border-black/50 dark:border-white/20 text-sm font-bold text-context flex-shrink-0">
                     <div className="col-span-2">코인명</div>
                     <div className="text-right">현재가</div>
                     <div className="text-right">전일대비</div>
@@ -44,7 +44,7 @@ export default function CoinList() {
                 </div>
             </div>
 
-            <div className="mt-4 text-[10px] text-context/40 flex justify-between items-center">
+            <div className="mt-2 text-[10px] text-context/40 flex justify-between items-center flex-shrink-0">
                 <span>Data provided by Upbit</span>
                 <span className="flex items-center gap-1">
                     <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
