@@ -5,6 +5,26 @@
 ## In-Progress Task
 
 ## Completed Tasks
+- [✔️] **(수정) Todo 마감일(Deadline) 시각화 및 마감 임박 강조 UI 구현 (Todo Deadline Visualization & Urgency Alert)**
+  - [✔️] 1. 마감일 계산 및 상태 판별 유틸리티 로직 구현 (`src/util/todoDate.ts` 및 단위 테스트)
+    - 로직/뷰 분리 원칙에 따라 D-Day, D-N, 기한 초과(Overdue) 계산 및 임박 여부(`isUrgent`, `isOverdue`) 판별
+    - 시간/타임존 엣지 케이스 방어 및 단위 테스트 작성
+  - [✔️] 2. 하단 팝오버 Todo 리스트(`ItemList.tsx`) 마감일 뱃지 및 임박 배경 스타일 적용
+    - Todo 항목에 마감일 뱃지(예: `D-Day`, `D-1`, `~M.D`) 시각적 노출
+    - 마감 임박/초과 시 글래스모피즘 테마에 맞춘 붉은 계열 배경(`bg-rose-500/15`, 테두리 강조) 적용
+    - 완료(`completed: true`) 항목은 붉은 배경 해제 및 완료 스타일(취소선/투명도) 일관성 유지
+  - [✔️] 3. 캐러셀 캘린더 슬라이드 Todo 리스트(`CalendarList.tsx`) 동기화 및 일관성 확보
+    - 캐러셀 캘린더 리스트에서도 동일한 마감일 뱃지 및 임박 강조 스타일 적용
+    - 라이트 모드 및 다크 모드에서의 가시성 확보
+  - [✔️] 4. 통합 테스트 및 시나리오 검증
+    - 마감일 설정 후 등록 시 리스트 즉시 반영 및 D-Day별 색상 변화 검증
+    - 전체 테스트 스위트 회귀 검증 통과 확인 (21개 테스트 파일, 68개 테스트 전수 통과)
+  - [✔️] 5. (수정) 등록일~마감일 전 기간 캘린더 노출 및 기간(Date Range) 표시 UI 개선
+    - 캘린더 필터링 로직 수정 (`useCalendar.ts`): 등록일부터 마감일까지 중간 기간(`item.date <= formattedDate && formattedDate <= item.deadline`) 전 기간 노출 보장
+    - 기간 포맷팅 로직 확장 (`todoDate.ts`): `등록일 ~ 마감일`(`MM.DD ~ MM.DD`) 기간 텍스트 및 단위 테스트 작성
+    - 리스트 UI 뱃지 확장 (`ItemList.tsx`, `CalendarList.tsx`): 등록일~마감일 기간 표시 연동
+    - 전체 테스트 스위트 회귀 검증 통과 확인 (22개 테스트 파일, 75개 테스트 전수 통과)
+
 - [✔️] **데이터 영속성 및 저장/인증 안정화 (Data Persistence & Storage Reliability Fix)**
   - [✔️] 1. 백엔드 익명 인증과 프론트엔드 전역 세션 분리 (Separate Anonymous Auth from UI State)
     - 파비콘 업로드(`iconUploader`)를 위한 Supabase 익명 세션 기능은 백엔드용으로 안전하게 유지

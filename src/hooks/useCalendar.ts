@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { ListKind } from '@/store/slice/listSlice';
+import { parseLocalDate, getDaysDifference } from '@/util/todoDate';
 
 export function useCalendar() {
     const [viewDate, setViewDate] = useState(new Date());
@@ -30,21 +31,16 @@ export function useCalendar() {
             
             // 할 일 필터링
             if (kind === 'todo') {
-                // 1. 해당 날짜에 생성된 할 일
-                if (item.date === formattedDate) return true;
-                
-                // 2. 마감일이 설정된 경우 D-1 로직 적용
+                // 마감일이 설정된 경우: 등록일(item.date)부터 마감일(item.deadline)까지 전 기간에 표시
                 if (item.deadline) {
-                    const deadlineDate = new Date(item.deadline);
-                    const viewDateObj = new Date(formattedDate);
-                    
-                    // 시간 차이를 일 단위로 계산
-                    const diffTime = deadlineDate.getTime() - viewDateObj.getTime();
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    
-                    // 마감일 당일(0) 또는 전날(1)이면 표시
-                    return diffDays === 0 || diffDays === 1;
+                    const startDate = item.date || item.deadline;
+                    const minDate = startDate <= item.deadline ? startDate : item.deadline;
+                    const maxDate = startDate <= item.deadline ? item.deadline : startDate;
+                    return formattedDate >= minDate && formattedDate <= maxDate;
                 }
+                
+                // 마감일이 없는 경우: 등록일 당일에만 표시
+                return item.date === formattedDate;
             }
             
             return false;
