@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 import { WeatherIcon } from "../weather/WeatherIcon";
 import WeatherChart from "./WeatherChart";
+import WeatherSkeleton from "./WeatherSkeleton";
 import { DailyForecast, WeatherHourly } from "@/type/weather";
 
 interface WeatherViewProps {
@@ -85,7 +86,7 @@ export default function WeatherView({
     };
 
     // 로딩 및 에러 상태 처리
-    if (loading) return <div className="w-full h-[296px] flex items-center justify-center glass rounded-2xl text-context/70 font-paperlogy">로딩 중...</div>;
+    if (loading || (!temperature && !error)) return <WeatherSkeleton />;
     if (error) return <div className="w-full h-[296px] flex items-center justify-center glass rounded-2xl text-red-500 text-xs p-4 text-center font-paperlogy">{error}</div>;
 
     const regionParts = region?.split(' ') || [];

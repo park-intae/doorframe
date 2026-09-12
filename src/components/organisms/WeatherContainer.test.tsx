@@ -53,4 +53,32 @@ describe('WeatherContainer Component', () => {
         expect(weatherElement).toBeDefined();
         expect(regionElement).toBeDefined();
     });
+
+    it('로딩 중일 때 스켈레톤 UI를 렌더링해야 함', () => {
+        const store = configureStore({ 
+            reducer: { weather: weatherReducer },
+            preloadedState: {
+                weather: {
+                    temperature: null,
+                    weather: '',
+                    region: '',
+                    forecast: [],
+                    hourly: [],
+                    loading: true,
+                    error: null,
+                    isFallback: false,
+                }
+            }
+        });
+
+        const { container } = render(
+            <Provider store={store}>
+                <WeatherContainer />
+            </Provider>
+        );
+
+        const skeleton = container.querySelector('#weather-skeleton');
+        expect(skeleton).not.toBeNull();
+        expect(skeleton?.getAttribute('aria-busy')).toBe('true');
+    });
 });
