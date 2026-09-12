@@ -55,8 +55,8 @@ export default function WeatherView({
     };
 
     // 로딩 및 에러 상태 처리
-    if (loading) return <div className="w-full h-[276px] flex items-center justify-center glass rounded-2xl text-context/70 font-paperlogy">로딩 중...</div>;
-    if (error) return <div className="w-full h-[276px] flex items-center justify-center glass rounded-2xl text-red-500 text-xs p-4 text-center font-paperlogy">{error}</div>;
+    if (loading) return <div className="w-full h-[296px] flex items-center justify-center glass rounded-2xl text-context/70 font-paperlogy">로딩 중...</div>;
+    if (error) return <div className="w-full h-[296px] flex items-center justify-center glass rounded-2xl text-red-500 text-xs p-4 text-center font-paperlogy">{error}</div>;
 
     const regionParts = region?.split(' ') || [];
     const displayRegion = regionParts[regionParts.length - 1] || region;
@@ -64,7 +64,7 @@ export default function WeatherView({
     return (
         <div 
             id="weather-container" 
-            className="relative overflow-hidden rounded-2xl w-full h-[276px] p-4.5 flex flex-col glass cursor-pointer select-none font-paperlogy"
+            className="relative overflow-hidden rounded-2xl w-full h-[296px] p-4.5 flex flex-col glass cursor-pointer select-none font-paperlogy"
             onClick={(e) => {
                 if ((e.target as HTMLElement).closest('.group')) return;
                 setPage(prev => (prev === 0 ? 1 : 0));

@@ -71,7 +71,7 @@ export default function WeatherChart({ data }: WeatherChartProps) {
         maintainAspectRatio: false,
         layout: {
           padding: {
-            top: 0,
+            top: 12, // 상단 최고 기온 곡선 잘림 방지 여백 확보
             bottom: 10, // 하단 라벨 여백 확보
           },
         },
@@ -123,7 +123,7 @@ export default function WeatherChart({ data }: WeatherChartProps) {
   }, [data]);
 
   return (
-    <div className="w-full h-24">
+    <div className="w-full h-28">
       <canvas ref={canvasRef} />
     </div>
   );

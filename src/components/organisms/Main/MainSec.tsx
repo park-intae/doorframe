@@ -14,7 +14,7 @@ export default function MainSec() {
                 <div className="flex-shrink-0 flex flex-col justify-center items-center w-full max-w-[390px] smDT:w-[390px] mdDT:w-[400px]">
                     <Container />
                 </div>
-                <div className="flex-shrink-0 flex justify-center w-full max-w-[480px] smDT:w-[480px] mdDT:w-[500px] h-[440px] mdDT:h-[450px]">
+                <div className="flex-shrink-0 flex justify-center w-full max-w-[480px] smDT:w-[480px] mdDT:w-[500px] h-[470px]">
                     <Carousel>
                         <CalendarSlide />
                         <NewsBriefing />
