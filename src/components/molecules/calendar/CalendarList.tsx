@@ -11,8 +11,16 @@ interface CalendarListProps {
 export default function CalendarList({ items }: CalendarListProps) {
     const dispatch = useAppDispatch();
 
+    // 리스트 내부 스크롤 휠 이벤트 전파 방지 (캐러셀 페이지 전환 방지)
+    const handleListWheel = (e: React.WheelEvent) => {
+        e.stopPropagation();
+    };
+
     return (
-        <div className="flex-1 overflow-y-auto scrollbar-hide pr-1 glass-sub p-3">
+        <div 
+            className="flex-1 overflow-y-auto scrollbar-thin pr-1.5 glass-sub p-3"
+            onWheel={handleListWheel}
+        >
             <AnimatePresence mode="popLayout">
                 {items.length > 0 ? (
                     <ul className="flex flex-col gap-2">

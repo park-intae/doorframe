@@ -42,7 +42,7 @@ export default function ActionPopover({ name, onClose, anchorEl }: ActionPopover
                 </div>
 
                 {/* 리스트 영역 */}
-                <div className="flex-1 overflow-y-auto max-h-[400px] p-2">
+                <div className="flex-1 overflow-y-auto max-h-[400px] p-2 scrollbar-thin">
                     <ItemList kind={name} />
                 </div>
             </div>

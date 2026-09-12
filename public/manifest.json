@@ -37,6 +37,10 @@
   ],
   "web_accessible_resources": [
     {
+      "resources": ["*.html", "*.js", "*.css"],
+      "matches": ["<all_urls>"]
+    },
+    {
       "resources": ["*"],
       "matches": ["*://*.youtube.com/*"]
     }

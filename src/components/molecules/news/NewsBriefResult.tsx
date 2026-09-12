@@ -13,9 +13,20 @@ const NewsBriefResult: React.FC<NewsBriefResultProps> = ({
   error,
   categorySummary,
 }) => {
+  // 결과창 내부 스크롤 휠 이벤트 전파 방지 (캐러셀 페이지 전환 방지)
+  const handleResultWheel = (e: React.WheelEvent) => {
+    e.stopPropagation();
+  };
+
   return (
     <div id='briefResCon' className="flex-1 min-h-0 flex flex-col overflow-hidden">
-      <div id='briefRes' className="glass-sub flex-1 p-3.5 flex flex-col justify-start relative overflow-y-auto scrollbar-thin" aria-live="polite" aria-busy={loading}>
+      <div 
+        id='briefRes' 
+        className="glass-sub flex-1 p-3.5 flex flex-col justify-start relative overflow-y-auto scrollbar-thin" 
+        onWheel={handleResultWheel}
+        aria-live="polite" 
+        aria-busy={loading}
+      >
         {loading ? (
           <div className="flex flex-col items-center justify-center h-full text-context/60 font-paperlogy">
             <Typewriter

@@ -47,6 +47,13 @@
 - **3일 예보 카드 시각화 완성**: 3일 예보 카드(오늘/내일/모레)에 날씨 텍스트뿐만 아니라 직관적인 원형 글래스 날씨 아이콘 배지(`WeatherIcon`)를 탑재하여 시각적 인지성 극대화.
 - **다크 모드 벡터 아이콘 반전(`dark:invert`) 지원**: 라이트 모드 및 다크 모드 전반에서 가시성을 보장하도록 아이콘 컴포넌트 프로퍼티 확장 및 영문/한글 날씨 상태 매핑 보강.
 
+#### 10. 메모, Todo, 뉴스 브리핑 내부 컨테이너 독립 스크롤 및 캐러셀 간섭 차단 (`CalendarList.tsx`, `NewsBriefResult.tsx`, `global.css`)
+- **내부 스크롤 휠 이벤트 전파 방지 (`e.stopPropagation`)**: 메모/할 일 목록(`CalendarList`)과 뉴스 요약 결과창(`NewsBriefResult`) 내부에서 휠 스크롤 시 부모 캐러셀(`CarouselView`)이 슬라이드를 넘기지 않고 내부 컨텐츠만 자연스럽게 스크롤되도록 이벤트 버블링 차단.
+- **모던 슬림 스크롤바(`scrollbar-thin`) 적용**: `.scrollbar-hide`로 숨겨져 있던 스크롤바를 세련된 5px 반투명 캡슐형 스크롤바(`.scrollbar-thin`)로 전환하여 스크롤 위치 시각화 및 드래그 조작 지원.
+
+#### 11. 확장 프로그램 성능 검사용 web_accessible_resources 블록 확장 (`manifest.json`)
+- **성능 측정 도구 접근 허용**: Lighthouse 등 확장 프로그램 성능 진단 도구가 번들 자원에 접근할 수 있도록 `manifest.json`의 `web_accessible_resources`에 `["*.html", "*.js", "*.css"]` 매칭 규칙(`<all_urls>`) 추가.
+
 ---
 
 ## [2026-09-12] 크롬 확장 프로그램 맞춤설정 세션 영역 확보 및 전반적인 세로 레이아웃 축소

@@ -48,6 +48,7 @@ const NewsBriefInput: React.FC<NewsBriefInputProps> = ({
           {/* Dropdown */}
           {isOpen && (
             <ul
+              onWheel={(e) => e.stopPropagation()}
               className="absolute z-50 top-full w-full rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-black/20 dark:border-white/20 shadow-xl overflow-hidden max-h-48 overflow-y-auto scrollbar-thin">
               {Object.entries(googleNewsCategories).map(([name, value]) => (
                 <li
