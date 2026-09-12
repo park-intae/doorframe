@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 import { WeatherIcon } from "../weather/WeatherIcon";
 import WeatherChart from "./WeatherChart";
@@ -15,16 +15,33 @@ interface WeatherViewProps {
     isFallback?: boolean;
 }
 
+const slideVariants = {
+    enter: (direction: number) => ({
+        opacity: 0,
+        y: direction >= 0 ? 30 : -30,
+    }),
+    center: {
+        opacity: 1,
+        y: 0,
+    },
+    exit: (direction: number) => ({
+        opacity: 0,
+        y: direction >= 0 ? -30 : 30,
+    }),
+};
+
 /**
  * 날씨 정보를 가로형 Flex 레이아웃과 캐러셀 구조로 보여주는 컴포넌트
- * 마우스 커서를 추적하는 고도화된 툴팁 시스템 포함
+ * 마우스 커서를 추적하는 고도화된 툴팁 시스템 및 수직(y축) 드래그/휠 인터랙션 포함
  */
 export default function WeatherView({ 
     temperature, weather, region, forecast, hourly, loading, error, isFallback 
 }: WeatherViewProps) {
     const [page, setPage] = useState(0);
+    const [direction, setDirection] = useState(1);
     const [tooltip, setTooltip] = useState<{ text: string; color: string } | null>(null);
     const [isScrollLocked, setIsLocked] = useState(false);
+    const isDraggingRef = useRef(false);
     
     // 마우스 좌표 추적을 위한 모션 값
     const mouseX = useMotionValue(0);
@@ -44,14 +61,27 @@ export default function WeatherView({
     const handleWheel = (e: React.WheelEvent) => {
         if (isScrollLocked) return;
         
-        // 휠의 움직임이 일정 강도 이상일 때만 작동 (감도 조절)
-        if (Math.abs(e.deltaY) > 10) {
+        // 휠의 움직임이 일정 강도 이상일 때만 수직 전환 (감도 조절)
+        if (e.deltaY > 15 && page === 0) {
             setIsLocked(true);
-            setPage(prev => (prev === 0 ? 1 : 0));
-            
-            // 0.6초 후 잠금 해제 (연속 전환 방지)
-            setTimeout(() => setIsLocked(false), 600);
+            setDirection(1);
+            setPage(1);
+            setTimeout(() => setIsLocked(false), 500);
+        } else if (e.deltaY < -15 && page === 1) {
+            setIsLocked(true);
+            setDirection(-1);
+            setPage(0);
+            setTimeout(() => setIsLocked(false), 500);
         }
+    };
+
+    const handleClick = (e: React.MouseEvent) => {
+        if (isDraggingRef.current) return;
+        if ((e.target as HTMLElement).closest('.group') || (e.target as HTMLElement).closest('button')) return;
+        
+        const nextPage = page === 0 ? 1 : 0;
+        setDirection(nextPage === 1 ? 1 : -1);
+        setPage(nextPage);
     };
 
     // 로딩 및 에러 상태 처리
@@ -64,24 +94,39 @@ export default function WeatherView({
     return (
         <div 
             id="weather-container" 
-            className="relative overflow-hidden rounded-2xl w-full h-[296px] p-4.5 flex flex-col glass cursor-pointer select-none font-paperlogy"
-            onClick={(e) => {
-                if ((e.target as HTMLElement).closest('.group')) return;
-                setPage(prev => (prev === 0 ? 1 : 0));
-            }}
+            className="relative overflow-hidden rounded-2xl w-full h-[296px] p-4.5 flex flex-col glass cursor-grab active:cursor-grabbing select-none font-paperlogy"
+            onClick={handleClick}
             onMouseMove={handleMouseMove}
             onWheel={handleWheel}
             onMouseLeave={() => setTooltip(null)}
         >
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="wait" custom={direction}>
                 {page === 0 ? (
                     <motion.div 
                         key="current"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        transition={{ duration: 0.3 }}
-                        className="flex flex-col h-full"
+                        custom={direction}
+                        variants={slideVariants}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{ duration: 0.25, ease: "easeInOut" }}
+                        drag="y"
+                        dragConstraints={{ top: 0, bottom: 0 }}
+                        dragElastic={0.2}
+                        onDragStart={() => {
+                            isDraggingRef.current = true;
+                            setTooltip(null);
+                        }}
+                        onDragEnd={(_, { offset, velocity }) => {
+                            if (offset.y < -30 || velocity.y < -200) {
+                                setDirection(1);
+                                setPage(1);
+                            }
+                            setTimeout(() => {
+                                isDraggingRef.current = false;
+                            }, 50);
+                        }}
+                        className="flex flex-col h-full touch-none"
                     >
                         {/* 상단: 실황 */}
                         <div className="flex flex-row items-center justify-between flex-1 min-h-0">
@@ -119,11 +164,29 @@ export default function WeatherView({
                 ) : (
                     <motion.div 
                         key="forecast"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        transition={{ duration: 0.3 }}
-                        className="flex flex-col h-full"
+                        custom={direction}
+                        variants={slideVariants}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{ duration: 0.25, ease: "easeInOut" }}
+                        drag="y"
+                        dragConstraints={{ top: 0, bottom: 0 }}
+                        dragElastic={0.2}
+                        onDragStart={() => {
+                            isDraggingRef.current = true;
+                            setTooltip(null);
+                        }}
+                        onDragEnd={(_, { offset, velocity }) => {
+                            if (offset.y > 30 || velocity.y > 200) {
+                                setDirection(-1);
+                                setPage(0);
+                            }
+                            setTimeout(() => {
+                                isDraggingRef.current = false;
+                            }, 50);
+                        }}
+                        className="flex flex-col h-full touch-none"
                     >
                         <div className="text-xs font-bold mt-1 mb-2.5 opacity-60 uppercase tracking-wider text-center text-context">단기 예보 (3일간)</div>
                         
@@ -137,7 +200,7 @@ export default function WeatherView({
                                     <div className="flex flex-col items-center leading-tight">
                                         {/* 최고 기온 */}
                                         <div 
-                                            className="text-sm font-black text-rose-500 hover:scale-110 transition-transform"
+                                            className="text-sm font-black text-rose-500 hover:scale-110 transition-transform cursor-pointer"
                                             onMouseEnter={() => setTooltip({ text: '최고 기온', color: 'text-rose-400' })}
                                             onMouseLeave={() => setTooltip(null)}
                                         >
@@ -145,7 +208,7 @@ export default function WeatherView({
                                         </div>
                                         {/* 최저 기온 */}
                                         <div 
-                                            className="text-[10px] font-bold text-blue-500 hover:scale-110 transition-transform"
+                                            className="text-[10px] font-bold text-blue-500 hover:scale-110 transition-transform cursor-pointer"
                                             onMouseEnter={() => setTooltip({ text: '최저 기온', color: 'text-blue-400' })}
                                             onMouseLeave={() => setTooltip(null)}
                                         >
@@ -192,19 +255,37 @@ export default function WeatherView({
             </AnimatePresence>
 
             {/* 페이지 인디케이터 (가시성 강화) */}
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 pointer-events-none items-center">
-                <div 
-                    className={`h-1.5 rounded-full transition-all duration-300 shadow-sm ${
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 items-center z-10">
+                <button 
+                    type="button"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        if (page !== 0) {
+                            setDirection(-1);
+                            setPage(0);
+                        }
+                    }}
+                    aria-label="실황 날씨 보기"
+                    className={`h-1.5 rounded-full transition-all duration-300 shadow-sm cursor-pointer ${
                         page === 0 
                         ? 'w-6 bg-point ring-2 ring-white/20' 
-                        : 'w-1.5 bg-context/40'
+                        : 'w-1.5 bg-context/40 hover:bg-context/60'
                     }`} 
                 />
-                <div 
-                    className={`h-1.5 rounded-full transition-all duration-300 shadow-sm ${
+                <button 
+                    type="button"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        if (page !== 1) {
+                            setDirection(1);
+                            setPage(1);
+                        }
+                    }}
+                    aria-label="단기 예보 보기"
+                    className={`h-1.5 rounded-full transition-all duration-300 shadow-sm cursor-pointer ${
                         page === 1 
                         ? 'w-6 bg-point ring-2 ring-white/20' 
-                        : 'w-1.5 bg-context/40'
+                        : 'w-1.5 bg-context/40 hover:bg-context/60'
                     }`} 
                 />
             </div>
