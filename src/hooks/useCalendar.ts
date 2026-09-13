@@ -1,7 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { ListKind } from '@/store/slice/listSlice';
-import { parseLocalDate, getDaysDifference } from '@/util/todoDate';
 
 export function useCalendar() {
     const [viewDate, setViewDate] = useState(new Date());

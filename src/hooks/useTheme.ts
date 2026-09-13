@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { useAppSelector } from '../store/hooks';
 
 export const useTheme = () => {
-    const dispatch = useAppDispatch();
     const mode = useAppSelector((state) => state.theme.mode);
 
     useEffect(() => {

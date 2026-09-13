@@ -1,7 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { Bookmark } from '@/type/bookmark';
 import { chromeStorage } from '@/util/chromeStorage';
-import { supabase } from '@/config/supabase';
 
 const BASE_STORAGE_KEY = 'fav_items';
 

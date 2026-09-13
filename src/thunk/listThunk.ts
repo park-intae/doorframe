@@ -1,7 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { ListItem } from '@/store/slice/listSlice';
 import { chromeStorage } from '@/util/chromeStorage';
-import { supabase } from '@/config/supabase';
 
 const BASE_STORAGE_KEY = 'list_items';
 const getUserStorageKey = (userId?: string) => userId ? `${userId}_${BASE_STORAGE_KEY}` : `guest_${BASE_STORAGE_KEY}`;

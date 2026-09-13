@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { ReactNode, useLayoutEffect, useState } from "react";
+import { ReactNode, useState } from "react";
 import { createPortal } from "react-dom";
 
 interface ModalProps {

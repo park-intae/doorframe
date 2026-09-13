@@ -1,5 +1,5 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { loadListFromStorage, saveListToStorage } from './listThunk';
+import { loadListFromStorage } from './listThunk';
 import { supabase } from '@/config/supabase';
 import { chromeStorage } from '@/util/chromeStorage';
 

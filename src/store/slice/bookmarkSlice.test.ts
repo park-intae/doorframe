@@ -1,4 +1,4 @@
-import reducer, { addBookmark, removeBookmark, setBookmarks } from './bookmarkSlice';
+import reducer, { addBookmark, removeBookmark } from './bookmarkSlice';
 import { Bookmark } from '@/type/bookmark';
 
 describe('bookmarkSlice reducer', () => {

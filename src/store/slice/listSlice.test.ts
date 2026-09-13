@@ -1,4 +1,4 @@
-import reducer, { addItem, toggleItem, removeItem, ListKind } from './listSlice';
+import reducer, { addItem, toggleItem, ListKind } from './listSlice';
 
 describe('listSlice reducer 철저한 검증', () => {
     const initialState = {

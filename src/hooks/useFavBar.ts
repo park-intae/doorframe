@@ -1,7 +1,7 @@
 import { RootState } from "@/store";
 import { useLayoutEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { loadBookmarksFromStorage, saveBookmarksToStorage } from "@/thunk/bookmarkThunk";
+import { saveBookmarksToStorage } from "@/thunk/bookmarkThunk";
 import { useAppDispatch } from "@/store/hooks";
 import { removeBookmark, setBookmarks } from "@/store/slice/bookmarkSlice";
 import {
