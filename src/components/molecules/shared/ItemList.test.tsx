@@ -21,14 +21,21 @@ const renderWithRedux = (ui: React.ReactElement, initialItems = []) => {
 };
 
 describe('ItemList 마감일 표시 및 UI 테스트', () => {
-    const todayStr = new Date().toISOString().split('T')[0];
+    const toLocalDateStr = (d: Date) => {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+    };
+
+    const todayStr = toLocalDateStr(new Date());
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+    const tomorrowStr = toLocalDateStr(tomorrow);
 
     const farFuture = new Date();
     farFuture.setDate(farFuture.getDate() + 7);
-    const farFutureStr = farFuture.toISOString().split('T')[0];
+    const farFutureStr = toLocalDateStr(farFuture);
 
     it('메모(memo) 항목은 마감일 뱃지가 표시되지 않는다', () => {
         const items = [

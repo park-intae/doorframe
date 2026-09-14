@@ -12,6 +12,8 @@ interface WeatherViewProps {
     forecast: DailyForecast[];
     hourly: WeatherHourly[];
     loading: boolean;
+    currentLoading?: boolean;
+    forecastLoading?: boolean;
     error: string | null;
     isFallback?: boolean;
     backupSource?: string | null;
@@ -19,17 +21,17 @@ interface WeatherViewProps {
 
 const slideVariants = {
     enter: (direction: number) => ({
-        opacity: 0,
-        y: direction >= 0 ? 30 : -30,
+        y: direction > 0 ? 40 : -40,
+        opacity: 0
     }),
     center: {
-        opacity: 1,
         y: 0,
+        opacity: 1
     },
     exit: (direction: number) => ({
-        opacity: 0,
-        y: direction >= 0 ? -30 : 30,
-    }),
+        y: direction > 0 ? -40 : 40,
+        opacity: 0
+    })
 };
 
 /**
@@ -37,7 +39,7 @@ const slideVariants = {
  * 마우스 커서를 추적하는 고도화된 툴팁 시스템 및 수직(y축) 드래그/휠 인터랙션 포함
  */
 export default function WeatherView({ 
-    temperature, weather, region, forecast, hourly, loading, error, isFallback, backupSource 
+    temperature, weather, region, forecast, hourly, loading, currentLoading, forecastLoading, error, isFallback, backupSource 
 }: WeatherViewProps) {
     const [page, setPage] = useState(0);
     const [direction, setDirection] = useState(1);
@@ -86,9 +88,9 @@ export default function WeatherView({
         setPage(nextPage);
     };
 
-    // 로딩 및 에러 상태 처리
-    if (loading || (!temperature && !error)) return <WeatherSkeleton />;
-    if (error) return <div className="w-full h-[296px] flex items-center justify-center glass rounded-2xl text-red-500 text-xs p-4 text-center font-paperlogy">{error}</div>;
+    // 로딩 및 에러 상태 처리 (온전한 실황 기온이 있으면 즉시 메인 카드 표출)
+    if ((loading && !temperature) || (!temperature && !error)) return <WeatherSkeleton />;
+    if (error && !temperature) return <div className="w-full h-[296px] flex items-center justify-center glass rounded-2xl text-red-500 text-xs p-4 text-center font-paperlogy">{error}</div>;
 
     const regionParts = region?.split(' ') || [];
     const displayRegion = regionParts[regionParts.length - 1] || region;
@@ -160,7 +162,19 @@ export default function WeatherView({
                         
                         {/* 하단: 차트 */}
                         <div className="flex-1 min-h-0 mt-1">
-                            <WeatherChart data={hourly} />
+                            {hourly && hourly.length > 0 ? (
+                                <WeatherChart data={hourly} />
+                            ) : (
+                                <div className="w-full h-full flex flex-col justify-end gap-2 pb-2 opacity-50 animate-pulse">
+                                    <div className="h-2 bg-black/10 dark:bg-white/10 rounded-full w-full"></div>
+                                    <div className="flex justify-between px-1">
+                                        <span className="w-6 h-2 bg-black/10 dark:bg-white/10 rounded"></span>
+                                        <span className="w-6 h-2 bg-black/10 dark:bg-white/10 rounded"></span>
+                                        <span className="w-6 h-2 bg-black/10 dark:bg-white/10 rounded"></span>
+                                        <span className="w-6 h-2 bg-black/10 dark:bg-white/10 rounded"></span>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </motion.div>
                 ) : (
@@ -193,45 +207,56 @@ export default function WeatherView({
                         <div className="text-xs font-bold mt-1 mb-2.5 opacity-60 uppercase tracking-wider text-center text-context">단기 예보 (3일간)</div>
                         
                         <div className="flex-1 flex flex-row justify-between items-stretch gap-2 mb-2">
-                            {forecast.map((day, i) => (
-                                <div key={day.date} className="flex flex-col items-center justify-between flex-1 p-2.5 rounded-xl bg-white/10 dark:bg-white/5 border border-black/10 dark:border-white/10 shadow-sm">
-                                    <div className="text-xs font-bold text-context">
-                                        {i === 0 ? '오늘' : i === 1 ? '내일' : '모레'}
-                                    </div>
-                                    <div className="w-10 h-10 my-0.5 rounded-full bg-main/50 dark:bg-main/30 flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
-                                        <WeatherIcon weather={day.weatherStatus} isNight={false} className="w-full h-full p-1.5 flex items-center justify-center" />
-                                    </div>
-                                    <div className="text-xs font-bold text-title">{day.weatherStatus}</div>
-                                    <div className="flex flex-col items-center leading-tight">
-                                        {/* 최고 기온 */}
+                            {forecast && forecast.length > 0 ? (
+                                forecast.map((day, i) => (
+                                    <div key={day.date} className="flex flex-col items-center justify-between flex-1 p-2.5 rounded-xl bg-white/10 dark:bg-white/5 border border-black/10 dark:border-white/10 shadow-sm">
+                                        <div className="text-xs font-bold text-context">
+                                            {i === 0 ? '오늘' : i === 1 ? '내일' : '모레'}
+                                        </div>
+                                        <div className="w-10 h-10 my-0.5 rounded-full bg-main/50 dark:bg-main/30 flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
+                                            <WeatherIcon weather={day.weatherStatus} isNight={false} className="w-full h-full p-1.5 flex items-center justify-center" />
+                                        </div>
+                                        <div className="text-xs font-bold text-title">{day.weatherStatus}</div>
+                                        <div className="flex flex-col items-center leading-tight">
+                                            {/* 최고 기온 */}
+                                            <div 
+                                                className="text-sm font-black text-rose-500 hover:scale-110 transition-transform cursor-pointer"
+                                                onMouseEnter={() => setTooltip({ text: '최고 기온', color: 'text-rose-400' })}
+                                                onMouseLeave={() => setTooltip(null)}
+                                            >
+                                                {day.maxTemp}°
+                                            </div>
+                                            {/* 최저 기온 */}
+                                            <div 
+                                                className="text-[10px] font-bold text-blue-500 hover:scale-110 transition-transform cursor-pointer"
+                                                onMouseEnter={() => setTooltip({ text: '최저 기온', color: 'text-blue-400' })}
+                                                onMouseLeave={() => setTooltip(null)}
+                                            >
+                                                {day.minTemp}°
+                                            </div>
+                                        </div>
+                                        {/* 강수 확률 */}
                                         <div 
-                                            className="text-sm font-black text-rose-500 hover:scale-110 transition-transform cursor-pointer"
-                                            onMouseEnter={() => setTooltip({ text: '최고 기온', color: 'text-rose-400' })}
+                                            className="flex justify-center w-full min-h-[12px]"
+                                            onMouseEnter={() => day.precipitation !== '0%' && setTooltip({ text: '강수 확률', color: 'text-sky-400' })}
                                             onMouseLeave={() => setTooltip(null)}
                                         >
-                                            {day.maxTemp}°
-                                        </div>
-                                        {/* 최저 기온 */}
-                                        <div 
-                                            className="text-[10px] font-bold text-blue-500 hover:scale-110 transition-transform cursor-pointer"
-                                            onMouseEnter={() => setTooltip({ text: '최저 기온', color: 'text-blue-400' })}
-                                            onMouseLeave={() => setTooltip(null)}
-                                        >
-                                            {day.minTemp}°
+                                            {day.precipitation !== '0%' && (
+                                                <div className="text-[8px] text-blue-400 font-bold hover:scale-110 transition-transform">{day.precipitation}</div>
+                                            )}
                                         </div>
                                     </div>
-                                    {/* 강수 확률 */}
-                                    <div 
-                                        className="flex justify-center w-full min-h-[12px]"
-                                        onMouseEnter={() => day.precipitation !== '0%' && setTooltip({ text: '강수 확률', color: 'text-sky-400' })}
-                                        onMouseLeave={() => setTooltip(null)}
-                                    >
-                                        {day.precipitation !== '0%' && (
-                                            <div className="text-[8px] text-blue-400 font-bold hover:scale-110 transition-transform">{day.precipitation}</div>
-                                        )}
+                                ))
+                            ) : (
+                                [0, 1, 2].map((i) => (
+                                    <div key={i} className="flex flex-col items-center justify-between flex-1 p-2.5 rounded-xl bg-white/10 dark:bg-white/5 border border-black/10 dark:border-white/10 shadow-sm animate-pulse">
+                                        <div className="w-8 h-3 bg-black/10 dark:bg-white/10 rounded"></div>
+                                        <div className="w-10 h-10 my-0.5 rounded-full bg-black/10 dark:bg-white/10"></div>
+                                        <div className="w-8 h-3 bg-black/10 dark:bg-white/10 rounded"></div>
+                                        <div className="w-10 h-3 bg-black/10 dark:bg-white/10 rounded"></div>
                                     </div>
-                                </div>
-                            ))}
+                                ))
+                            )}
                         </div>
                     </motion.div>
                 )}

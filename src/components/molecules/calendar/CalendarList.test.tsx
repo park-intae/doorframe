@@ -21,10 +21,17 @@ const renderWithRedux = (ui: React.ReactElement, initialItems = []) => {
 };
 
 describe('CalendarList 마감일 뱃지 및 긴급 스타일 테스트', () => {
-    const todayStr = new Date().toISOString().split('T')[0];
+    const toLocalDateStr = (d: Date) => {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+    };
+
+    const todayStr = toLocalDateStr(new Date());
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+    const tomorrowStr = toLocalDateStr(tomorrow);
 
     it('아이템이 없을 때 안내 문구를 노출한다', () => {
         renderWithRedux(<CalendarList items={[]} />);

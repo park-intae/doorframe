@@ -3,15 +3,15 @@
 ## Back-log Tasks
 
 ## In-Progress Task
-- [🔼] **날씨 데이터 병렬 분리 및 초단기 실황 우선 렌더링 (Parallel Weather Fetching & Current Weather First)**
-  - [ ] 1. 백엔드(Edge Function) API 분리 (`?type=current` 실황 vs `?type=forecast` 3일 예보/시간별)
-  - [ ] 2. 초단기 실황 초고속 경량화 (현재 기온/날씨/지역명 최소 페이로드로 수백 ms 내 반환)
-  - [ ] 3. 단기 예보 비동기 분리 (대용량 1000개 예보 데이터 백그라운드 후속 처리)
-  - [ ] 4. 프론트엔드 Redux Thunk 병렬화 (`fetchCurrentWeather` 우선 완료 ➔ `fetchWeatherForecast` 연계)
-  - [ ] 5. `WeatherView` 점진적 렌더링(Progressive UI) 적용 (현재 날씨 즉시 표출, 차트/예보는 부분 스켈레톤 처리)
-  - [ ] 6. 브라우저/확장 프로그램 실환경 체감 속도 검증 및 회귀 테스트 통과 확인
 
 ## Completed Tasks
+- [✔️] **날씨 데이터 병렬 분리 및 초단기 실황 우선 렌더링 (Parallel Weather Fetching & Current Weather First)**
+  - [✔️] 1. 백엔드(Edge Function) API 분리 (`?type=current` 실황 vs `?type=forecast` 3일 예보/시간별)
+  - [✔️] 2. 초단기 실황 초고속 경량화 (현재 기온/날씨/지역명 최소 페이로드로 수백 ms 내 반환)
+  - [✔️] 3. 단기 예보 비동기 분리 (대용량 1000개 예보 데이터 백그라운드 후속 처리)
+  - [✔️] 4. 프론트엔드 Redux Thunk 병렬화 (`fetchCurrentWeather` 우선 완료 ➔ `fetchWeatherForecast` 연계)
+  - [✔️] 5. `WeatherView` 점진적 렌더링(Progressive UI) 적용 (현재 날씨 즉시 표출, 차트/예보는 부분 스켈레톤 처리)
+  - [✔️] 6. 브라우저/확장 프로그램 실환경 체감 속도 검증 및 회귀 테스트 통과 확인 (22개 파일 79개 테스트 전수 통과)
 - [✔️] **데스크탑 중심 반응형 레이아웃 구조 재설계 (좌우 2열 대시보드)**
   - [✔️] 1. 데스크탑 특화 브레이크포인트 체계 정돈 (`global.css`)
     - 불필요한 모바일 타겟 제거 및 데스크탑 실사용 환경 중심 정규화

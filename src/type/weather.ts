@@ -12,6 +12,23 @@ export interface WeatherHourly {
   weather: string;      // 날씨 상태
 }
 
+export interface WeatherCurrentResponse {
+  current: {
+    temperature: string;
+    weather: string;
+    region: string;
+  };
+  isFallback?: boolean;
+  backupSource?: string | null;
+}
+
+export interface WeatherForecastResponse {
+  forecast: DailyForecast[];
+  hourly: WeatherHourly[];
+  isFallback?: boolean;
+  backupSource?: string | null;
+}
+
 export interface WeatherResponse {
   current: {
     temperature: string;
