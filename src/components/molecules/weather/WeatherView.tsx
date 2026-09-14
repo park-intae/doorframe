@@ -14,6 +14,7 @@ interface WeatherViewProps {
     loading: boolean;
     error: string | null;
     isFallback?: boolean;
+    backupSource?: string | null;
 }
 
 const slideVariants = {
@@ -36,7 +37,7 @@ const slideVariants = {
  * 마우스 커서를 추적하는 고도화된 툴팁 시스템 및 수직(y축) 드래그/휠 인터랙션 포함
  */
 export default function WeatherView({ 
-    temperature, weather, region, forecast, hourly, loading, error, isFallback 
+    temperature, weather, region, forecast, hourly, loading, error, isFallback, backupSource 
 }: WeatherViewProps) {
     const [page, setPage] = useState(0);
     const [direction, setDirection] = useState(1);
@@ -305,13 +306,19 @@ export default function WeatherView({
             </div>
 
             {/* 데이터 출처 및 상태 안내 */}
-            <div className="absolute bottom-1 right-2 flex items-center gap-2 text-[8px] text-context opacity-60 uppercase select-none">
+            <div className="absolute bottom-1 right-2 flex items-center gap-2 text-[8px] text-context opacity-70 select-none">
                 {isFallback && (
                     <span className="text-amber-600 dark:text-amber-400 font-medium normal-case">
-                        *위치 권한 필요 (기본 위치)
+                        *기본 위치
                     </span>
                 )}
-                <span>Data by KMA</span>
+                {backupSource ? (
+                    <span className="text-blue-500 dark:text-blue-400 font-medium normal-case">
+                        현재 백업망 사용중 ({backupSource})
+                    </span>
+                ) : (
+                    <span className="uppercase">Data by KMA</span>
+                )}
             </div>
         </div>
     );

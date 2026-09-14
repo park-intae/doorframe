@@ -42,18 +42,58 @@ function getWeatherStatus(sky: string, pty: string): string {
   return '알 수 없음';
 }
 
+/**
+ * Open-Meteo 글로벌 기상망 백업 데이터 생성 함수
+ */
+async function fetchOpenMeteoBackup(lat: number, lon: number, region: string) {
+  const meteoRes = await fetch(
+    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FSeoul&forecast_days=3`
+  );
+  if (!meteoRes.ok) throw new Error('Open-Meteo 백업 서버 응답 실패');
+
+  const meteo = await meteoRes.json();
+  const curTemp = Math.round(meteo.current?.temperature_2m ?? 0).toString();
+  const curWeather = getWmoStatus(meteo.current?.weather_code ?? 0);
+
+  const hourly = (meteo.hourly?.time || []).slice(0, 24).map((t: string, idx: number) => ({
+    time: t.slice(11, 16),
+    temp: Math.round(meteo.hourly.temperature_2m[idx]).toString(),
+    weather: getWmoStatus(meteo.hourly.weather_code[idx]),
+  }));
+
+  const forecast = (meteo.daily?.time || []).slice(0, 3).map((d: string, idx: number) => ({
+    date: d.replace(/-/g, ''),
+    minTemp: Math.round(meteo.daily.temperature_2m_min[idx]).toString(),
+    maxTemp: Math.round(meteo.daily.temperature_2m_max[idx]).toString(),
+    weatherStatus: getWmoStatus(meteo.daily.weather_code[idx]),
+    precipitation: (meteo.daily.precipitation_probability_max?.[idx] ?? 0) + '%',
+  }));
+
+  return {
+    current: {
+      temperature: curTemp,
+      weather: curWeather,
+      region,
+    },
+    forecast,
+    hourly,
+  };
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
-    const WEATHER_API_KEY = Deno.env.get('VITE_PUBLIC_WEATHER_API_KEY');
-    const VWORLD_API_KEY = Deno.env.get('VITE_PUBLIC_GEOCODER_API_KEY');
-    if (!WEATHER_API_KEY || !VWORLD_API_KEY) throw new Error('API Key 누락');
+    const WEATHER_API_KEY = Deno.env.get('VITE_PUBLIC_WEATHER_API_KEY') || '';
+    let VWORLD_API_KEY = Deno.env.get('VITE_PUBLIC_GEOCODER_API_KEY') || '';
+    // 만약 키 값에 prefix(예: '발급받은_VWORLD_API_KEY=...')가 포함되어 있다면 순수 키만 추출
+    if (VWORLD_API_KEY.includes('=')) {
+      VWORLD_API_KEY = VWORLD_API_KEY.split('=').pop()?.trim() || '';
+    }
 
     const url = new URL(req.url);
-    const lat = Number(url.searchParams.get('lat'));
-    const lon = Number(url.searchParams.get('lon'));
-    if (!lat || !lon) throw new Error('위치 정보(lat, lon)가 필요합니다.');
+    const lat = Number(url.searchParams.get('lat')) || 37.5665;
+    const lon = Number(url.searchParams.get('lon')) || 126.9780;
 
     const { nx, ny } = ConvertToGrid(lat, lon);
 
@@ -98,8 +138,6 @@ Deno.serve(async (req) => {
     }
     const formattedBaseTime = baseHour.toString().padStart(2, '0') + '00';
 
-    const encodedWeatherKey = encodeURIComponent(decodeURIComponent(WEATHER_API_KEY));
-
     console.log('[Weather Backend] ⏰ 기상청 조회 기준:', {
       ncstDate: baseDateForNcst,
       ncstTime: formattedNcstTime,
@@ -109,35 +147,59 @@ Deno.serve(async (req) => {
       ny
     });
 
-    // 2. API 호출 (numOfRows를 1000으로 늘려 3일치 데이터를 확실히 확보)
-    const [currentRes, forecastRes, geoRes] = await Promise.all([
-      fetch(`${BASE_URL}/getUltraSrtNcst?serviceKey=${encodedWeatherKey}&dataType=JSON&base_date=${baseDateForNcst}&base_time=${formattedNcstTime}&nx=${nx}&ny=${ny}`),
-      fetch(`${BASE_URL}/getVilageFcst?serviceKey=${encodedWeatherKey}&dataType=JSON&base_date=${baseDate}&base_time=${formattedBaseTime}&nx=${nx}&ny=${ny}&numOfRows=1000`),
-      fetch(`https://api.vworld.kr/req/address?service=address&request=getAddress&crs=EPSG:4326&point=${lon},${lat}&key=${VWORLD_API_KEY}&type=both`)
-    ]);
-
-    const currentText = await currentRes.text();
-    const forecastText = await forecastRes.text();
-    const geoText = await geoRes.text();
-
+    // 2. 외부 API 개별 격리 호출 (네트워크 단절 및 차단 대비)
     let currentData: any = {};
     let forecastData: any = {};
     let geoData: any = {};
 
-    try { currentData = JSON.parse(currentText); } catch { console.error('[Weather Backend] ❌ 기상청 초단기실황 JSON 파싱 실패 (원본):', currentText); }
-    try { forecastData = JSON.parse(forecastText); } catch { console.error('[Weather Backend] ❌ 기상청 단기예보 JSON 파싱 실패 (원본):', forecastText); }
-    try { geoData = JSON.parse(geoText); } catch { console.error('[Weather Backend] ❌ VWorld 지오코더 JSON 파싱 실패 (원본):', geoText); }
+    // 2-1. VWorld 역지오코딩 (네트워크 장애 및 Connection Reset에 대비한 격리)
+    if (VWORLD_API_KEY) {
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 3000);
+        const geoRes = await fetch(
+          `https://api.vworld.kr/req/address?service=address&request=getAddress&crs=EPSG:4326&point=${lon},${lat}&key=${VWORLD_API_KEY}&type=both`,
+          { signal: controller.signal }
+        );
+        clearTimeout(timer);
+        if (geoRes.ok) {
+          const geoText = await geoRes.text();
+          try { geoData = JSON.parse(geoText); } catch {}
+        }
+      } catch (geoErr) {
+        console.warn('[Weather Backend] VWorld 지오코딩 실패 또는 차단:', geoErr);
+      }
+    }
 
-    console.log('[Weather Backend] 🗺️ VWorld 역지오코딩 원본 응답:', JSON.stringify(geoData));
-    console.log('[Weather Backend] 🌤️ 기상청 초단기실황 응답 헤더/코드:', currentData?.response?.header);
-    console.log('[Weather Backend] 📅 기상청 단기예보 응답 헤더/코드:', forecastData?.response?.header);
+    // 2-2. 기상청 API 호출 (점검 또는 장애 시 격리)
+    if (WEATHER_API_KEY) {
+      try {
+        const encodedWeatherKey = encodeURIComponent(decodeURIComponent(WEATHER_API_KEY));
+        const [currentRes, forecastRes] = await Promise.all([
+          fetch(`${BASE_URL}/getUltraSrtNcst?serviceKey=${encodedWeatherKey}&dataType=JSON&base_date=${baseDateForNcst}&base_time=${formattedNcstTime}&nx=${nx}&ny=${ny}`),
+          fetch(`${BASE_URL}/getVilageFcst?serviceKey=${encodedWeatherKey}&dataType=JSON&base_date=${baseDate}&base_time=${formattedBaseTime}&nx=${nx}&ny=${ny}&numOfRows=1000`)
+        ]);
 
-    // 3. 지역 정보
+        if (currentRes.ok) {
+          const currentText = await currentRes.text();
+          try { currentData = JSON.parse(currentText); } catch {}
+        }
+        if (forecastRes.ok) {
+          const forecastText = await forecastRes.text();
+          try { forecastData = JSON.parse(forecastText); } catch {}
+        }
+      } catch (kmaErr) {
+        console.warn('[Weather Backend] 기상청 API 호출 실패:', kmaErr);
+      }
+    }
+
+    // 3. 지역 정보 결정
     let region = '알 수 없는 지역';
     if (geoData.response?.status === 'OK' && geoData.response.result?.length > 0) {
       const addr = geoData.response.result[0].structure;
       region = `${addr.level1 || ''} ${addr.level2 || ''}`.trim() || addr.level4L || '알 수 없는 지역';
     }
+
     // VWorld 실패 시 무료 역지오코딩 백업
     if (region === '알 수 없는 지역') {
       try {
@@ -159,46 +221,11 @@ Deno.serve(async (req) => {
     // 4. 기상청 데이터 누락 시 Open-Meteo 실시간 기상 데이터로 자동 백업
     if (forecastItems.length === 0) {
       console.log('[Weather Backend] ⚠️ 기상청 데이터 누락 -> Open-Meteo 실시간 기상 데이터로 자동 백업 연동');
-      try {
-        const meteoRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FSeoul&forecast_days=3`);
-        if (meteoRes.ok) {
-          const meteo = await meteoRes.json();
-          const curTemp = Math.round(meteo.current?.temperature_2m ?? 0).toString();
-          const curWeather = getWmoStatus(meteo.current?.weather_code ?? 0);
-
-          const hourly = (meteo.hourly?.time || []).slice(0, 24).map((t: string, idx: number) => ({
-            time: t.slice(11, 16),
-            temp: Math.round(meteo.hourly.temperature_2m[idx]).toString(),
-            weather: getWmoStatus(meteo.hourly.weather_code[idx]),
-          }));
-
-          const forecast = (meteo.daily?.time || []).slice(0, 3).map((d: string, idx: number) => ({
-            date: d.replace(/-/g, ''),
-            minTemp: Math.round(meteo.daily.temperature_2m_min[idx]).toString(),
-            maxTemp: Math.round(meteo.daily.temperature_2m_max[idx]).toString(),
-            weatherStatus: getWmoStatus(meteo.daily.weather_code[idx]),
-            precipitation: (meteo.daily.precipitation_probability_max?.[idx] ?? 0) + '%',
-          }));
-
-          const fallbackResponse = {
-            current: {
-              temperature: curTemp,
-              weather: curWeather,
-              region,
-            },
-            forecast,
-            hourly,
-          };
-
-          console.log('[Weather Backend] 📤 Open-Meteo 백업 데이터 반환:', JSON.stringify(fallbackResponse));
-          return new Response(JSON.stringify(fallbackResponse), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 200,
-          });
-        }
-      } catch (meteoErr) {
-        console.error('[Weather Backend] Open-Meteo 호출 실패:', meteoErr);
-      }
+      const fallbackResponse = await fetchOpenMeteoBackup(lat, lon, region);
+      return new Response(JSON.stringify(fallbackResponse), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      });
     }
 
     const nowHourStr = currentHour.toString().padStart(2, '0') + '00';
@@ -276,7 +303,19 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     });
-  } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 400, headers: corsHeaders });
+  } catch (e: any) {
+    console.error('[Weather Backend] 💥 처리 중 예외 발생 -> Open-Meteo 최후 안전망 가동:', e);
+    try {
+      const url = new URL(req.url);
+      const lat = Number(url.searchParams.get('lat')) || 37.5665;
+      const lon = Number(url.searchParams.get('lon')) || 126.9780;
+      const fallbackResponse = await fetchOpenMeteoBackup(lat, lon, '서울특별시');
+      return new Response(JSON.stringify(fallbackResponse), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      });
+    } catch (finalErr: any) {
+      return new Response(JSON.stringify({ error: finalErr?.message || e.message }), { status: 500, headers: corsHeaders });
+    }
   }
 });
