@@ -5,6 +5,12 @@
 ## In-Progress Task
 
 ## Completed Tasks
+- [✔️] **날씨 0ms 체감 출력 극대화: Frame 0 초기 주입 및 30분 SWR·서버 인메모리 가속 (Weather 0ms Instant Rendering & 30-min SWR)**
+  - [✔️] 1. Frame 0 (0ms) Redux 초기 상태 주입 (`initialState` 생성 시 유효 캐시 즉시 동기 반영으로 스켈레톤 노출 0초화)
+  - [✔️] 2. 30분 수명 제한 기반 진짜 SWR 라이프사이클 구현 (0~10분 완전 신선 반환, 10~30분 0ms 즉시 표시 후 백그라운드 갱신, 30분 초과 시 localStorage 자동 영구 파기)
+  - [✔️] 3. Geolocation 대기 없는 최근 유효 위치(30분 TTL) 즉시 발송 로직 강화 (최근 좌표로 0ms 백그라운드 요청 트리거)
+  - [✔️] 4. 백엔드(Supabase Edge Function) 인메모리 캐시 구현 (VWorld 역지오코딩 1시간, 기상청 실황 10분, 단기예보 20분 캐싱으로 동일 지역 10ms 이내 응답)
+  - [✔️] 5. 단위/통합 테스트 스위트 검증 및 프로덕션 빌드 무결성 확인 (22개 파일 81개 테스트 100% 통과 및 번들 빌드 성공)
 - [✔️] **날씨 데이터 병렬 분리 및 초단기 실황 우선 렌더링 (Parallel Weather Fetching & Current Weather First)**
   - [✔️] 1. 백엔드(Edge Function) API 분리 (`?type=current` 실황 vs `?type=forecast` 3일 예보/시간별)
   - [✔️] 2. 초단기 실황 초고속 경량화 (현재 기온/날씨/지역명 최소 페이로드로 수백 ms 내 반환)

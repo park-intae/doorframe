@@ -101,10 +101,29 @@ async function fetchOpenMeteoBackup(lat: number, lon: number, region: string, ty
   };
 }
 
+// 1. VWorld 역지오코딩 인메모리 캐시 (좌표 소수점 2자리 기준 약 1.1km 반경, 1시간 TTL)
+const regionCache = new Map<string, { region: string; timestamp: number }>();
+const REGION_CACHE_TTL = 60 * 60 * 1000;
+
+// 2. 기상청 초단기실황 인메모리 캐시 (격자 nx, ny + 기준시각 기준, 10분 TTL)
+const kmaCurrentCache = new Map<string, { data: { temperature: string; weather: string }; timestamp: number }>();
+const KMA_CURRENT_TTL = 10 * 60 * 1000;
+
+// 3. 기상청 단기예보 인메모리 캐시 (격자 nx, ny + 기준시각 기준, 20분 TTL)
+const kmaForecastCache = new Map<string, { data: any; timestamp: number }>();
+const KMA_FORECAST_TTL = 20 * 60 * 1000;
+
 /**
- * VWorld 및 BigDataCloud를 활용한 역지오코딩 (비동기 격리)
+ * VWorld 및 BigDataCloud를 활용한 역지오코딩 (인메모리 캐시 및 비동기 격리)
  */
 async function fetchRegion(lat: number, lon: number, vworldKey: string): Promise<string> {
+  const cacheKey = `${lat.toFixed(2)},${lon.toFixed(2)}`;
+  const cached = regionCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < REGION_CACHE_TTL) {
+    console.log('[Weather Backend] ⚡ VWorld 인메모리 캐시 히트 (0ms):', cached.region);
+    return cached.region;
+  }
+
   let region = '알 수 없는 지역';
   if (vworldKey) {
     try {
@@ -145,7 +164,9 @@ async function fetchRegion(lat: number, lon: number, vworldKey: string): Promise
     }
   }
 
-  return region === '알 수 없는 지역' ? '서울특별시' : region;
+  const finalRegion = region === '알 수 없는 지역' ? '서울특별시' : region;
+  regionCache.set(cacheKey, { region: finalRegion, timestamp: Date.now() });
+  return finalRegion;
 }
 
 /**
@@ -174,6 +195,14 @@ async function fetchCurrentKma(
     }
   }
   const formattedNcstTime = baseHourForNcst.toString().padStart(2, '0') + '00';
+
+  // 인메모리 캐시 확인 (10분 유효)
+  const cacheKey = `${nx},${ny},${formattedNcstTime}`;
+  const cached = kmaCurrentCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < KMA_CURRENT_TTL) {
+    console.log('[Weather Backend] ⚡ KMA 초단기실황 인메모리 캐시 히트 (0ms):', cached.data);
+    return cached.data;
+  }
 
   // 2. 초단기예보 (getUltraSrtFcst): 매시 30분 발표 (하늘상태 SKY 확보용)
   let baseHourForFcst = currentHour;
@@ -232,10 +261,12 @@ async function fetchCurrentKma(
 
     const weather = getWeatherStatus(skyFcst || '1', ptyObsr !== undefined ? ptyObsr : ptyFcst || '0');
 
-    return {
+    const result = {
       temperature: Math.round(Number(temp)).toString(),
       weather,
     };
+    kmaCurrentCache.set(cacheKey, { data: result, timestamp: Date.now() });
+    return result;
   } catch (err) {
     console.warn('[Weather Backend] 초단기 실황 KMA 조회 실패:', err);
     return null;
@@ -265,6 +296,14 @@ async function fetchForecastKma(
     baseHour = 23;
   }
   const formattedBaseTime = baseHour.toString().padStart(2, '0') + '00';
+
+  // 인메모리 캐시 확인 (20분 유효)
+  const cacheKey = `${nx},${ny},${formattedBaseTime}`;
+  const cached = kmaForecastCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < KMA_FORECAST_TTL) {
+    console.log('[Weather Backend] ⚡ KMA 단기예보 인메모리 캐시 히트 (0ms)');
+    return cached.data;
+  }
 
   try {
     const forecastRes = await fetch(
@@ -336,12 +375,14 @@ async function fetchForecastKma(
       })
       .slice(0, 3);
 
-    return {
+    const result = {
       forecast,
       hourly,
       firstWeather: hourly[0]?.weather || '맑음',
       firstTemp: hourly[0]?.temp || '0',
     };
+    kmaForecastCache.set(cacheKey, { data: result, timestamp: Date.now() });
+    return result;
   } catch (err) {
     console.warn('[Weather Backend] KMA 단기예보 처리 실패:', err);
     return null;

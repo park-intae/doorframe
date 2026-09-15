@@ -21,21 +21,67 @@ export interface WeatherState {
   backupSource: string | null;
 }
 
-const initialState: WeatherState = {
-  temperature: null,
-  weather: '',
-  region: '',
-  forecast: [],
-  hourly: [],
-  loading: false,
-  currentLoading: false,
-  forecastLoading: false,
-  error: null,
-  isFallback: false,
-  backupSource: null,
+// 1. Fresh 구간 (0 ~ 10분): 완전 신선한 상태, 재요청 불필요
+export const FRESH_DURATION = 10 * 60 * 1000;
+
+// 2. Stale-While-Revalidate 허용 최대 수명 (30분):
+// 10~30분 사이는 0ms 즉시 표시 + 백그라운드 갱신, 30분 초과 시 프라이버시/보안을 위해 영구 파기(Eviction)
+export const STALE_MAX_AGE = 30 * 60 * 1000;
+
+/**
+ * 30분 이내의 유효 캐시를 반환하며, 30분이 지난 오래된 데이터는 브라우저에서 즉시 영구 삭제합니다.
+ */
+export function getValidCachedWeather(): WeatherResponse | null {
+  if (typeof window === 'undefined') return null;
+
+  const lastFetch = localStorage.getItem('lastWeatherFetch');
+  const cached = localStorage.getItem('cachedWeather');
+  if (!lastFetch || !cached) return null;
+
+  const age = Date.now() - parseInt(lastFetch, 10);
+
+  // 30분 초과 시: 브라우저에서 영구 삭제하여 1시간 이상 장기 방치 원천 차단
+  if (isNaN(age) || age > STALE_MAX_AGE) {
+    localStorage.removeItem('cachedWeather');
+    localStorage.removeItem('lastWeatherFetch');
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(cached) as WeatherResponse;
+    if (parsed && !parsed.isFallback && !parsed.backupSource) {
+      return parsed;
+    }
+  } catch {
+    localStorage.removeItem('cachedWeather');
+    localStorage.removeItem('lastWeatherFetch');
+  }
+  return null;
+}
+
+/**
+ * Frame 0 (0ms) 즉시 렌더링을 위한 초기 상태 생성기
+ * 30분 이내 유효 캐시가 존재할 경우 새 탭이 열리자마자 0초 만에 날씨 데이터를 주입합니다.
+ */
+export const getInitialWeatherState = (): WeatherState => {
+  const cached = typeof window !== 'undefined' ? getValidCachedWeather() : null;
+
+  return {
+    temperature: cached?.current?.temperature || null,
+    weather: cached?.current?.weather || '',
+    region: cached?.current?.region || '',
+    forecast: cached?.forecast || [],
+    hourly: cached?.hourly || [],
+    loading: false,
+    currentLoading: false,
+    forecastLoading: false,
+    error: null,
+    isFallback: false,
+    backupSource: null,
+  };
 };
 
-const CACHE_DURATION = 10 * 60 * 1000;
+const initialState: WeatherState = getInitialWeatherState();
 
 export interface UserCoords {
   latitude: number;
@@ -43,25 +89,37 @@ export interface UserCoords {
   isFallback: boolean;
 }
 
-// 메모리 기반 위치 캐시
 let memoryCoords: UserCoords | null = null;
 
 /**
- * 브라우저 Geolocation 위치 획득 (maximumAge 및 타임아웃 4초 적용으로 즉시 반환 최적화)
+ * 브라우저 Geolocation 위치 획득
+ * 최근 유효 위치(30분 이내)가 있으면 0ms 즉시 반환하여 네트워크 요청을 즉각 발송합니다.
  */
 export async function getUserLocation(): Promise<UserCoords> {
   if (memoryCoords) return memoryCoords;
 
-  let cachedCoords: UserCoords | null = null;
+  // 1. 최근 유효 좌표(30분 이내) 캐시가 있으면 0ms 즉각 반환 (센서 대기 시간 0초)
   if (typeof window !== 'undefined') {
     const saved = localStorage.getItem('lastUserLocation');
-    if (saved) {
-      try {
-        cachedCoords = JSON.parse(saved);
-      } catch {}
+    const savedTime = localStorage.getItem('lastUserLocationTime');
+    if (saved && savedTime) {
+      const age = Date.now() - parseInt(savedTime, 10);
+      if (age <= STALE_MAX_AGE) {
+        try {
+          const cachedCoords = JSON.parse(saved) as UserCoords;
+          if (cachedCoords?.latitude && cachedCoords?.longitude) {
+            memoryCoords = cachedCoords;
+            return cachedCoords;
+          }
+        } catch {}
+      } else {
+        localStorage.removeItem('lastUserLocation');
+        localStorage.removeItem('lastUserLocationTime');
+      }
     }
   }
 
+  // 2. 캐시가 없는 경우 브라우저 Geolocation 호출 (빠른 타임아웃 3.5초, maximumAge 5분)
   try {
     const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
       if (!navigator.geolocation) {
@@ -69,8 +127,8 @@ export async function getUserLocation(): Promise<UserCoords> {
       }
       navigator.geolocation.getCurrentPosition(resolve, reject, {
         enableHighAccuracy: false,
-        timeout: 4000,
-        maximumAge: 5 * 60 * 1000, // 5분 이내 측정된 위치 즉시 사용 (0ms 캐시 응답)
+        timeout: 3500,
+        maximumAge: 5 * 60 * 1000,
       });
     });
 
@@ -82,13 +140,11 @@ export async function getUserLocation(): Promise<UserCoords> {
     memoryCoords = coords;
     if (typeof window !== 'undefined') {
       localStorage.setItem('lastUserLocation', JSON.stringify(coords));
+      localStorage.setItem('lastUserLocationTime', Date.now().toString());
     }
     return coords;
   } catch (err) {
-    console.warn('Geolocation 위치 획득 실패, 최근 캐시 좌표 또는 기본 좌표(서울) 사용:', err);
-    if (cachedCoords) {
-      return cachedCoords;
-    }
+    console.warn('Geolocation 위치 획득 실패, 기본 좌표(서울) 사용:', err);
     return {
       latitude: 37.5665,
       longitude: 126.978,
@@ -331,29 +387,28 @@ export const fetchWeatherForecast = createAsyncThunk<
 });
 
 /**
- * [통합 진입점] 초단기 실황 우선 + 예보 병렬 처리 Thunk
+ * [통합 진입점] 30분 SWR 기반 초단기 실황 우선 + 예보 병렬 처리 Thunk
  */
 export const fetchWeather = createAsyncThunk(
   'weather/fetchWeather',
   async (_, { dispatch }) => {
-    // 1. 클라이언트 사이드 캐싱 확인 (10분 유효)
-    if (typeof window !== 'undefined') {
-      const lastFetch = localStorage.getItem('lastWeatherFetch');
-      const cached = localStorage.getItem('cachedWeather');
-      const now = Date.now();
+    const lastFetch = typeof window !== 'undefined' ? localStorage.getItem('lastWeatherFetch') : null;
+    const now = Date.now();
+    const age = lastFetch ? now - parseInt(lastFetch, 10) : Infinity;
 
-      if (lastFetch && cached && now - parseInt(lastFetch) < CACHE_DURATION) {
-        const parsed = JSON.parse(cached) as WeatherResponse;
-        if (!parsed.isFallback && !parsed.backupSource) {
-          return parsed;
-        }
+    // 1. [Fresh 구간 (0 ~ 10분)] 완전 신선한 상태면 캐시를 즉시 반환 (재요청 불필요)
+    if (age < FRESH_DURATION) {
+      const cached = getValidCachedWeather();
+      if (cached) {
+        return cached;
       }
     }
 
-    // 2. 위치 좌표 획득 (단 1회 수행하여 두 작업에 공유)
+    // 2. [Stale 구간 (10 ~ 30분) 및 신규 갱신 (Revalidate)]
+    // 유효 좌표를 즉시 획득 (최근 30분 캐시 좌표로 0ms 반환)
     const coords = await getUserLocation();
 
-    // 3. 초단기 실황을 최우선으로 즉시 디스패치 및 예보 병렬 디스패치
+    // 초단기 실황(Track 1)과 단기 예보(Track 2)를 백그라운드에서 병렬 갱신
     const currentPromise = dispatch(fetchCurrentWeather(coords));
     const forecastPromise = dispatch(fetchWeatherForecast(coords));
 
@@ -377,6 +432,7 @@ export const fetchWeather = createAsyncThunk(
       backupSource: currentPayload?.backupSource || forecastPayload?.backupSource || null,
     };
 
+    // 정상 데이터만 30분 만료 캐시로 저장
     if (typeof window !== 'undefined' && !fullResponse.isFallback && !fullResponse.backupSource) {
       localStorage.setItem('lastWeatherFetch', Date.now().toString());
       localStorage.setItem('cachedWeather', JSON.stringify(fullResponse));
@@ -413,7 +469,7 @@ const weatherSlice = createSlice({
       })
       .addCase(fetchCurrentWeather.fulfilled, (state, action) => {
         state.currentLoading = false;
-        state.loading = false; // 실황 데이터가 도착하면 메인 스켈레톤 해제
+        state.loading = false; // 실황 데이터가 도착하면 메인 스켈레톤 즉시 해제
         state.temperature = action.payload.current.temperature;
         state.weather = action.payload.current.weather;
         state.region = action.payload.current.region;
@@ -443,14 +499,14 @@ const weatherSlice = createSlice({
         state.forecastLoading = false;
       })
 
-      // 3. fetchWeather 통합 처리 (하위 호환성 유지)
+      // 3. fetchWeather 통합 처리 (하위 호환성 및 SWR 무중단 갱신)
       .addCase(fetchWeather.pending, (state) => {
-        // 이미 온전한 기온 데이터가 있는 경우 깜빡임 방지를 위해 loading true 전환 방지
+        // 이미 온전한 기온 데이터(SWR 캐시)가 있는 경우 화면 깜빡임 방지를 위해 loading: true 전환 방지
         if (!state.temperature) {
           state.loading = true;
+          state.currentLoading = true;
+          state.forecastLoading = true;
         }
-        state.currentLoading = true;
-        state.forecastLoading = true;
         state.error = null;
       })
       .addCase(fetchWeather.fulfilled, (state, action) => {

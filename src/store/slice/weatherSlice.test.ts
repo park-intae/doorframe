@@ -1,8 +1,12 @@
-import { describe, it, expect } from 'vitest';
-import weatherReducer, { restoreCachedWeather } from './weatherSlice';
+import { describe, it, expect, beforeEach } from 'vitest';
+import weatherReducer, { restoreCachedWeather, getValidCachedWeather } from './weatherSlice';
 import { WeatherResponse, WeatherCurrentResponse, WeatherForecastResponse } from '@/type/weather';
 
 describe('weatherSlice reducer', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   const initialState = {
     temperature: null,
     weather: '',
@@ -125,5 +129,24 @@ describe('weatherSlice reducer', () => {
 
     expect(state.loading).toBe(false);
     expect(state.error).toBe('날씨 정보 가져오기 실패');
+  });
+
+  it('30분 이내의 유효 캐시는 getValidCachedWeather가 정상 복원해야 한다', () => {
+    localStorage.setItem('lastWeatherFetch', (Date.now() - 15 * 60 * 1000).toString()); // 15분 전 (SWR 구간)
+    localStorage.setItem('cachedWeather', JSON.stringify(mockWeatherData));
+
+    const cached = getValidCachedWeather();
+    expect(cached).not.toBeNull();
+    expect(cached?.current.temperature).toBe('22');
+  });
+
+  it('30분이 초과된 캐시는 프라이버시 보호를 위해 자동 영구 삭제되어야 한다', () => {
+    localStorage.setItem('lastWeatherFetch', (Date.now() - 35 * 60 * 1000).toString()); // 35분 전 (만료 구간)
+    localStorage.setItem('cachedWeather', JSON.stringify(mockWeatherData));
+
+    const cached = getValidCachedWeather();
+    expect(cached).toBeNull();
+    expect(localStorage.getItem('cachedWeather')).toBeNull();
+    expect(localStorage.getItem('lastWeatherFetch')).toBeNull();
   });
 });
