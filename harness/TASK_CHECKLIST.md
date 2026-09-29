@@ -18,8 +18,8 @@
   - [✔️] 4. 프론트엔드 Redux Thunk 병렬화 (`fetchCurrentWeather` 우선 완료 ➔ `fetchWeatherForecast` 연계)
   - [✔️] 5. `WeatherView` 점진적 렌더링(Progressive UI) 적용 (현재 날씨 즉시 표출, 차트/예보는 부분 스켈레톤 처리)
   - [✔️] 6. 브라우저/확장 프로그램 실환경 체감 속도 검증 및 회귀 테스트 통과 확인 (22개 파일 79개 테스트 전수 통과)
-- [✔️] **브라우저 홈 버튼 이동 연동 (Homepage Override)**
-  - [✔️] 1. `manifest.json`에 `chrome_settings_overrides`를 추가하여 브라우저 홈 버튼 클릭 시 확장 프로그램 페이지(`index.html`)로 이동하도록 설정
+- [✔️] **브라우저 홈 버튼 이동 연동 가이드 및 매니페스트 안정화**
+  - [✔️] 1. `chrome_settings_overrides.homepage`의 Chromium 엔진 제한(HTTP/HTTPS 필수 및 로컬 파일 불가)으로 인한 로드 에러 방지를 위해 매니페스트 정리 및 브라우저 자체 '새 탭 페이지' 연동 가이드 정리
 - [✔️] **북마크 현재 탭 이동으로 변경 (Bookmark Navigation Update)**
   - [✔️] 1. 북마크 클릭 시 새 창이 아닌 현재 탭에서 이동하도록 링크 및 클릭 이벤트 수정
 - [✔️] **데스크탑 중심 반응형 레이아웃 구조 재설계 (좌우 2열 대시보드)**
