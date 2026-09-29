@@ -47,9 +47,7 @@ export function SortableBookmarkItem({
 
             <a
                 className={`fav flex items-center gap-2 ${isOpen ? 'hover:bg-background flex-1' : ''} p-1 rounded`}
-                href={item.url}
-                target="_blank"
-                rel="nooper noreferrer">
+                href={item.url}>
                 <div className="IcoBg shrink-0 w-10 h-10 items-center justify-center p-1 rounded transition-colors group-hover:bg-background">
                     <img
                         className="w-8 h-8"
