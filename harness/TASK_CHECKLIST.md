@@ -5,6 +5,10 @@
 ## In-Progress Task
 
 ## Completed Tasks
+- [✔️] **브라우저 홈 버튼 이동 연동 (Homepage Override)**
+  - [✔️] 1. `manifest.json`에 `chrome_settings_overrides`를 추가하여 브라우저 홈 버튼 클릭 시 확장 프로그램 페이지(`index.html`)로 이동하도록 설정
+- [✔️] **북마크 현재 탭 이동으로 변경 (Bookmark Navigation Update)**
+  - [✔️] 1. 북마크 클릭 시 새 창이 아닌 현재 탭에서 이동하도록 링크 및 클릭 이벤트 수정
 - [✔️] **데스크탑 중심 반응형 레이아웃 구조 재설계 (좌우 2열 대시보드)**
   - [✔️] 1. 데스크탑 특화 브레이크포인트 체계 정돈 (`global.css`)
     - 불필요한 모바일 타겟 제거 및 데스크탑 실사용 환경 중심 정규화
