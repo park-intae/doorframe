@@ -1,6 +1,8 @@
 # Doorframe Remaster - Project Advance
 
 ## Back-log Tasks
+- [ ] **유튜브 뮤직 라디오 플레이어 구현 (YouTube Music Radio Integration)**
+  - 현재 코드베이스 기반 연동 준비 완료 상태이며, 실제 재생 및 스트리밍 플레이어 로직 구현 예정
 
 ## In-Progress Task
 

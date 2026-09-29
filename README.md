@@ -27,9 +27,17 @@
 ### UI & Styling
 
 - Tailwind CSS v4
+- Framer Motion (Gestures & Transitions)
+- Chart.js (Weather Trend Visualization)
 - Lucide React (Icons)
 - @dnd-kit (Drag & Drop)
 - Typewriter-effect (Loading UI)
+
+### Testing & Quality
+
+- Vitest
+- React Testing Library
+- @vitest/coverage-v8 (Test Coverage 81.5%+)
 
 ## 주요기능
 
@@ -58,12 +66,13 @@
 - **우측 세로형 도트 네비게이션**: 상하 슬라이드에 맞춰 오른쪽에 세로형 버튼을 배치하여 현재 보고 있는 화면을 직관적으로 확인하고 클릭 전환할 수 있습니다.
 - **3일 단기 예보 날씨 아이콘 시각화**: 오늘, 내일, 모레 날씨 카드에 날씨 아이콘(맑음, 구름, 비 등)을 표시하고, 기온 꺾은선 그래프 꼭대기가 잘리지 않도록 다듬었습니다.
 
-### 북마크
+### 북마크 (Updated!)
 
-- 자주 방문하는 사이트 북마크
-- 사이드 바로 구현해 접근성 향상
-- 드래그 앤 드롭으로 순서 변경
-- 로그인 상태에 따라 브라우저 스토리지에 안전하게 저장
+- 자주 방문하는 사이트 북마크 등록 및 관리
+- 사이드 바로 구현해 대시보드 어디서든 빠른 접근성 제공
+- **현재 탭 즉시 이동**: 북마크 클릭 시 새 창/새 탭을 강제하지 않고 현재 탭에서 매끄럽게 웹사이트로 이동
+- 드래그 앤 드롭(@dnd-kit)으로 손쉬운 순서 변경
+- 로그인 상태에 따라 브라우저 스토리지(게스트 및 소셜 계정 데이터 마이그레이션)에 안전하게 저장
 
 ### 캘린더 연동 메모 & 할 일 (Updated!)
 
@@ -113,6 +122,18 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 npm run dev
 ```
 
+5. **단위 테스트 실행 및 커버리지 리포트**
+
+```bash
+# 전체 단위 및 컴포넌트 테스트 실행 (Vitest)
+npm test
+
+# 테스트 커버리지 리포트 확인 (@vitest/coverage-v8)
+npx vitest run --coverage
+```
+- **테스트 현황**: 26개 테스트 파일, 120개 테스트 전수 통과 (100% Pass)
+- **커버리지 지표**: 구문(Statements) **81.55%**, 라인(Lines) **83.87%**, 함수(Functions) **80.11%** 확보
+
 ### Chrome Extension 빌드
 
 > 본 확장 프로그램은 Chrome Web Store에 등록되지 않았기 때문에 아래와 같은 방식으로 로컬에서 직접 로드해야 합니다.
@@ -128,6 +149,13 @@ npm run build
    - 우측 상단 "개발자 모드" 활성화
    - "압축해제된 확장 프로그램을 로드합니다" 클릭
    - `dist/` 폴더 선택
+
+3. **브라우저 홈 버튼 연동 팁 (선택 사항)**
+   - 브라우저 상단의 **홈(Home) 버튼**을 눌렀을 때 Doorframe이 열리도록 설정할 수 있습니다:
+     1. Chrome 주소창에 `chrome://settings/appearance` 입력 후 이동
+     2. **'홈 버튼 표시'** 옵션 활성화
+     3. 하위 라디오 버튼에서 **'새 탭 페이지'** 선택
+     - 이제 홈 버튼을 누르면 언제든지 Doorframe 대시보드로 즉시 전환됩니다.
 
 ## 🔧 아키텍처 및 외부 API 연동 가이드
 
@@ -159,28 +187,31 @@ Chrome 확장 프로그램 특성상 클라이언트 코드(`dist/`)에 민감�
 ```
 doorframe/
 ├── public/
-│   ├── manifest.json       # Chrome Extension 설정
-│   └── icons/              # 아이콘 리소스
+│   ├── manifest.json       # Chrome Extension Manifest V3 설정
+│   ├── fonts/              # WOFF2 로컬 서빙 웹폰트 (Paperlogy 등)
+│   ├── images/             # 확장 프로그램 아이콘 및 그래픽 리소스
+│   └── robots.txt
 ├── src/
-│   ├── components/         # React 컴포넌트
-│   │   ├── container/
-│   │   │   └── subcomponents/
-│   │   │       └── mainSec/
-│   │   │           └── newsBrief/ # 뉴스 브리핑 UI 컴포넌트
-│   │   ├── favBar/
-│   │   └── modal/
-│   ├── hooks/             # 커스텀 훅 (비즈니스 로직 분리)
-│   ├── store/             # Redux 스토어
-│   ├── type/              # 전역 타입 정의
-│   ├── util/              # 유틸리티 함수
-│   ├── config/            # 설정 파일
-│   ├── App.tsx
-│   └── styles/
-│       └── global.css      # 전역 스타일 및 테마
+│   ├── components/         # Atomic 디자인 기반 UI 컴포넌트
+│   │   ├── molecules/      # 분자 단위 컴포넌트 (bookmark, weather, calendar, coin, news 등)
+│   │   └── organisms/      # 유기체 단위 대시보드 컴포넌트 (Main, WeatherContainer, carousel 등)
+│   ├── component/          # ListPersistence (메모/Todo 스토리지 영속성 관리자)
+│   ├── hooks/              # 커스텀 훅 (useAuth, useWeather, useFavBar 등 비즈니스 로직)
+│   ├── providers/          # 전역 Context & Provider 설정
+│   ├── store/              # Redux Toolkit 스토어 및 상태 슬라이스
+│   ├── thunk/              # 비동기 Thunk 액션 (날씨 병렬 패칭 등)
+│   ├── type/               # TypeScript 전역 타입 정의
+│   ├── util/               # 유틸리티 함수 (기상청 그리드 좌표, 날짜 계산, 스토리지 등)
+│   ├── config/             # 전역 상수 및 설정 파일
+│   ├── styles/
+│   │   └── global.css      # 전역 스타일, 브레이크포인트 및 글래스모피즘 테마
+│   ├── App.tsx             # 메인 앱 엔트리
+│   ├── popup.tsx           # 확장 프로그램 팝업 엔트리
+│   └── main.tsx            # 웹 렌더링 엔트리
 ├── supabase/
-│   └── functions/          # Edge Functions (News Summarizer, Weather Proxy)
-├── .env                   # 환경 변수
-├── vite.config.ts
+│   └── functions/          # Edge Functions (news-briefing, weather, favicon-proxy)
+├── .env                    # 환경 변수 (공개용 Supabase 키)
+├── vite.config.ts          # Vite 멀티 엔트리 빌드 파이프라인
 └── package.json
 ```
 
@@ -214,8 +245,6 @@ doorframe/
    npx supabase functions deploy news-briefing
    npx supabase functions deploy favicon-proxy
    ```
-
-## 🐛 트러블슈팅
 
 ## 🐛 트러블슈팅
 
@@ -254,6 +283,16 @@ doorframe/
 - 야간 모드
 
 ## 🚀 릴리스 노트
+### v1.3.06 (2026-09-30)
+- **테스트 스위트 전면 보강 및 구문 커버리지 81.5% 달성**:
+  - 날씨 컴포넌트(`WeatherView`, `WeatherChart`), 북마크 모달 및 아이템, 인증 훅(`useAuth`), 스토리지 유틸(`chromeStorage`), 전역 슬라이스 전반의 테스트 스위트 보강.
+  - 26개 테스트 파일, 120개 테스트 전수 통과 (100% Pass) 및 구문(Statement) 커버리지 **81.55%** (라인 83.87%, 함수 80.11%) 확보.
+- **북마크 현재 탭 이동 UX 개선**:
+  - 북마크 클릭 시 새 탭을 강제 생성하지 않고 현재 탭에서 매끄럽게 웹사이트로 이동하도록 내비게이션 동작 개선.
+- **크롬 매니페스트 안정화 및 홈 연동 가이드 정리**:
+  - Chromium 엔진 정책에 맞추어 매니페스트 내 불필요 항목을 정리하고 확장 프로그램 로드 무결성 확보.
+  - 브라우저 상단 홈 버튼 클릭 시 Doorframe 시작페이지로 연결할 수 있는 크롬 설정 가이드 제공.
+
 ### v1.3.05 (2026-09-15)
 - **날씨 0초 체감 출력 극대화 (Frame 0 즉시 복원 및 30분 SWR)**:
   - 브라우저 새 탭을 열거나 새로고침할 때 로딩 스켈레톤 없이 이전 날씨를 0ms 즉시 화면에 노출.
