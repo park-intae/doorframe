@@ -1,10 +1,18 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import weatherReducer, { restoreCachedWeather, getValidCachedWeather } from './weatherSlice';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import weatherReducer, {
+  restoreCachedWeather,
+  getValidCachedWeather,
+  fetchWeather,
+  fetchCurrentWeather,
+  fetchWeatherForecast,
+} from './weatherSlice';
 import { WeatherResponse, WeatherCurrentResponse, WeatherForecastResponse } from '@/type/weather';
+import { configureStore } from '@reduxjs/toolkit';
 
-describe('weatherSlice reducer', () => {
+describe('weatherSlice reducer and thunks', () => {
   beforeEach(() => {
     localStorage.clear();
+    vi.clearAllMocks();
   });
 
   const initialState = {
@@ -113,6 +121,22 @@ describe('weatherSlice reducer', () => {
     expect(state.hourly).toHaveLength(2);
   });
 
+  it('fetchCurrentWeather.rejected 및 fetchWeatherForecast.rejected 처리 검증', () => {
+    const action1 = {
+      type: 'weather/fetchCurrentWeather/rejected',
+      payload: '실황 에러',
+    };
+    const state1 = weatherReducer(initialState, action1);
+    expect(state1.currentLoading).toBe(false);
+    expect(state1.error).toBe('실황 에러');
+
+    const action2 = {
+      type: 'weather/fetchWeatherForecast/rejected',
+    };
+    const state2 = weatherReducer(initialState, action2);
+    expect(state2.forecastLoading).toBe(false);
+  });
+
   it('restoreCachedWeather 리듀서 실행 시 캐시 데이터가 즉각 복원되어야 한다', () => {
     const state = weatherReducer(initialState, restoreCachedWeather(mockWeatherData));
     expect(state.temperature).toBe('22');
@@ -148,5 +172,78 @@ describe('weatherSlice reducer', () => {
     expect(cached).toBeNull();
     expect(localStorage.getItem('cachedWeather')).toBeNull();
     expect(localStorage.getItem('lastWeatherFetch')).toBeNull();
+  });
+
+  it('fetchWeather Thunk: 10분 이내의 신선한 캐시가 있으면 네트워크 요청 없이 즉시 반환해야 함', async () => {
+    localStorage.setItem('lastWeatherFetch', (Date.now() - 5 * 60 * 1000).toString()); // 5분 전
+    localStorage.setItem('cachedWeather', JSON.stringify(mockWeatherData));
+
+    const store = configureStore({
+      reducer: { weather: weatherReducer },
+    });
+
+    const result = await store.dispatch(fetchWeather());
+    expect(result.payload).toEqual(mockWeatherData);
+  });
+
+  it('fetchCurrentWeather thunk: API 호출 성공 시 실황 데이터 반환', async () => {
+    (global as any).fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        current: { temperature: '25', weather: '맑음', region: '서울' },
+        isFallback: false,
+      }),
+    });
+
+    const store = configureStore({ reducer: { weather: weatherReducer } });
+    const result = await store.dispatch(fetchCurrentWeather({ latitude: 37.5, longitude: 127.0 }));
+    expect((result.payload as any).current.temperature).toBe('25');
+    expect(store.getState().weather.temperature).toBe('25');
+  });
+
+  it('fetchWeatherForecast thunk: API 호출 성공 시 예보 데이터 반환', async () => {
+    (global as any).fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        forecast: [{ date: '20261001', weatherStatus: '맑음', minTemp: '15', maxTemp: '25', precipitation: '0%' }],
+        hourly: [{ time: '12:00', temp: '25', weather: '맑음' }],
+        isFallback: false,
+      }),
+    });
+
+    const store = configureStore({ reducer: { weather: weatherReducer } });
+    const result = await store.dispatch(fetchWeatherForecast({ latitude: 37.5, longitude: 127.0 }));
+    expect((result.payload as any).forecast).toHaveLength(1);
+    expect(store.getState().weather.forecast).toHaveLength(1);
+  });
+
+  it('fetchCurrentWeather thunk: API 오류 시 Open-Meteo 백업망으로 자동 전환', async () => {
+    (global as any).fetch = vi.fn().mockImplementation(async (url: string) => {
+      if (url.includes('functions/v1/weather')) {
+        return { ok: false, status: 500 };
+      }
+      if (url.includes('reverse-geocode-client')) {
+        return {
+          ok: true,
+          json: async () => ({ principalSubdivision: '서울특별시', locality: '강남구' }),
+        };
+      }
+      if (url.includes('api.open-meteo.com')) {
+        return {
+          ok: true,
+          json: async () => ({
+            current: { temperature_2m: 23.4, weather_code: 0 },
+            hourly: { time: ['2026-09-30T12:00'], temperature_2m: [23.4], weather_code: [0] },
+            daily: { time: ['2026-09-30'], temperature_2m_max: [25.0], temperature_2m_min: [15.0], weather_code: [0], precipitation_probability_max: [10] },
+          }),
+        };
+      }
+      return { ok: false };
+    });
+
+    const store = configureStore({ reducer: { weather: weatherReducer } });
+    const result = await store.dispatch(fetchCurrentWeather({ latitude: 37.5, longitude: 127.0 }));
+    expect((result.payload as any).backupSource).toBe('Open-Meteo');
+    expect(store.getState().weather.temperature).toBe('23');
   });
 });

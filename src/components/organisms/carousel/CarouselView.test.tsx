@@ -35,4 +35,16 @@ describe('CarouselView', () => {
         fireEvent.wheel(wrapper, { deltaY: 50 });
         expect(mockOnPaginate).toHaveBeenCalledWith(1);
     });
+
+    it('두 번째 페이지에서 휠 위로 스크롤 시 이전 페이지로 이동해야 함', () => {
+        const onPaginateMock = vi.fn();
+        const { container } = render(
+            <CarouselView index={1} direction={0} total={2} children={children} onPaginate={onPaginateMock} />
+        );
+        const wrapper = container.firstChild as HTMLElement;
+
+        // 휠 위로
+        fireEvent.wheel(wrapper, { deltaY: -50 });
+        expect(onPaginateMock).toHaveBeenCalledWith(-1);
+    });
 });

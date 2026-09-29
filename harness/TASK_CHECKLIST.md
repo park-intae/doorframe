@@ -5,6 +5,10 @@
 ## In-Progress Task
 
 ## Completed Tasks
+- [✔️] **테스트 커버리지 81.5% 달성 및 테스트 스위트 보강**
+  - [✔️] 1. 날씨 뷰(`WeatherView.tsx`) 및 차트(`WeatherChart.tsx`) 인터랙션/라이프사이클 단위 테스트 작성
+  - [✔️] 2. 북마크 추가 모달(`BookmarkAdd.tsx`) 및 아이템(`SortableBookmarkItem.tsx`) 검증 테스트 작성
+  - [✔️] 3. 인증 훅(`useAuth.ts`), 스토리지 유틸(`chromeStorage.ts`), 상태 슬라이스 테스트 보강으로 구문 커버리지 81.55% 달성 (120개 테스트 전수 통과)
 - [✔️] **날씨 0ms 체감 출력 극대화: Frame 0 초기 주입 및 30분 SWR·서버 인메모리 가속 (Weather 0ms Instant Rendering & 30-min SWR)**
   - [✔️] 1. Frame 0 (0ms) Redux 초기 상태 주입 (`initialState` 생성 시 유효 캐시 즉시 동기 반영으로 스켈레톤 노출 0초화)
   - [✔️] 2. 30분 수명 제한 기반 진짜 SWR 라이프사이클 구현 (0~10분 완전 신선 반환, 10~30분 0ms 즉시 표시 후 백그라운드 갱신, 30분 초과 시 localStorage 자동 영구 파기)

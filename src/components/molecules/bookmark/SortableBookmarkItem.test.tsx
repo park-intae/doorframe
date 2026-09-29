@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { SortableBookmarkItem } from './SortableBookmarkItem';
 import { vi, describe, it, expect } from 'vitest';
 
@@ -44,5 +44,37 @@ describe('SortableBookmarkItem 컴포넌트', () => {
     expect(link).toHaveAttribute('href', 'https://example.com');
     expect(link).not.toHaveAttribute('target', '_blank');
     expect(link).not.toHaveAttribute('rel', 'nooper noreferrer');
+  });
+
+  it('사이드바가 열려있을 때(isOpen=true) 제목, 드래그 핸들, 삭제 버튼이 노출되어야 하고 삭제 클릭 시 onRemove가 호출되어야 함', () => {
+    const handleRemove = vi.fn();
+    render(
+      <SortableBookmarkItem
+        item={mockItem}
+        isOpen={true}
+        onRemove={handleRemove}
+      />
+    );
+
+    expect(screen.getByText('테스트 북마크')).toBeDefined();
+    const deleteButton = screen.getByRole('button', { name: `${mockItem.title} 북마크 삭제` });
+    expect(deleteButton).toBeDefined();
+
+    fireEvent.click(deleteButton);
+    expect(handleRemove).toHaveBeenCalledWith(expect.anything(), mockItem.id);
+  });
+
+  it('아이콘 로드 실패 시 구글 기본 파비콘으로 대체되어야 함', () => {
+    render(
+      <SortableBookmarkItem
+        item={mockItem}
+        isOpen={false}
+        onRemove={vi.fn()}
+      />
+    );
+
+    const img = screen.getByRole('img');
+    fireEvent.error(img);
+    expect(img).toHaveAttribute('src', 'https://www.google.com/favicon.icon');
   });
 });
