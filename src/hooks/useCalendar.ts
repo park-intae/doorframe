@@ -4,7 +4,7 @@ import { ListKind } from '@/store/slice/listSlice';
 
 export function useCalendar() {
     const [viewDate, setViewDate] = useState(new Date());
-    const [kind, setKind] = useState<ListKind>('memo');
+    const [kind, setKind] = useState<ListKind>('todo');
     const items = useAppSelector((state) => state.list.items);
 
     const formattedDate = useMemo(() => {

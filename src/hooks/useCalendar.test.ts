@@ -24,6 +24,12 @@ const createWrapper = (items: ListItem[] = []) => {
 };
 
 describe('useCalendar 훅 및 기간 필터링 검증', () => {
+    it('기본(디폴트) 탭 상태는 할 일(todo)이어야 한다', () => {
+        const wrapper = createWrapper([]);
+        const { result } = renderHook(() => useCalendar(), { wrapper });
+        expect(result.current.kind).toBe('todo');
+    });
+
     it('마감일이 있는 할 일은 등록일부터 마감일까지 전 기간(중간 기간 포함) 동안 조회된다', () => {
         const testTodo: ListItem = {
             id: 1,
