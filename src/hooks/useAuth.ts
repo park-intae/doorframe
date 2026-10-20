@@ -1,10 +1,14 @@
 import { supabase } from '@/config/supabase';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '@/store';
 import { setUser } from '@/store/slice/authSlice';
 import { loadBookmarksFromStorage } from '@/thunk/bookmarkThunk';
 import { loadListFromStorage } from '@/thunk/listThunk';
+import { User } from '@supabase/supabase-js';
+
+const GOOGLE_CLIENT_ID = '636198045097-3gh22uidcqu9nlletsptk4680dv6bthp.apps.googleusercontent.com';
+const MANUAL_SIGNOUT_KEY = 'doorframe_manual_signout';
 
 export function useAuth() {
     const dispatch = useDispatch<AppDispatch>();
@@ -15,17 +19,105 @@ export function useAuth() {
 
     const isSigningInRef = useRef(false);
     const [isSigningIn, setIsSigningIn] = useState(false);
+    const hasAttemptedSilentSignInRef = useRef(false);
 
+    // 사용자 인증 성공 시 전역 스토어 및 스토리지 동기화
+    const syncUserSession = (authenticatedUser: User) => {
+        dispatch(setUser(authenticatedUser));
+        dispatch(loadBookmarksFromStorage(authenticatedUser.id));
+        dispatch(loadListFromStorage(authenticatedUser.id));
+    };
+
+    // [핵심 기능 1: 크롬 브라우저 계정 무팝업(Silent) 백그라운드 자동 연동]
+    useEffect(() => {
+        if (loading || user || hasAttemptedSilentSignInRef.current) return;
+        hasAttemptedSilentSignInRef.current = true;
+
+        const attemptSilentSignIn = async () => {
+            const isManualSignOut = localStorage.getItem(MANUAL_SIGNOUT_KEY) === 'true';
+            if (isManualSignOut) return;
+
+            const isChromeExtension = typeof chrome !== 'undefined' && !!chrome.identity?.launchWebAuthFlow;
+            if (!isChromeExtension) return;
+
+            try {
+                const redirectUri = chrome.identity.getRedirectURL
+                    ? chrome.identity.getRedirectURL()
+                    : `https://${chrome.runtime?.id}.chromiumapp.org/`;
+                const nonce = Math.random().toString(36).substring(2);
+                const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&response_type=id_token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=openid%20email%20profile&nonce=${nonce}`;
+
+                const callbackUrl = await new Promise<string>((resolve, reject) => {
+                    chrome.identity.launchWebAuthFlow(
+                        { url: authUrl, interactive: false },
+                        (responseUrl) => {
+                            if (chrome.runtime.lastError || !responseUrl) {
+                                reject(chrome.runtime.lastError || new Error('Silent auth unavailable'));
+                            } else {
+                                resolve(responseUrl);
+                            }
+                        }
+                    );
+                });
+
+                if (callbackUrl) {
+                    const parsedUrl = new URL(callbackUrl);
+                    const hashParams = new URLSearchParams(parsedUrl.hash.replace(/^#/, ''));
+                    const idToken = hashParams.get('id_token');
+
+                    if (idToken) {
+                        const { data, error } = await (supabase.auth as any).signInWithIdToken({
+                            provider: 'google',
+                            token: idToken,
+                        });
+
+                        if (!error && data?.session?.user) {
+                            syncUserSession(data.session.user);
+                        }
+                    }
+                }
+            } catch {
+                // 브라우저 미로그인 또는 자동 연동 불가 시 게스트 모드 유지
+            }
+        };
+
+        attemptSilentSignIn();
+    }, [loading, user]);
+
+    // [핵심 기능 2: 크롬 브라우저 계정 로그아웃 감지 동기화]
+    useEffect(() => {
+        if (typeof chrome !== 'undefined' && chrome.identity?.onSignInChanged) {
+            const handleSignInChange = (_account: unknown, signedIn: boolean) => {
+                if (!signedIn && user) {
+                    supabase.auth.signOut().then(() => {
+                        dispatch(setUser(null));
+                    }).catch(() => {
+                        // 로그아웃 동기화 실패 시 무시
+                    });
+                }
+            };
+
+            chrome.identity.onSignInChanged.addListener(handleSignInChange);
+            return () => {
+                if (typeof chrome !== 'undefined' && chrome.identity?.onSignInChanged) {
+                    chrome.identity.onSignInChanged.removeListener(handleSignInChange);
+                }
+            };
+        }
+    }, [user, dispatch]);
+
+    // [핵심 기능 3: 수동 로그인 (창 2번 뜨는 문제 없는 단 1회의 깔끔한 로그인)]
     const handleGoogleSignIn = async () => {
         if (isSigningInRef.current) return;
         isSigningInRef.current = true;
         setIsSigningIn(true);
 
+        localStorage.removeItem(MANUAL_SIGNOUT_KEY);
+
         try {
             const isChromeExtension = typeof chrome !== 'undefined' && !!chrome.tabs?.create;
 
             if (isChromeExtension) {
-                // 확장 프로그램의 실제 내부 index.html 주소를 명시적으로 리디렉션 주소로 지정
                 const redirectUrl = chrome.runtime.getURL('index.html');
 
                 const { data, error } = await supabase.auth.signInWithOAuth({
@@ -43,7 +135,6 @@ export function useAuth() {
                 if (error) throw new Error(`[OAuth 요청 실패] ${error.message}`);
                 if (!data?.url) throw new Error('인증 URL을 생성하지 못했습니다.');
 
-                // 새 브라우저 탭으로 구글 로그인 열기 (웹뷰 차단 회피)
                 const loginTab = await chrome.tabs.create({ url: data.url });
                 const loginTabId = loginTab.id;
 
@@ -51,7 +142,6 @@ export function useAuth() {
                     throw new Error('로그인 탭을 열 수 없습니다.');
                 }
 
-                // 탭 URL 변경 감지 리스너
                 await new Promise<void>((resolve, reject) => {
                     let cleanedUp = false;
 
@@ -65,7 +155,7 @@ export function useAuth() {
                     const onRemovedListener = (tabId: number) => {
                         if (tabId === loginTabId) {
                             cleanup();
-                            resolve(); // 사용자가 탭을 닫음 (정상 취소)
+                            resolve();
                         }
                     };
 
@@ -75,8 +165,6 @@ export function useAuth() {
                         try {
                             const currentUrl = new URL(changeInfo.url);
 
-                            // 콜백 URL의 실제 origin에 도달하고 인증 파라미터가 있는지 엄격히 검사
-                            // (chrome-extension://, localhost, 127.0.0.1, chromiumapp.org 모두 코드 단위에서 완벽 포착)
                             const isCallbackOrigin =
                                 currentUrl.protocol === 'chrome-extension:' ||
                                 currentUrl.hostname === 'localhost' ||
@@ -92,7 +180,6 @@ export function useAuth() {
                             if (isCallbackOrigin && hasAuthPayload) {
                                 cleanup();
                                 try {
-                                    // 로그인 완료 탭 자동 닫기
                                     await chrome.tabs.remove(loginTabId);
                                 } catch {}
 
@@ -107,16 +194,12 @@ export function useAuth() {
                                 const code = currentUrl.searchParams.get('code');
 
                                 if (code) {
-                                    // PKCE 코드 교환
                                     const { data: sessionData, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
                                     if (exchangeError) throw new Error(`[세션 코드 교환 실패] ${exchangeError.message}`);
                                     if (sessionData.session?.user) {
-                                        dispatch(setUser(sessionData.session.user));
-                                        dispatch(loadBookmarksFromStorage(sessionData.session.user.id));
-                                        dispatch(loadListFromStorage(sessionData.session.user.id));
+                                        syncUserSession(sessionData.session.user);
                                     }
                                 } else {
-                                    // Implicit / Hash 토큰 교환
                                     const accessToken = hashParams.get('access_token');
                                     const refreshToken = hashParams.get('refresh_token');
 
@@ -127,9 +210,7 @@ export function useAuth() {
                                         });
                                         if (setSessionError) throw new Error(`[세션 설정 실패] ${setSessionError.message}`);
                                         if (sessionData.session?.user) {
-                                            dispatch(setUser(sessionData.session.user));
-                                            dispatch(loadBookmarksFromStorage(sessionData.session.user.id));
-                                            dispatch(loadListFromStorage(sessionData.session.user.id));
+                                            syncUserSession(sessionData.session.user);
                                         }
                                     }
                                 }
@@ -147,7 +228,6 @@ export function useAuth() {
                     chrome.tabs.onRemoved.addListener(onRemovedListener);
                 });
             } else {
-                // 일반 웹 브라우저 환경 폴백 (GitHub Pages 등 서브패스 지원)
                 const redirectTo = window.location.href.split('?')[0].split('#')[0];
 
                 const { error } = await supabase.auth.signInWithOAuth({
@@ -165,7 +245,6 @@ export function useAuth() {
                 setShowPopover(false);
             }
         } catch (error: any) {
-            console.error('로그인 에러:', error);
             alert(`로그인에 실패했습니다.\n\n오류 내용: ${error?.message || error || '알 수 없는 오류'}`);
         } finally {
             isSigningInRef.current = false;
@@ -175,11 +254,13 @@ export function useAuth() {
 
     const handleSignOut = async () => {
         try {
+            localStorage.setItem(MANUAL_SIGNOUT_KEY, 'true');
+
             const { error } = await supabase.auth.signOut();
             if (error) throw error;
             setShowPopover(false);
-        } catch (error) {
-            console.error('로그아웃 실패:', error);
+        } catch {
+            // 로그아웃 실패 시 무시
         }
     };
 

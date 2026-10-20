@@ -15,6 +15,7 @@ vi.mock('@/config/supabase', () => ({
     supabase: {
         auth: {
             signInWithOAuth: vi.fn(),
+            signInWithIdToken: vi.fn(),
             signOut: vi.fn(),
             exchangeCodeForSession: vi.fn(),
             setSession: vi.fn(),
@@ -26,11 +27,13 @@ describe('useAuth 훅 테스트', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         vi.spyOn(window, 'alert').mockImplementation(() => {});
+        localStorage.clear();
         delete (global as any).chrome;
     });
 
     afterEach(() => {
         delete (global as any).chrome;
+        localStorage.clear();
     });
 
     const createTestStore = (initialUser: User | null = null, initialLoading: boolean = true) => {
@@ -74,7 +77,61 @@ describe('useAuth 훅 테스트', () => {
         expect(result.current.user).toEqual(mockUser);
     });
 
-    it('웹 브라우저 환경에서 handleGoogleSignIn 호출 시 supabase.auth.signInWithOAuth를 호출해야 함', async () => {
+    it('크롬 확장 프로그램 환경에서 마운트 시 interactive: false로 무팝업 자동 로그인을 시도해야 함', async () => {
+        const mockAuthUser = { id: 'silent-user-1', email: 'silent@google.com' } as unknown as User;
+
+        (global as any).chrome = {
+            runtime: { id: 'test-ext-id' },
+            identity: {
+                getRedirectURL: () => 'https://test-ext-id.chromiumapp.org/',
+                launchWebAuthFlow: vi.fn((options: any, callback: (url?: string) => void) => {
+                    expect(options.interactive).toBe(false); // 창이 절대 뜨지 않는 옵션 검증
+                    callback('https://test-ext-id.chromiumapp.org/#id_token=mock_jwt_id_token');
+                }),
+            },
+        };
+
+        (supabase.auth.signInWithIdToken as Mock).mockResolvedValue({
+            data: { session: { user: mockAuthUser } },
+            error: null,
+        });
+
+        const store = createTestStore(null, false); // loading false, user null
+        renderHook(() => useAuth(), { wrapper: createWrapper(store) });
+
+        await act(async () => {
+            await new Promise((r) => setTimeout(r, 20));
+        });
+
+        expect(chrome.identity.launchWebAuthFlow).toHaveBeenCalled();
+        expect(supabase.auth.signInWithIdToken).toHaveBeenCalledWith({
+            provider: 'google',
+            token: 'mock_jwt_id_token',
+        });
+        expect(store.getState().auth.user?.id).toBe('silent-user-1');
+    });
+
+    it('사용자가 수동 로그아웃한 플래그가 있으면 무팝업 자동 로그인을 시도하지 않아야 함', async () => {
+        localStorage.setItem('doorframe_manual_signout', 'true');
+
+        (global as any).chrome = {
+            runtime: { id: 'test-ext-id' },
+            identity: {
+                launchWebAuthFlow: vi.fn(),
+            },
+        };
+
+        const store = createTestStore(null, false);
+        renderHook(() => useAuth(), { wrapper: createWrapper(store) });
+
+        await act(async () => {
+            await new Promise((r) => setTimeout(r, 20));
+        });
+
+        expect(chrome.identity.launchWebAuthFlow).not.toHaveBeenCalled();
+    });
+
+    it('웹 브라우저 환경에서 handleGoogleSignIn 호출 시 supabase.auth.signInWithOAuth를 단 1회 호출해야 함', async () => {
         (supabase.auth.signInWithOAuth as Mock).mockResolvedValue({ error: null });
         const store = createTestStore();
         const { result } = renderHook(() => useAuth(), { wrapper: createWrapper(store) });
@@ -83,6 +140,7 @@ describe('useAuth 훅 테스트', () => {
             await result.current.handleGoogleSignIn();
         });
 
+        expect(supabase.auth.signInWithOAuth).toHaveBeenCalledTimes(1);
         expect(supabase.auth.signInWithOAuth).toHaveBeenCalledWith(expect.objectContaining({
             provider: 'google'
         }));
@@ -100,7 +158,7 @@ describe('useAuth 훅 테스트', () => {
         expect(window.alert).toHaveBeenCalledWith(expect.stringContaining('로그인에 실패했습니다.'));
     });
 
-    it('크롬 확장 프로그램 환경에서 PKCE 인증 흐름이 정상 처리되어야 함', async () => {
+    it('수동 로그인 시 탭 생성(chrome.tabs.create)을 정확히 1회만 호출하여 창이 2번 뜨지 않아야 함', async () => {
         let updatedListener: any;
 
         (global as any).chrome = {
@@ -132,7 +190,7 @@ describe('useAuth 훅 테스트', () => {
         });
 
         (supabase.auth.exchangeCodeForSession as Mock).mockResolvedValue({
-            data: { session: { user: { id: 'u101', email: 'pkce@test.com' } } },
+            data: { session: { user: { id: 'single-tab-user', email: 'tab@test.com' } } },
             error: null,
         });
 
@@ -143,8 +201,38 @@ describe('useAuth 훅 테스트', () => {
             await result.current.handleGoogleSignIn();
         });
 
+        expect(chrome.tabs.create).toHaveBeenCalledTimes(1); // 1회만 정확히 호출
         expect(supabase.auth.exchangeCodeForSession).toHaveBeenCalledWith('sample_pkce_code');
-        expect(store.getState().auth.user?.id).toBe('u101');
+        expect(store.getState().auth.user?.id).toBe('single-tab-user');
+    });
+
+    it('chrome.identity.onSignInChanged 리스너가 등록되고 브라우저 로그아웃 감지 시 세션을 정리해야 함', async () => {
+        let signInChangedListener: any;
+
+        (global as any).chrome = {
+            runtime: {},
+            identity: {
+                onSignInChanged: {
+                    addListener: vi.fn((fn: any) => { signInChangedListener = fn; }),
+                    removeListener: vi.fn(),
+                },
+            },
+        };
+
+        (supabase.auth.signOut as Mock).mockResolvedValue({ error: null });
+
+        const mockUser = { id: 'active-user', email: 'active@test.com' } as unknown as User;
+        const store = createTestStore(mockUser, false);
+        renderHook(() => useAuth(), { wrapper: createWrapper(store) });
+
+        expect(chrome.identity.onSignInChanged.addListener).toHaveBeenCalled();
+
+        await act(async () => {
+            signInChangedListener?.({ id: 'active-user' }, false);
+        });
+
+        expect(supabase.auth.signOut).toHaveBeenCalled();
+        expect(store.getState().auth.user).toBeNull();
     });
 
     it('크롬 확장 프로그램 환경에서 해시 토큰(access_token) 인증 흐름이 정상 처리되어야 함', async () => {
@@ -236,7 +324,7 @@ describe('useAuth 훅 테스트', () => {
         expect(result.current.isSigningIn).toBe(false);
     });
 
-    it('handleSignOut 호출 시 supabase.auth.signOut을 호출해야 함', async () => {
+    it('handleSignOut 호출 시 수동 로그아웃 플래그를 저장하고 signOut을 호출해야 함', async () => {
         (supabase.auth.signOut as Mock).mockResolvedValue({ error: null });
         const store = createTestStore();
         const { result } = renderHook(() => useAuth(), { wrapper: createWrapper(store) });
@@ -245,6 +333,7 @@ describe('useAuth 훅 테스트', () => {
             await result.current.handleSignOut();
         });
 
+        expect(localStorage.getItem('doorframe_manual_signout')).toBe('true');
         expect(supabase.auth.signOut).toHaveBeenCalled();
     });
 

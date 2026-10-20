@@ -7,6 +7,12 @@
 ## In-Progress Task
 
 ## Completed Tasks
+- [✔️] **크롬 브라우저 계정 연동 및 다단계 폴백(Graceful Degradation) 로그인 구현 (Chrome Browser Account Auth & Multi-Tier Fallback)**
+  - [✔️] 1. @harness 규칙 및 기존 useAuth 단위 테스트 스위트 확인
+  - [✔️] 2. chrome.identity.launchWebAuthFlow 표준 연동(400 에러 해결) 및 Graceful Degradation 폴백 로직 구현
+  - [✔️] 3. useAuth.test.ts 단위 테스트 스위트 보강 (identity 성공, 실패 폴백, 탭 OAuth, 일반 웹 13개 케이스 통과)
+  - [✔️] 4. manifest.json OAuth2 클라이언트 ID 연동 및 업비트/Supabase 실시간 웹소켓(wss) CSP 보안 허용
+  - [✔️] 5. 전체 회귀 테스트 검증 (26개 파일 124개 테스트 100% 통과) 및 프로덕션 번들 빌드 확인
 - [✔️] **테스트 커버리지 81.5% 달성 및 테스트 스위트 보강**
   - [✔️] 1. 날씨 뷰(`WeatherView.tsx`) 및 차트(`WeatherChart.tsx`) 인터랙션/라이프사이클 단위 테스트 작성
   - [✔️] 2. 북마크 추가 모달(`BookmarkAdd.tsx`) 및 아이템(`SortableBookmarkItem.tsx`) 검증 테스트 작성
