@@ -3,7 +3,7 @@ import Search from '../search/Search';
 import Carousel from '../carousel';
 import CalendarSlide from '../calendar/CalendarSlide';
 import NewsBriefing from '../news/NewsBrief';
-import CoinList from "../../molecules/coin/CoinList";
+import MarketBoard from "../../molecules/market/MarketBoard";
 // import YoutubePlayerSlide from '../carousel/YoutubePlayerSlide';
 
 export default function MainSec() {
@@ -18,7 +18,7 @@ export default function MainSec() {
                     <Carousel>
                         <CalendarSlide />
                         <NewsBriefing />
-                        <CoinList />
+                        <MarketBoard />
                         {/* <YoutubePlayerSlide /> */}
                     </Carousel>
                 </div>

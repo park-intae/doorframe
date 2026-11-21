@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.window", "deno.ns"],
+    "strict": true
+  },
+  "imports": {
+    "supabase": "jsr:@supabase/functions-js/edge-runtime.d.ts"
+  }
+}
