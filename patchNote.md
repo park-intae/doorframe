@@ -1,3 +1,27 @@
+## [2026-11-21] 코인 커스텀 선택, 국장/미장 주식 시세 연동 및 코인 초기 로딩 최적화
+
+### 주요 변경 사항
+
+#### 1. 코인 커스텀 선택 및 기본 종목 10종 확장 (`useCoinMarket.ts`, `MarketBoard.tsx`)
+- **기본 관심 코인 확대**: 기존 6종에서 10종(`KRW-BTC`, `KRW-ETH`, `KRW-XRP`, `KRW-SOL`, `KRW-DOGE`, `KRW-ADA`, `KRW-AVAX`, `KRW-LINK`, `KRW-SUI`, `KRW-TRX`)으로 기본 목록 확장.
+- **업비트 전체 KRW 마켓 검색 및 커스텀 편집**: `/v1/market/all`로 전체 KRW 코인 목록을 불러와 한글명·영문명·티커로 검색하고 토글로 추가/삭제할 수 있으며, `chromeStorage` 저장 및 변경 즉시 WebSocket 재구독 적용.
+
+#### 2. 코인 초기 로딩 지연 해결 (`useCoinMarket.ts`, `coin.ts`)
+- **REST/WebSocket 응답 필드명 불일치 수정**: 업비트 WebSocket(`code`)과 달리 REST `/v1/ticker`가 `market` 필드를 반환해 초기 시세가 누락되던 문제를 `data.code || data.market`으로 통합 파싱하도록 수정.
+- **불필요한 재구독 제거 및 모듈 캐시 적용**: `nameMapRef` 도입으로 마켓 카탈로그 로딩 완료 시 `useEffect` 재실행을 방지하고, 모듈 캐시(`cachedCoins`, `cachedSelectedCodes`)를 통해 탭/슬라이드 전환 시 즉시 시세 표시.
+
+#### 3. 국내·미국 주식 시세 Edge Function 및 폴링 훅 구축 (`supabase/functions/stock/index.ts`, `useStockMarket.ts`, `StockListItem.tsx`)
+- **Supabase `stock` Edge Function (`verify_jwt = false`)**: API 키 없이 Yahoo Finance 엔드포인트를 통해 국내(`.KS`, `.KQ`)·미국 주식 시세 조회(`quotes`, 15초 인메모리 캐시) 및 종목 검색(`search`) 지원.
+- **`전체 / 국장 / 미장` 필터 & 커스텀 종목 편집**: 기본 국내 5종 + 미국 5종을 제공하며 시장 필터 전환, 인기 프리셋 및 실시간 검색을 통한 종목 추가/삭제, 20초 주기 폴링(`document.hidden` 시 자동 일시 정지) 구현.
+
+#### 4. 통합 마켓 대시보드 UI (`MarketBoard.tsx`, `MainSec.tsx`)
+- 기존 `CoinList` 슬라이드를 `코인 | 주식` 탭 전환, `종목 편집` 모드, `기본값 복원` 버튼을 갖춘 `MarketBoard`로 통합 개편.
+
+#### 5. 단위 테스트 보강 및 검증 (`useCoinMarket.test.ts`, `useStockMarket.test.ts`)
+- 코인 REST/마켓 목록/커스텀 토글 및 주식 시장 필터/검색/토글 단위 테스트 추가 (전체 28개 테스트 파일, 128개 테스트 통과 및 프로덕션 빌드 검증 완료).
+
+---
+
 ## [2026-10-20] 크롬 브라우저 계정 무팝업 자동 연동, 수동 로그아웃 보호 및 웹소켓(WSS) 보안 정책 개선
 
 ### 주요 변경 사항
